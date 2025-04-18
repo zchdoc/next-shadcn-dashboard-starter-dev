@@ -14,7 +14,7 @@
   "editor.fontSize": 16,
   "npm.packageManager": "npm",
   "workbench.iconTheme": "vs-minimal",
-  "workbench.colorTheme": "Default High Contrast",
+  "workbench.colorTheme": "Default Dark+",
   "liveServer.settings.port": 5501,
   "svg.preview.background": "transparent",
   "security.workspace.trust.enabled": false,

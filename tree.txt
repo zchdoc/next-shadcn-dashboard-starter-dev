@@ -1,0 +1,227 @@
+E:\code_zch\code_frontend\nextjs-dev\next-shadcn-dashboard-starter-dev
+├── components.json
+├── env.example.txt
+├── LICENSE
+├── next-env.d.ts
+├── next.config.js
+├── package.json
+├── pnpm-lock.yaml
+├── postcss.config.js
+├── public
+|  ├── next.svg
+|  └── vercel.svg
+├── README.md
+├── README.ZCH.txt
+├── src
+|  ├── app
+|  |  ├── auth
+|  |  |  ├── sign-in
+|  |  |  |  └── [[...sign-in]]
+|  |  |  |     └── page.tsx
+|  |  |  └── sign-up
+|  |  |     └── [[...sign-up]]
+|  |  |        └── page.tsx
+|  |  ├── dashboard
+|  |  |  ├── kanban
+|  |  |  |  └── page.tsx
+|  |  |  ├── layout.tsx
+|  |  |  ├── overview
+|  |  |  |  ├── @area_stats
+|  |  |  |  |  ├── error.tsx
+|  |  |  |  |  ├── loading.tsx
+|  |  |  |  |  └── page.tsx
+|  |  |  |  ├── @bar_stats
+|  |  |  |  |  ├── error.tsx
+|  |  |  |  |  ├── loading.tsx
+|  |  |  |  |  └── page.tsx
+|  |  |  |  ├── @pie_stats
+|  |  |  |  |  ├── error.tsx
+|  |  |  |  |  ├── loading.tsx
+|  |  |  |  |  └── page.tsx
+|  |  |  |  ├── @sales
+|  |  |  |  |  ├── error.tsx
+|  |  |  |  |  ├── loading.tsx
+|  |  |  |  |  └── page.tsx
+|  |  |  |  ├── error.tsx
+|  |  |  |  └── layout.tsx
+|  |  |  ├── page.tsx
+|  |  |  ├── product
+|  |  |  |  ├── page.tsx
+|  |  |  |  └── [productId]
+|  |  |  |     └── page.tsx
+|  |  |  └── profile
+|  |  |     └── [[...profile]]
+|  |  |        └── page.tsx
+|  |  ├── favicon.ico
+|  |  ├── globals.css
+|  |  ├── layout.tsx
+|  |  ├── not-found.tsx
+|  |  ├── page.tsx
+|  |  └── theme.css
+|  ├── components
+|  |  ├── active-theme.tsx
+|  |  ├── breadcrumbs.tsx
+|  |  ├── file-uploader.tsx
+|  |  ├── form-card-skeleton.tsx
+|  |  ├── icons.tsx
+|  |  ├── kbar
+|  |  |  ├── index.tsx
+|  |  |  ├── render-result.tsx
+|  |  |  ├── result-item.tsx
+|  |  |  └── use-theme-switching.tsx
+|  |  ├── layout
+|  |  |  ├── app-sidebar.tsx
+|  |  |  ├── cta-github.tsx
+|  |  |  ├── header.tsx
+|  |  |  ├── page-container.tsx
+|  |  |  ├── providers.tsx
+|  |  |  ├── ThemeToggle
+|  |  |  |  ├── theme-provider.tsx
+|  |  |  |  └── theme-toggle.tsx
+|  |  |  └── user-nav.tsx
+|  |  ├── modal
+|  |  |  └── alert-modal.tsx
+|  |  ├── nav-main.tsx
+|  |  ├── nav-projects.tsx
+|  |  ├── nav-user.tsx
+|  |  ├── org-switcher.tsx
+|  |  ├── search-input.tsx
+|  |  ├── theme-selector.tsx
+|  |  ├── ui
+|  |  |  ├── accordion.tsx
+|  |  |  ├── alert-dialog.tsx
+|  |  |  ├── alert.tsx
+|  |  |  ├── aspect-ratio.tsx
+|  |  |  ├── avatar.tsx
+|  |  |  ├── badge.tsx
+|  |  |  ├── breadcrumb.tsx
+|  |  |  ├── button.tsx
+|  |  |  ├── calendar.tsx
+|  |  |  ├── card.tsx
+|  |  |  ├── chart.tsx
+|  |  |  ├── checkbox.tsx
+|  |  |  ├── collapsible.tsx
+|  |  |  ├── command.tsx
+|  |  |  ├── context-menu.tsx
+|  |  |  ├── dialog.tsx
+|  |  |  ├── drawer.tsx
+|  |  |  ├── dropdown-menu.tsx
+|  |  |  ├── form.tsx
+|  |  |  ├── heading.tsx
+|  |  |  ├── hover-card.tsx
+|  |  |  ├── input-otp.tsx
+|  |  |  ├── input.tsx
+|  |  |  ├── label.tsx
+|  |  |  ├── menubar.tsx
+|  |  |  ├── modal.tsx
+|  |  |  ├── navigation-menu.tsx
+|  |  |  ├── pagination.tsx
+|  |  |  ├── popover.tsx
+|  |  |  ├── progress.tsx
+|  |  |  ├── radio-group.tsx
+|  |  |  ├── resizable.tsx
+|  |  |  ├── scroll-area.tsx
+|  |  |  ├── select.tsx
+|  |  |  ├── separator.tsx
+|  |  |  ├── sheet.tsx
+|  |  |  ├── sidebar.tsx
+|  |  |  ├── skeleton.tsx
+|  |  |  ├── slider.tsx
+|  |  |  ├── sonner.tsx
+|  |  |  ├── switch.tsx
+|  |  |  ├── table
+|  |  |  |  ├── data-table-column-header.tsx
+|  |  |  |  ├── data-table-date-filter.tsx
+|  |  |  |  ├── data-table-faceted-filter.tsx
+|  |  |  |  ├── data-table-pagination.tsx
+|  |  |  |  ├── data-table-skeleton.tsx
+|  |  |  |  ├── data-table-slider-filter.tsx
+|  |  |  |  ├── data-table-toolbar.tsx
+|  |  |  |  ├── data-table-view-options.tsx
+|  |  |  |  └── data-table.tsx
+|  |  |  ├── table.tsx
+|  |  |  ├── tabs.tsx
+|  |  |  ├── textarea.tsx
+|  |  |  ├── toggle-group.tsx
+|  |  |  ├── toggle.tsx
+|  |  |  └── tooltip.tsx
+|  |  └── user-avatar-profile.tsx
+|  ├── config
+|  |  └── data-table.ts
+|  ├── constants
+|  |  ├── data.ts
+|  |  └── mock-api.ts
+|  ├── features
+|  |  ├── auth
+|  |  |  └── components
+|  |  |     ├── github-auth-button.tsx
+|  |  |     ├── sign-in-view.tsx
+|  |  |     ├── sign-up-view.tsx
+|  |  |     └── user-auth-form.tsx
+|  |  ├── kanban
+|  |  |  ├── components
+|  |  |  |  ├── board-column.tsx
+|  |  |  |  ├── column-action.tsx
+|  |  |  |  ├── kanban-board.tsx
+|  |  |  |  ├── kanban-view-page.tsx
+|  |  |  |  ├── new-section-dialog.tsx
+|  |  |  |  ├── new-task-dialog.tsx
+|  |  |  |  └── task-card.tsx
+|  |  |  └── utils
+|  |  |     ├── index.ts
+|  |  |     └── store.ts
+|  |  ├── overview
+|  |  |  └── components
+|  |  |     ├── area-graph-skeleton.tsx
+|  |  |     ├── area-graph.tsx
+|  |  |     ├── bar-graph-skeleton.tsx
+|  |  |     ├── bar-graph.tsx
+|  |  |     ├── overview.tsx
+|  |  |     ├── pie-graph-skeleton.tsx
+|  |  |     ├── pie-graph.tsx
+|  |  |     ├── recent-sales-skeleton.tsx
+|  |  |     └── recent-sales.tsx
+|  |  ├── products
+|  |  |  └── components
+|  |  |     ├── product-form.tsx
+|  |  |     ├── product-listing.tsx
+|  |  |     ├── product-tables
+|  |  |     |  ├── cell-action.tsx
+|  |  |     |  ├── columns.tsx
+|  |  |     |  ├── index.tsx
+|  |  |     |  └── options.tsx
+|  |  |     └── product-view-page.tsx
+|  |  └── profile
+|  |     ├── components
+|  |     |  ├── profile-create-form.tsx
+|  |     |  └── profile-view-page.tsx
+|  |     └── utils
+|  |        └── form-schema.ts
+|  ├── hooks
+|  |  ├── use-breadcrumbs.tsx
+|  |  ├── use-callback-ref.ts
+|  |  ├── use-callback-ref.tsx
+|  |  ├── use-controllable-state.tsx
+|  |  ├── use-data-table.ts
+|  |  ├── use-debounce.tsx
+|  |  ├── use-debounced-callback.ts
+|  |  ├── use-media-query.ts
+|  |  ├── use-mobile.tsx
+|  |  └── use-multistep-form.tsx
+|  ├── lib
+|  |  ├── data-table.ts
+|  |  ├── font.ts
+|  |  ├── format.ts
+|  |  ├── parsers.ts
+|  |  ├── searchparams.ts
+|  |  └── utils.ts
+|  ├── middleware.ts
+|  └── types
+|     ├── data-table.ts
+|     └── index.ts
+├── tree.txt
+└── tsconfig.json
+
+directory: 55 file: 177 symboliclink: 85
+
+ignored: directory (1)
