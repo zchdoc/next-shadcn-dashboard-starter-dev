@@ -11,6 +11,7 @@ E:\code_zch\code_frontend\nextjs-dev\next-shadcn-dashboard-starter-dev
 |  ├── next.svg
 |  └── vercel.svg
 ├── README.md
+├── README.ZCH.TREE.CMD.txt
 ├── README.ZCH.txt
 ├── src
 |  ├── app
@@ -219,9 +220,10 @@ E:\code_zch\code_frontend\nextjs-dev\next-shadcn-dashboard-starter-dev
 |  └── types
 |     ├── data-table.ts
 |     └── index.ts
+├── tree.dir.txt
 ├── tree.txt
 └── tsconfig.json
 
-directory: 55 file: 177 symboliclink: 85
+directory: 55 file: 179 symboliclink: 85
 
 ignored: directory (1)
