@@ -57,6 +57,13 @@ export const navItems: NavItem[] = [
     shortcut: ['k', 'k'],
     isActive: false,
     items: [] // No child items
+  },
+  {
+    title: 'Bookmark',
+    url: '#',
+    icon: 'bookmark',
+    isActive: true,
+    items: []
   }
 ];
 
