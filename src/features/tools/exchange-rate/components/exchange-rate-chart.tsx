@@ -378,8 +378,8 @@ export function ExchangeRateChart({
           </div>
         ) : historicalData.length > 0 ? (
           <div className='h-[300px] w-full'>
-            <ChartContainer config={chartConfig} className='h-full w-full'>
-              {chartType === 'area' && (
+            {chartType === 'area' && (
+              <ChartContainer config={chartConfig} className='h-full w-full'>
                 <AreaChart
                   data={historicalData.map((item) => ({
                     ...item,
@@ -429,9 +429,11 @@ export function ExchangeRateChart({
                     fill='url(#colorRate)'
                   />
                 </AreaChart>
-              )}
+              </ChartContainer>
+            )}
 
-              {chartType === 'line' && (
+            {chartType === 'line' && (
+              <ChartContainer config={chartConfig} className='h-full w-full'>
                 <LineChart
                   data={historicalData.map((item) => ({
                     ...item,
@@ -468,9 +470,11 @@ export function ExchangeRateChart({
                     activeDot={{ r: 5 }}
                   />
                 </LineChart>
-              )}
+              </ChartContainer>
+            )}
 
-              {chartType === 'bar' && (
+            {chartType === 'bar' && (
+              <ChartContainer config={chartConfig} className='h-full w-full'>
                 <BarChart
                   data={historicalData.map((item) => ({
                     ...item,
@@ -507,8 +511,8 @@ export function ExchangeRateChart({
                     }
                   />
                 </BarChart>
-              )}
-            </ChartContainer>
+              </ChartContainer>
+            )}
           </div>
         ) : (
           <div className='flex h-[300px] w-full items-center justify-center'>
