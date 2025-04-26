@@ -20,13 +20,20 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   IconArrowUpRight,
   IconArrowDownRight,
-  IconRefresh
+  IconRefresh,
+  IconChartLine,
+  IconChartBar,
+  IconChartCandle
 } from '@tabler/icons-react';
 import { useEffect, useState } from 'react';
 import {
   Area,
   AreaChart,
+  Bar,
+  BarChart,
   CartesianGrid,
+  Line,
+  LineChart,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -62,6 +69,7 @@ export function ExchangeRateChart({
   const [lastRefreshTime, setLastRefreshTime] = useState<Date | null>(null);
   const [selectedApiProvider, setSelectedApiProvider] =
     useState<ApiProviderType>(apiProvider || 'alltick');
+  const [chartType, setChartType] = useState<'area' | 'line' | 'bar'>('area');
 
   // 获取可用的 API 提供者
   const availableProviders = ApiProviderFactory.getAvailableProviders();
@@ -270,18 +278,42 @@ export function ExchangeRateChart({
             </TabsList>
           </Tabs>
 
-          {/* 刷新按钮 */}
-          <Button
-            variant='outline'
-            size='icon'
-            onClick={handleRefresh}
-            disabled={isInitialDelay || isRefreshDisabled}
-            className='ml-auto'
-          >
-            <IconRefresh
-              className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`}
-            />
-          </Button>
+          {/* 图表类型和刷新按钮 */}
+          <div className='flex gap-1'>
+            {/* 图表类型切换 */}
+            <Tabs
+              value={chartType}
+              onValueChange={(value) =>
+                setChartType(value as 'area' | 'line' | 'bar')
+              }
+              className='w-auto'
+            >
+              <TabsList className='grid grid-cols-3'>
+                <TabsTrigger value='area' className='px-2' title='Area Chart'>
+                  <IconChartLine className='h-4 w-4' />
+                </TabsTrigger>
+                <TabsTrigger value='line' className='px-2' title='Line Chart'>
+                  <IconChartLine className='h-4 w-4' />
+                </TabsTrigger>
+                <TabsTrigger value='bar' className='px-2' title='Bar Chart'>
+                  <IconChartBar className='h-4 w-4' />
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+
+            {/* 刷新按钮 */}
+            <Button
+              variant='outline'
+              size='icon'
+              onClick={handleRefresh}
+              disabled={isInitialDelay || isRefreshDisabled}
+              className='ml-1'
+            >
+              <IconRefresh
+                className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`}
+              />
+            </Button>
+          </div>
         </div>
 
         {/* 加载状态和上次刷新时间 */}
@@ -301,55 +333,135 @@ export function ExchangeRateChart({
         ) : historicalData.length > 0 ? (
           <div className='h-[300px] w-full'>
             <ResponsiveContainer width='100%' height='100%'>
-              <AreaChart
-                data={historicalData.map((item) => ({
-                  ...item,
-                  formattedDate: formatDate(item.date)
-                }))}
-                margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
-              >
-                <defs>
-                  <linearGradient id='colorRate' x1='0' y1='0' x2='0' y2='1'>
-                    <stop
-                      offset='5%'
-                      stopColor='hsl(var(--primary))'
-                      stopOpacity={0.8}
-                    />
-                    <stop
-                      offset='95%'
-                      stopColor='hsl(var(--primary))'
-                      stopOpacity={0}
-                    />
-                  </linearGradient>
-                </defs>
-                <XAxis
-                  dataKey='formattedDate'
-                  tick={{ fontSize: 12 }}
-                  tickLine={false}
-                  axisLine={false}
-                  minTickGap={5}
-                />
-                <YAxis
-                  domain={['auto', 'auto']}
-                  tick={{ fontSize: 12 }}
-                  tickLine={false}
-                  axisLine={false}
-                  tickFormatter={(value) => value.toFixed(2)}
-                />
-                <CartesianGrid
-                  strokeDasharray='3 3'
-                  vertical={false}
-                  stroke='hsl(var(--border))'
-                />
-                <Tooltip content={<CustomTooltip />} />
-                <Area
-                  type='monotone'
-                  dataKey='rate'
-                  stroke='hsl(var(--primary))'
-                  fillOpacity={1}
-                  fill='url(#colorRate)'
-                />
-              </AreaChart>
+              {chartType === 'area' && (
+                <AreaChart
+                  data={historicalData.map((item) => ({
+                    ...item,
+                    formattedDate: formatDate(item.date)
+                  }))}
+                  margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+                >
+                  <defs>
+                    <linearGradient id='colorRate' x1='0' y1='0' x2='0' y2='1'>
+                      <stop
+                        offset='5%'
+                        stopColor='hsl(var(--primary))'
+                        stopOpacity={0.8}
+                      />
+                      <stop
+                        offset='95%'
+                        stopColor='hsl(var(--primary))'
+                        stopOpacity={0}
+                      />
+                    </linearGradient>
+                  </defs>
+                  <XAxis
+                    dataKey='formattedDate'
+                    tick={{ fontSize: 12 }}
+                    tickLine={false}
+                    axisLine={false}
+                    minTickGap={5}
+                  />
+                  <YAxis
+                    domain={['auto', 'auto']}
+                    tick={{ fontSize: 12 }}
+                    tickLine={false}
+                    axisLine={false}
+                    tickFormatter={(value) => value.toFixed(2)}
+                  />
+                  <CartesianGrid
+                    strokeDasharray='3 3'
+                    vertical={false}
+                    stroke='hsl(var(--border))'
+                  />
+                  <Tooltip content={<CustomTooltip />} />
+                  <Area
+                    type='monotone'
+                    dataKey='rate'
+                    stroke='hsl(var(--primary))'
+                    fillOpacity={1}
+                    fill='url(#colorRate)'
+                  />
+                </AreaChart>
+              )}
+
+              {chartType === 'line' && (
+                <LineChart
+                  data={historicalData.map((item) => ({
+                    ...item,
+                    formattedDate: formatDate(item.date)
+                  }))}
+                  margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+                >
+                  <XAxis
+                    dataKey='formattedDate'
+                    tick={{ fontSize: 12 }}
+                    tickLine={false}
+                    axisLine={false}
+                    minTickGap={5}
+                  />
+                  <YAxis
+                    domain={['auto', 'auto']}
+                    tick={{ fontSize: 12 }}
+                    tickLine={false}
+                    axisLine={false}
+                    tickFormatter={(value) => value.toFixed(2)}
+                  />
+                  <CartesianGrid
+                    strokeDasharray='3 3'
+                    vertical={false}
+                    stroke='hsl(var(--border))'
+                  />
+                  <Tooltip content={<CustomTooltip />} />
+                  <Line
+                    type='monotone'
+                    dataKey='rate'
+                    stroke='hsl(var(--primary))'
+                    strokeWidth={2}
+                    dot={{ r: 3, fill: 'hsl(var(--primary))' }}
+                    activeDot={{ r: 5 }}
+                  />
+                </LineChart>
+              )}
+
+              {chartType === 'bar' && (
+                <BarChart
+                  data={historicalData.map((item) => ({
+                    ...item,
+                    formattedDate: formatDate(item.date)
+                  }))}
+                  margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+                >
+                  <XAxis
+                    dataKey='formattedDate'
+                    tick={{ fontSize: 12 }}
+                    tickLine={false}
+                    axisLine={false}
+                    minTickGap={5}
+                  />
+                  <YAxis
+                    domain={['auto', 'auto']}
+                    tick={{ fontSize: 12 }}
+                    tickLine={false}
+                    axisLine={false}
+                    tickFormatter={(value) => value.toFixed(2)}
+                  />
+                  <CartesianGrid
+                    strokeDasharray='3 3'
+                    vertical={false}
+                    stroke='hsl(var(--border))'
+                  />
+                  <Tooltip content={<CustomTooltip />} />
+                  <Bar
+                    dataKey='rate'
+                    fill='hsl(var(--primary))'
+                    radius={[4, 4, 0, 0]}
+                    barSize={
+                      timeframe === 'day' ? 10 : timeframe === 'week' ? 20 : 30
+                    }
+                  />
+                </BarChart>
+              )}
             </ResponsiveContainer>
           </div>
         ) : (

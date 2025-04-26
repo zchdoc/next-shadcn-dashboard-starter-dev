@@ -17,7 +17,7 @@ export default async function DashboardLayout({
 }) {
   // Persisting the sidebar state in the cookie.
   const cookieStore = await cookies();
-  const sidebarState = cookieStore.get('sidebar:state');
+  const sidebarState = cookieStore.get('sidebar_state'); // Changed from sidebar:state to sidebar_state
   console.log('sidebarState', sidebarState);
   const defaultOpen = sidebarState?.value === 'true';
   console.log('defaultOpen', defaultOpen);
