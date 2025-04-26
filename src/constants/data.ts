@@ -80,7 +80,7 @@ export const navItems: NavItem[] = [
     isActive: true,
     items: [
       {
-        title: 'MineBookmark',
+        title: 'Zch',
         url: '/dashboard/bookmark/zch',
         icon: 'userPen',
         shortcut: ['dbz', 'dbz']
