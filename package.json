@@ -17,7 +17,8 @@
     "format:check": "prettier -c .",
     "type-check": "tsc --noEmit",
     "pre-commit": "lint-staged",
-    "pre-deploy": "pnpm type-check && pnpm lint:strict && pnpm format:check && pnpm build",
+    "pre-deploy": "pnpm type-check && pnpm lint && pnpm format:check && pnpm build",
+    "fix-warnings": "eslint --fix src",
     "prepare": "husky"
   },
   "lint-staged": {

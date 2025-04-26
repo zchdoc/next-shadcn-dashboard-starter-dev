@@ -35,6 +35,7 @@ pnpm type-check
 pnpm lint
 pnpm lint:strict  # Zero warnings allowed
 pnpm lint:fix     # Fix automatically fixable issues
+pnpm fix-warnings # Fix ESLint warnings across the project
 
 # Formatting
 pnpm format       # Format all files
@@ -78,7 +79,7 @@ return (
 
 ### ESLint Warnings
 
-If you're getting ESLint warnings, you can run `pnpm lint:fix` to automatically fix many common issues.
+If you're getting ESLint warnings, you can run `pnpm fix-warnings` to automatically fix many common issues. For more detailed guidance on fixing specific warnings, see the `LINTING-FIXES.md` file.
 
 ### Prettier Formatting
 
