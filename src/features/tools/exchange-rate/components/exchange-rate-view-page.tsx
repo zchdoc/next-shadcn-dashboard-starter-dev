@@ -5,6 +5,7 @@ import { Separator } from '@/components/ui/separator';
 import { useState } from 'react';
 import { ExchangeRateChart } from './exchange-rate-chart';
 import { ExchangeRateForm } from './exchange-rate-form';
+import { ApiProviderType } from '../utils/api-providers/api-provider-factory';
 import {
   DEFAULT_FROM_CURRENCY,
   DEFAULT_TO_CURRENCY
@@ -13,10 +14,15 @@ import {
 export default function ExchangeRateViewPage() {
   const [fromCurrency, setFromCurrency] = useState(DEFAULT_FROM_CURRENCY);
   const [toCurrency, setToCurrency] = useState(DEFAULT_TO_CURRENCY);
+  const [apiProvider, setApiProvider] = useState<ApiProviderType>('alltick');
 
   const handleCurrencyChange = (from: string, to: string) => {
     setFromCurrency(from);
     setToCurrency(to);
+  };
+
+  const handleApiProviderChange = (provider: ApiProviderType) => {
+    setApiProvider(provider);
   };
 
   return (
@@ -30,10 +36,15 @@ export default function ExchangeRateViewPage() {
           <Separator className='my-4' />
         </div>
         <div className='grid grid-cols-1 gap-6 lg:grid-cols-2'>
-          <ExchangeRateForm onCurrencyChange={handleCurrencyChange} />
+          <ExchangeRateForm
+            onCurrencyChange={handleCurrencyChange}
+            onApiProviderChange={handleApiProviderChange}
+          />
           <ExchangeRateChart
             fromCurrency={fromCurrency}
             toCurrency={toCurrency}
+            apiProvider={apiProvider}
+            onApiProviderChange={handleApiProviderChange}
           />
         </div>
       </div>

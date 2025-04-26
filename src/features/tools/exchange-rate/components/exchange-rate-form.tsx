@@ -41,16 +41,30 @@ import {
   DEFAULT_FROM_CURRENCY,
   DEFAULT_TO_CURRENCY
 } from '../utils/currency-data';
-import { convertCurrency, fetchExchangeRate } from '../utils/exchange-rate-api';
+import { ApiProviderFactory } from '../utils/api-providers/api-provider-factory';
+import {
+  convertCurrency,
+  fetchExchangeRate
+} from '../utils/exchange-rate-service';
+
+import { ApiProviderType } from '../utils/api-providers/api-provider-factory';
 
 interface ExchangeRateFormProps {
   onCurrencyChange?: (fromCurrency: string, toCurrency: string) => void;
+  onApiProviderChange?: (apiProvider: ApiProviderType) => void;
 }
 
-export function ExchangeRateForm({ onCurrencyChange }: ExchangeRateFormProps) {
+export function ExchangeRateForm({
+  onCurrencyChange,
+  onApiProviderChange
+}: ExchangeRateFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [convertedAmount, setConvertedAmount] = useState<number | null>(null);
   const [rateLastUpdated, setRateLastUpdated] = useState<Date | null>(null);
+
+  // 获取可用的 API 提供者
+  const availableProviders = ApiProviderFactory.getAvailableProviders();
+  const defaultProviderType = ApiProviderFactory.getDefaultProviderType();
 
   // Initialize form with default values
   const form = useForm<ExchangeRateFormValues>({
@@ -60,7 +74,8 @@ export function ExchangeRateForm({ onCurrencyChange }: ExchangeRateFormProps) {
       toCurrency: DEFAULT_TO_CURRENCY,
       amount: 1,
       rate: DEFAULT_EXCHANGE_RATE,
-      useCustomRate: false
+      useCustomRate: false,
+      apiProvider: defaultProviderType
     }
   });
 
@@ -72,6 +87,7 @@ export function ExchangeRateForm({ onCurrencyChange }: ExchangeRateFormProps) {
   const amount = watch('amount');
   const rate = watch('rate');
   const useCustomRate = watch('useCustomRate');
+  const apiProvider = watch('apiProvider');
 
   // Notify parent component when currencies change
   useEffect(() => {
@@ -80,12 +96,19 @@ export function ExchangeRateForm({ onCurrencyChange }: ExchangeRateFormProps) {
     }
   }, [fromCurrency, toCurrency, onCurrencyChange]);
 
-  // Fetch exchange rate when currencies change
+  // Notify parent component when API provider changes
+  useEffect(() => {
+    if (onApiProviderChange) {
+      onApiProviderChange(apiProvider as ApiProviderType);
+    }
+  }, [apiProvider, onApiProviderChange]);
+
+  // Fetch exchange rate when currencies or API provider change
   useEffect(() => {
     if (!useCustomRate) {
       updateExchangeRate().then();
     }
-  }, [fromCurrency, toCurrency, useCustomRate]);
+  }, [fromCurrency, toCurrency, apiProvider, useCustomRate]);
 
   // Update converted amount when amount or rate changes
   useEffect(() => {
@@ -104,7 +127,11 @@ export function ExchangeRateForm({ onCurrencyChange }: ExchangeRateFormProps) {
     setIsLoading(true);
 
     try {
-      const newRate = await fetchExchangeRate(fromCurrency, toCurrency);
+      const newRate = await fetchExchangeRate(
+        fromCurrency,
+        toCurrency,
+        apiProvider
+      );
 
       if (newRate) {
         setValue('rate', newRate);
@@ -238,6 +265,39 @@ export function ExchangeRateForm({ onCurrencyChange }: ExchangeRateFormProps) {
                       }}
                     />
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* API Provider Selection */}
+            <FormField
+              control={form.control}
+              name='apiProvider'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>API Provider</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                    value={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder='Select API provider' />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {availableProviders.map((provider) => (
+                        <SelectItem key={provider.type} value={provider.type}>
+                          {provider.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormDescription>
+                    Choose which API to use for exchange rate data
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
