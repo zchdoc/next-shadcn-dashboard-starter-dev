@@ -40,6 +40,12 @@ import {
   YAxis
 } from 'recharts';
 import {
+  ChartConfig,
+  ChartContainer,
+  ChartTooltip
+} from '@/components/ui/chart';
+import { useTheme } from 'next-themes';
+import {
   ApiProviderFactory,
   ApiProviderType
 } from '../utils/api-providers/api-provider-factory';
@@ -52,6 +58,35 @@ interface ExchangeRateChartProps {
   apiProvider?: ApiProviderType;
   onApiProviderChange?: (provider: ApiProviderType) => void;
 }
+
+// Define chart colors based on theme
+const chartConfig: ChartConfig = {
+  rate: {
+    label: 'Exchange Rate',
+    theme: {
+      light: 'var(--primary)',
+      dark: 'var(--primary)'
+    }
+  },
+  grid: {
+    theme: {
+      light: 'var(--border)',
+      dark: 'var(--border)'
+    }
+  },
+  upTrend: {
+    theme: {
+      light: '#10b981', // green-500
+      dark: '#10b981'
+    }
+  },
+  downTrend: {
+    theme: {
+      light: '#ef4444', // red-500
+      dark: '#ef4444'
+    }
+  }
+};
 
 export function ExchangeRateChart({
   fromCurrency,
@@ -70,6 +105,7 @@ export function ExchangeRateChart({
   const [selectedApiProvider, setSelectedApiProvider] =
     useState<ApiProviderType>(apiProvider || 'alltick');
   const [chartType, setChartType] = useState<'area' | 'line' | 'bar'>('area');
+  const { theme } = useTheme();
 
   // 获取可用的 API 提供者
   const availableProviders = ApiProviderFactory.getAvailableProviders();
@@ -193,8 +229,12 @@ export function ExchangeRateChart({
           <p className='text-sm font-medium'>
             {new Date(label).toLocaleDateString()}
           </p>
-          <p className='text-primary text-sm'>
-            1 {fromCurrency} = {payload[0].value.toFixed(4)} {toCurrency}
+          <p className='text-sm'>
+            <span className='font-medium'>1 {fromCurrency}</span> ={' '}
+            <span className='text-primary font-medium'>
+              {payload[0].value.toFixed(4)}
+            </span>{' '}
+            {toCurrency}
           </p>
         </div>
       );
@@ -215,12 +255,18 @@ export function ExchangeRateChart({
           {!isLoading && (
             <div className='flex items-center'>
               {trend === 'up' ? (
-                <div className='flex items-center text-green-500'>
+                <div
+                  className='flex items-center'
+                  style={{ color: 'var(--color-upTrend)' }}
+                >
                   <IconArrowUpRight className='mr-1 h-4 w-4' />
                   <span className='font-medium'>+{percentChange}%</span>
                 </div>
               ) : trend === 'down' ? (
-                <div className='flex items-center text-red-500'>
+                <div
+                  className='flex items-center'
+                  style={{ color: 'var(--color-downTrend)' }}
+                >
                   <IconArrowDownRight className='mr-1 h-4 w-4' />
                   <span className='font-medium'>{percentChange}%</span>
                 </div>
@@ -332,8 +378,8 @@ export function ExchangeRateChart({
           </div>
         ) : historicalData.length > 0 ? (
           <div className='h-[300px] w-full'>
-            {chartType === 'area' && (
-              <ResponsiveContainer width='100%' height='100%'>
+            <ChartContainer config={chartConfig} className='h-full w-full'>
+              {chartType === 'area' && (
                 <AreaChart
                   data={historicalData.map((item) => ({
                     ...item,
@@ -345,12 +391,12 @@ export function ExchangeRateChart({
                     <linearGradient id='colorRate' x1='0' y1='0' x2='0' y2='1'>
                       <stop
                         offset='5%'
-                        stopColor='hsl(var(--primary))'
+                        stopColor='var(--color-rate)'
                         stopOpacity={0.8}
                       />
                       <stop
                         offset='95%'
-                        stopColor='hsl(var(--primary))'
+                        stopColor='var(--color-rate)'
                         stopOpacity={0}
                       />
                     </linearGradient>
@@ -372,22 +418,20 @@ export function ExchangeRateChart({
                   <CartesianGrid
                     strokeDasharray='3 3'
                     vertical={false}
-                    stroke='hsl(var(--border))'
+                    stroke='var(--color-grid)'
                   />
-                  <Tooltip content={<CustomTooltip />} />
+                  <ChartTooltip content={<CustomTooltip />} />
                   <Area
                     type='monotone'
                     dataKey='rate'
-                    stroke='hsl(var(--primary))'
+                    stroke='var(--color-rate)'
                     fillOpacity={1}
                     fill='url(#colorRate)'
                   />
                 </AreaChart>
-              </ResponsiveContainer>
-            )}
+              )}
 
-            {chartType === 'line' && (
-              <ResponsiveContainer width='100%' height='100%'>
+              {chartType === 'line' && (
                 <LineChart
                   data={historicalData.map((item) => ({
                     ...item,
@@ -412,23 +456,21 @@ export function ExchangeRateChart({
                   <CartesianGrid
                     strokeDasharray='3 3'
                     vertical={false}
-                    stroke='hsl(var(--border))'
+                    stroke='var(--color-grid)'
                   />
-                  <Tooltip content={<CustomTooltip />} />
+                  <ChartTooltip content={<CustomTooltip />} />
                   <Line
                     type='monotone'
                     dataKey='rate'
-                    stroke='hsl(var(--primary))'
+                    stroke='var(--color-rate)'
                     strokeWidth={2}
-                    dot={{ r: 3, fill: 'hsl(var(--primary))' }}
+                    dot={{ r: 3, fill: 'var(--color-rate)' }}
                     activeDot={{ r: 5 }}
                   />
                 </LineChart>
-              </ResponsiveContainer>
-            )}
+              )}
 
-            {chartType === 'bar' && (
-              <ResponsiveContainer width='100%' height='100%'>
+              {chartType === 'bar' && (
                 <BarChart
                   data={historicalData.map((item) => ({
                     ...item,
@@ -453,20 +495,20 @@ export function ExchangeRateChart({
                   <CartesianGrid
                     strokeDasharray='3 3'
                     vertical={false}
-                    stroke='hsl(var(--border))'
+                    stroke='var(--color-grid)'
                   />
-                  <Tooltip content={<CustomTooltip />} />
+                  <ChartTooltip content={<CustomTooltip />} />
                   <Bar
                     dataKey='rate'
-                    fill='hsl(var(--primary))'
+                    fill='var(--color-rate)'
                     radius={[4, 4, 0, 0]}
                     barSize={
                       timeframe === 'day' ? 10 : timeframe === 'week' ? 20 : 30
                     }
                   />
                 </BarChart>
-              </ResponsiveContainer>
-            )}
+              )}
+            </ChartContainer>
           </div>
         ) : (
           <div className='flex h-[300px] w-full items-center justify-center'>
