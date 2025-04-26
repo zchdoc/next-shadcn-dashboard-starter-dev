@@ -59,6 +59,21 @@ export const navItems: NavItem[] = [
     items: [] // No child items
   },
   {
+    title: 'Tools',
+    url: '#',
+    icon: 'tools',
+    isActive: true,
+    shortcut: ['t', 't'],
+    items: [
+      {
+        title: 'ExchangeRate',
+        url: '/dashboard/tools/exchange-rate',
+        icon: 'currency',
+        shortcut: ['e', 'r']
+      }
+    ]
+  },
+  {
     title: 'Bookmark',
     url: '#',
     icon: 'bookmark',
