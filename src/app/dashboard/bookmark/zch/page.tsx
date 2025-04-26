@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { BookmarkContent } from '@/components/bookmark/bookmark-content';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
@@ -335,137 +336,139 @@ export default function BookmarkPage() {
     }))
   );
   return (
-    <div className='flex h-full flex-col'>
-      {/* 顶部区域 */}
-      <div className='flex-none px-4 py-4'>
-        <div className='flex items-center gap-4'>
-          {/* 选择分组 */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant='outline'>选择分组</Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className='w-56'>
-              <div className='grid gap-2 p-2'>
-                {Object.entries(bookmarkData).map(([key, group]) => (
-                  <div key={key} className='flex items-center space-x-2'>
-                    <Checkbox
-                      id={key}
-                      checked={selectedGroups.includes(key)}
-                      onCheckedChange={(checked) => {
-                        setSelectedGroups((prev) =>
-                          checked
-                            ? [...prev, key]
-                            : prev.filter((g) => g !== key)
-                        );
-                      }}
-                    />
-                    <label
-                      htmlFor={key}
-                      className='text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
-                    >
-                      {group.title}
-                    </label>
-                  </div>
-                ))}
-              </div>
-              <div className='grid gap-2 border-t p-2'>
-                <div className='flex gap-2'>
-                  <Button
-                    className='flex-1'
-                    variant='outline'
-                    size='sm'
-                    onClick={() => {
-                      setSelectedGroups(Object.keys(bookmarkData));
-                    }}
-                  >
-                    全选
-                  </Button>
-                  <Button
-                    className='flex-1'
-                    variant='outline'
-                    size='sm'
-                    onClick={() => {
-                      setSelectedGroups([]);
-                    }}
-                  >
-                    清空
-                  </Button>
-                  <Button
-                    className='flex-1'
-                    variant='outline'
-                    size='sm'
-                    onClick={() => {
-                      setSelectedGroups((prev) => {
-                        const allKeys = Object.keys(bookmarkData);
-                        return allKeys.filter((key) => !prev.includes(key));
-                      });
-                    }}
-                  >
-                    反选
-                  </Button>
-                </div>
-                <Button
-                  className='w-full'
-                  variant='outline'
-                  onClick={saveSelection}
-                >
-                  保存选择
-                </Button>
-              </div>
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <div className='flex flex-1 items-center gap-4'>
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button variant='outline'>已选分组</Button>
-              </DialogTrigger>
-              <DialogContent className='max-h-[80vh] max-w-3xl overflow-y-auto'>
-                <DialogHeader>
-                  <DialogTitle>已选择的分组</DialogTitle>
-                </DialogHeader>
-                <div className='grid gap-4 py-4'>
-                  {selectedGroups.map((groupKey) => (
-                    <div key={groupKey} className='space-y-2'>
-                      <h3 className='font-semibold'>
-                        {bookmarkData[groupKey].title}
-                      </h3>
-                    </div>
-                  ))}
-                </div>
-              </DialogContent>
-            </Dialog>
-            {/* 查看已选择分组内容 */}
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button variant='outline'>已选内容</Button>
-              </DialogTrigger>
-              <DialogContent className='max-h-[80vh] max-w-3xl overflow-y-auto'>
-                <DialogHeader>
-                  <DialogTitle>已选择的书签列表内容</DialogTitle>
-                </DialogHeader>
-                <div className='grid gap-4 py-4'>
-                  {selectedGroups.map((groupKey) => (
-                    <div key={groupKey} className='space-y-2'>
-                      <h3 className='font-semibold'>
-                        {bookmarkData[groupKey].title}
-                      </h3>
-                      {bookmarkData[groupKey].links.map((link, index) => (
-                        <div
-                          key={index}
-                          className='ml-4 flex items-center gap-4'
+    <ScrollArea className='h-[calc(100dvh-52px)]'>
+      <div className='flex flex-1 p-4 md:px-6'>
+        <div className='flex w-full flex-col'>
+          {/* 顶部区域 */}
+          <div className='flex-none py-4'>
+            <div className='flex items-center gap-4'>
+              {/* 选择分组 */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant='outline'>选择分组</Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className='w-56'>
+                  <div className='grid gap-2 p-2'>
+                    {Object.entries(bookmarkData).map(([key, group]) => (
+                      <div key={key} className='flex items-center space-x-2'>
+                        <Checkbox
+                          id={key}
+                          checked={selectedGroups.includes(key)}
+                          onCheckedChange={(checked) => {
+                            setSelectedGroups((prev) =>
+                              checked
+                                ? [...prev, key]
+                                : prev.filter((g) => g !== key)
+                            );
+                          }}
+                        />
+                        <label
+                          htmlFor={key}
+                          className='text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
                         >
-                          <div className='font-medium'>{link.title}</div>
-                          <div className='text-muted-foreground text-sm'>
-                            {link.url}
-                          </div>
+                          {group.title}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                  <div className='grid gap-2 border-t p-2'>
+                    <div className='flex gap-2'>
+                      <Button
+                        className='flex-1'
+                        variant='outline'
+                        size='sm'
+                        onClick={() => {
+                          setSelectedGroups(Object.keys(bookmarkData));
+                        }}
+                      >
+                        全选
+                      </Button>
+                      <Button
+                        className='flex-1'
+                        variant='outline'
+                        size='sm'
+                        onClick={() => {
+                          setSelectedGroups([]);
+                        }}
+                      >
+                        清空
+                      </Button>
+                      <Button
+                        className='flex-1'
+                        variant='outline'
+                        size='sm'
+                        onClick={() => {
+                          setSelectedGroups((prev) => {
+                            const allKeys = Object.keys(bookmarkData);
+                            return allKeys.filter((key) => !prev.includes(key));
+                          });
+                        }}
+                      >
+                        反选
+                      </Button>
+                    </div>
+                    <Button
+                      className='w-full'
+                      variant='outline'
+                      onClick={saveSelection}
+                    >
+                      保存选择
+                    </Button>
+                  </div>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              <div className='flex flex-1 items-center gap-4'>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button variant='outline'>已选分组</Button>
+                  </DialogTrigger>
+                  <DialogContent className='max-h-[80vh] max-w-3xl overflow-y-auto'>
+                    <DialogHeader>
+                      <DialogTitle>已选择的分组</DialogTitle>
+                    </DialogHeader>
+                    <div className='grid gap-4 py-4'>
+                      {selectedGroups.map((groupKey) => (
+                        <div key={groupKey} className='space-y-2'>
+                          <h3 className='font-semibold'>
+                            {bookmarkData[groupKey].title}
+                          </h3>
                         </div>
                       ))}
                     </div>
-                  ))}
-                </div>
-              </DialogContent>
-            </Dialog>
-            {/* {isClient && (
+                  </DialogContent>
+                </Dialog>
+                {/* 查看已选择分组内容 */}
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button variant='outline'>已选内容</Button>
+                  </DialogTrigger>
+                  <DialogContent className='max-h-[80vh] max-w-3xl overflow-y-auto'>
+                    <DialogHeader>
+                      <DialogTitle>已选择的书签列表内容</DialogTitle>
+                    </DialogHeader>
+                    <div className='grid gap-4 py-4'>
+                      {selectedGroups.map((groupKey) => (
+                        <div key={groupKey} className='space-y-2'>
+                          <h3 className='font-semibold'>
+                            {bookmarkData[groupKey].title}
+                          </h3>
+                          {bookmarkData[groupKey].links.map((link, index) => (
+                            <div
+                              key={index}
+                              className='ml-4 flex items-center gap-4'
+                            >
+                              <div className='font-medium'>{link.title}</div>
+                              <div className='text-muted-foreground text-sm'>
+                                {link.url}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      ))}
+                    </div>
+                  </DialogContent>
+                </Dialog>
+                {/* {isClient && (
               <p className="text-sm text-muted-foreground">
                 已选择:{' '}
                 {selectedGroups
@@ -473,21 +476,23 @@ export default function BookmarkPage() {
                   .join(', ')}
               </p>
             )} */}
+              </div>
+            </div>
+          </div>
+          {/* 主要内容区域 */}
+          <div className='flex-1 pb-6'>
+            {isClient ? (
+              <BookmarkContent
+                bookmarks={allSelectedBookmarks}
+                groupTitle=''
+                cardsPerRow={6}
+                showGroup={true}
+                settingsKey={'zch-bookmark'}
+              />
+            ) : null}
           </div>
         </div>
       </div>
-      {/* 主要内容区域 */}
-      <div className='min-h-0 flex-1 px-4 pb-6'>
-        {isClient ? (
-          <BookmarkContent
-            bookmarks={allSelectedBookmarks}
-            groupTitle=''
-            cardsPerRow={6}
-            showGroup={true}
-            settingsKey={'zch-bookmark'}
-          />
-        ) : null}
-      </div>
-    </div>
+    </ScrollArea>
   );
 }
