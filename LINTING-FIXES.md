@@ -7,21 +7,23 @@ This document provides guidance on how to fix the linting warnings in the projec
 Most of the warnings are about unused variables. Here are the ways to fix them:
 
 1. **Remove the variable if it's not needed**
+
    ```typescript
    // Before
    const unusedVar = 'something';
-   
+
    // After
    // Just remove the variable declaration
    ```
 
 2. **Prefix with underscore to indicate it's intentionally unused**
+
    ```typescript
    // Before
    function Component({ unused, used }) {
      return <div>{used}</div>;
    }
-   
+
    // After
    function Component({ _unused, used }) {
      return <div>{used}</div>;
@@ -29,13 +31,14 @@ Most of the warnings are about unused variables. Here are the ways to fix them:
    ```
 
 3. **Use object destructuring with rest operator to extract only what you need**
+
    ```typescript
    // Before
    function process(data) {
      const { id, name, age, address } = data;
      return `${id}: ${name}`;
    }
-   
+
    // After
    function process(data) {
      const { id, name, ...rest } = data;
@@ -64,7 +67,7 @@ useEffect(() => {
   const fetchData = async () => {
     // implementation
   };
-  
+
   fetchData();
 }, [otherDependency]);
 ```
