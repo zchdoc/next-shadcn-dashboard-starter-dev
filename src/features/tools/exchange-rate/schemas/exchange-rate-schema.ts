@@ -11,7 +11,10 @@ export const exchangeRateSchema = z.object({
     .number()
     .positive({ message: 'Rate must be a positive number' }),
   useCustomRate: z.boolean().default(false),
-  apiProvider: z.string().min(1, { message: 'Please select an API provider' })
+  apiProvider: z.custom<ApiProviderType>(
+    (val) => val === 'alltick' || val === 'exchangerate-api',
+    { message: 'Please select a valid API provider' }
+  )
 });
 
 export type ExchangeRateFormValues = z.infer<typeof exchangeRateSchema>;

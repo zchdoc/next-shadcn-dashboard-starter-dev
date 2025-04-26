@@ -130,7 +130,7 @@ export function ExchangeRateForm({
       const newRate = await fetchExchangeRate(
         fromCurrency,
         toCurrency,
-        apiProvider
+        apiProvider as ApiProviderType
       );
 
       if (newRate) {
