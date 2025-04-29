@@ -3,7 +3,7 @@
 import { usePathname } from 'next/navigation';
 import { useMemo } from 'react';
 import { navItems } from '@/constants/data';
-import { NavItem } from '@/types';
+import type { NavItem } from '@/types';
 
 export type BreadcrumbItem = {
   title: string;
@@ -66,6 +66,41 @@ function findParentNavItem(
   return null;
 }
 
+// Helper to find siblings at the same level in the nav hierarchy
+function findSiblingsAtLevel(
+  level: number,
+  pathname: string
+): Array<{ title: string; link: string }> {
+  // For top level items, we return main nav items excluding Dashboard
+  if (level === 0) {
+    return navItems
+      .filter((item) => item.title.toLowerCase() !== 'dashboard')
+      .map((item) => ({
+        title: item.title,
+        link: item.items?.length ? item.items[0].url : item.url
+      }));
+  }
+
+  // For level 1 (modules), find parent and get siblings from same parent
+  // First get the path segments
+  const segments = pathname.split('/').filter(Boolean);
+  const parentPath = `/${segments.slice(0, level).join('/')}`;
+
+  // Find the parent nav item
+  const parentItem = findNavItemByPath(parentPath);
+
+  if (parentItem?.items) {
+    // Use optional chain
+    // Return siblings (other items under same parent)
+    return parentItem.items.map((item) => ({
+      title: item.title,
+      link: item.url
+    }));
+  }
+
+  return [];
+}
+
 export function useBreadcrumbs() {
   const pathname = usePathname();
 
@@ -76,30 +111,16 @@ export function useBreadcrumbs() {
 
       // Add siblings and children information
       return mappedBreadcrumbs.map((crumb, index) => {
-        // For the first level, add all main nav items as siblings
-        if (index === 0) {
-          return {
-            ...crumb,
-            siblings: navItems.map((item) => ({
-              title: item.title,
-              link: item.url
-            }))
-          };
+        // Skip adding siblings for Dashboard
+        if (index === 0 && crumb.title.toLowerCase() === 'dashboard') {
+          return crumb;
         }
 
-        // For other levels, find the parent and add its children as siblings
-        const parent = findParentNavItem(crumb.link);
-        if (parent && parent.items) {
-          return {
-            ...crumb,
-            siblings: parent.items.map((item) => ({
-              title: item.title,
-              link: item.url
-            }))
-          };
-        }
-
-        return crumb;
+        // For other items, add appropriate siblings and children
+        return {
+          ...crumb,
+          siblings: findSiblingsAtLevel(index, pathname)
+        };
       });
     }
 
@@ -112,30 +133,23 @@ export function useBreadcrumbs() {
         link: path
       };
 
-      // For the first level (usually 'dashboard'), add all main nav items as siblings
-      if (index === 0) {
-        breadcrumb.siblings = navItems.map((item) => ({
+      // Skip adding siblings for the Dashboard level
+      if (index === 0 && segment.toLowerCase() === 'dashboard') {
+        return breadcrumb;
+      }
+
+      // For main modules and sub-modules
+      breadcrumb.siblings = findSiblingsAtLevel(index, pathname);
+
+      // Add children if this item has any
+      const currentItem = findNavItemByPath(path);
+      // 使用更安全的方式处理可能为null的值
+      const childItems = currentItem?.items || [];
+      if (childItems.length > 0) {
+        breadcrumb.children = childItems.map((item) => ({
           title: item.title,
           link: item.url
         }));
-      } else {
-        // For other levels, find the parent and add its children as siblings
-        const parent = findParentNavItem(path);
-        if (parent && parent.items) {
-          breadcrumb.siblings = parent.items.map((item) => ({
-            title: item.title,
-            link: item.url
-          }));
-        }
-
-        // Add children if this item has any
-        const currentItem = findNavItemByPath(path);
-        if (currentItem && currentItem.items && currentItem.items.length > 0) {
-          breadcrumb.children = currentItem.items.map((item) => ({
-            title: item.title,
-            link: item.url
-          }));
-        }
       }
 
       return breadcrumb;

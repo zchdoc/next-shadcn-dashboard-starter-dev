@@ -1,4 +1,4 @@
-import { NavItem } from '@/types';
+import type { NavItem } from '@/types';
 
 export type Product = {
   photo_url: string;
@@ -31,7 +31,7 @@ export const navItems: NavItem[] = [
   },
   {
     title: 'Account',
-    url: '#', // Placeholder as there is no direct link for the parent
+    url: '/dashboard/profile',
     icon: 'billing',
     isActive: true,
 
@@ -60,7 +60,7 @@ export const navItems: NavItem[] = [
   },
   {
     title: 'Tools',
-    url: '#',
+    url: '/dashboard/tools/exchange-rate',
     icon: 'tools',
     isActive: true,
     shortcut: ['t', 't'],
@@ -75,7 +75,7 @@ export const navItems: NavItem[] = [
   },
   {
     title: 'Bookmark',
-    url: '#',
+    url: '/dashboard/bookmark/zch',
     icon: 'bookmark',
     isActive: true,
     items: [

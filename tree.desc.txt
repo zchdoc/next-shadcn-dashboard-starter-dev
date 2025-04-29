@@ -1,6 +1,6 @@
 根据 tree.desc.txt 文件了解项目大致结构
 
-windows 系统
+mac 系统
 
 你需要先查看和了解
 README.md

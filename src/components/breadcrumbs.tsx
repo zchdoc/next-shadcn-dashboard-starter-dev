@@ -8,7 +8,7 @@ import {
   BreadcrumbSeparator
 } from '@/components/ui/breadcrumb';
 import {
-  BreadcrumbItem as BreadcrumbItemType,
+  type BreadcrumbItem as BreadcrumbItemType,
   useBreadcrumbs
 } from '@/hooks/use-breadcrumbs';
 import { IconChevronDown, IconSlash } from '@tabler/icons-react';
@@ -24,17 +24,23 @@ import Link from 'next/link';
 interface BreadcrumbWithDropdownProps {
   item: BreadcrumbItemType;
   isLast: boolean;
+  index: number;
 }
 
-function BreadcrumbWithDropdown({ item, isLast }: BreadcrumbWithDropdownProps) {
+function BreadcrumbWithDropdown({
+  item,
+  isLast,
+  index
+}: BreadcrumbWithDropdownProps) {
   const hasSiblings = item.siblings && item.siblings.length > 0;
   const hasChildren = item.children && item.children.length > 0;
   const hasDropdown = hasSiblings || hasChildren;
+  const isDashboard = item.title.toLowerCase() === 'dashboard';
 
   if (isLast) {
     return (
       <BreadcrumbPage>
-        {hasDropdown ? (
+        {hasDropdown && !isDashboard ? (
           <DropdownMenu>
             <DropdownMenuTrigger className='flex items-center gap-1 outline-none'>
               {item.title}
@@ -62,7 +68,7 @@ function BreadcrumbWithDropdown({ item, isLast }: BreadcrumbWithDropdownProps) {
 
   return (
     <BreadcrumbItem className='hidden md:block'>
-      {hasDropdown ? (
+      {hasDropdown && !isDashboard ? (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <BreadcrumbLink
@@ -105,6 +111,7 @@ export function Breadcrumbs() {
             <BreadcrumbWithDropdown
               item={item}
               isLast={index === items.length - 1}
+              index={index}
             />
             {index < items.length - 1 && (
               <BreadcrumbSeparator className='hidden md:block'>
