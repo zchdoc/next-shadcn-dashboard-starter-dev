@@ -11,4 +11,6 @@ pnpm run format && pnpm run pre-deploy
 
 rm
 
-rm -f -r .next node_modules .clerk
+rm -f -r .next node_modules
+
+rm -f -r .next node_modules && pnpm install && pnpm run dev

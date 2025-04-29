@@ -105,7 +105,7 @@ function findSiblingsAtLevel(
 
   // 对于第二级（大模块层级）
   if (level === 1) {
-    // 返回除了Dashboard以外的所有主模块
+    // 返回除了Dashboard以外的所有主模块，确保不包含子模块
     return navItems
       .filter((item) => item.title.toLowerCase() !== 'dashboard')
       .map((item) => ({
@@ -252,7 +252,13 @@ export function useBreadcrumbs() {
 
       // 第二级是主模块 (Product, Account等)
       if (index === 1) {
-        breadcrumb.siblings = findSiblingsAtLevel(1, pathname);
+        // 只获取主模块作为siblings，不包含子模块
+        breadcrumb.siblings = navItems
+          .filter((item) => item.title.toLowerCase() !== 'dashboard')
+          .map((item) => ({
+            title: item.title,
+            link: item.items?.length ? item.items[0].url : item.url
+          }));
 
         // 查找当前模块
         const currentItem = navItems.find(

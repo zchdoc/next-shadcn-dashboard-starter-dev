@@ -37,6 +37,9 @@ function BreadcrumbWithDropdown({
   const hasDropdown = hasSiblings || hasChildren;
   const isDashboard = item.title.toLowerCase() === 'dashboard';
 
+  // 决定在主模块层级是否显示子模块
+  const shouldShowChildren = index === 1 ? false : hasChildren;
+
   if (isLast) {
     return (
       <BreadcrumbPage>
@@ -52,11 +55,12 @@ function BreadcrumbWithDropdown({
                   <Link href={sibling.link}>{sibling.title}</Link>
                 </DropdownMenuItem>
               ))}
-              {item.children?.map((child) => (
-                <DropdownMenuItem key={child.title} asChild>
-                  <Link href={child.link}>{child.title}</Link>
-                </DropdownMenuItem>
-              ))}
+              {shouldShowChildren &&
+                item.children?.map((child) => (
+                  <DropdownMenuItem key={child.title} asChild>
+                    <Link href={child.link}>{child.title}</Link>
+                  </DropdownMenuItem>
+                ))}
             </DropdownMenuContent>
           </DropdownMenu>
         ) : (
@@ -85,11 +89,12 @@ function BreadcrumbWithDropdown({
                 <Link href={sibling.link}>{sibling.title}</Link>
               </DropdownMenuItem>
             ))}
-            {item.children?.map((child) => (
-              <DropdownMenuItem key={child.title} asChild>
-                <Link href={child.link}>{child.title}</Link>
-              </DropdownMenuItem>
-            ))}
+            {shouldShowChildren &&
+              item.children?.map((child) => (
+                <DropdownMenuItem key={child.title} asChild>
+                  <Link href={child.link}>{child.title}</Link>
+                </DropdownMenuItem>
+              ))}
           </DropdownMenuContent>
         </DropdownMenu>
       ) : (
