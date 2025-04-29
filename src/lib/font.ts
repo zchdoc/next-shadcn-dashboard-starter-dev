@@ -1,49 +1,16 @@
-import {
-  Geist,
-  Geist_Mono,
-  Instrument_Sans,
-  Inter,
-  Mulish,
-  Noto_Sans_Mono
-} from 'next/font/google';
-
+import { Inter } from 'next/font/google';
 import { cn } from '@/lib/utils';
 
-const fontSans = Geist({
-  subsets: ['latin'],
-  variable: '--font-sans'
-});
-
-const fontMono = Geist_Mono({
-  subsets: ['latin'],
-  variable: '--font-mono'
-});
-
-const fontInstrument = Instrument_Sans({
-  subsets: ['latin'],
-  variable: '--font-instrument'
-});
-
-const fontNotoMono = Noto_Sans_Mono({
-  subsets: ['latin'],
-  variable: '--font-noto-mono'
-});
-
-const fontMullish = Mulish({
-  subsets: ['latin'],
-  variable: '--font-mullish'
-});
-
+// Using a subset of Google fonts to minimize network requests
 const fontInter = Inter({
   subsets: ['latin'],
+  display: 'swap',
   variable: '--font-inter'
 });
 
-export const fontVariables = cn(
-  fontSans.variable,
-  fontMono.variable,
-  fontInstrument.variable,
-  fontNotoMono.variable,
-  fontMullish.variable,
-  fontInter.variable
-);
+// Define CSS variables for other fonts
+const fontSans = { variable: '--font-sans' };
+const fontMono = { variable: '--font-mono' };
+
+// Export font variables for use in layout
+export const fontVariables = cn(fontInter.variable, 'font-sans');
