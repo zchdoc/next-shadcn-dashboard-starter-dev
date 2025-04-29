@@ -15,6 +15,10 @@ export type BreadcrumbItem = {
 // This allows to add custom title as well
 const routeMapping: Record<string, BreadcrumbItem[]> = {
   '/dashboard': [{ title: 'Dashboard', link: '/dashboard' }],
+  '/dashboard/overview': [
+    { title: 'Dashboard', link: '/dashboard' },
+    { title: 'Overview', link: '/dashboard/overview' }
+  ],
   '/dashboard/employee': [
     { title: 'Dashboard', link: '/dashboard' },
     { title: 'Employee', link: '/dashboard/employee' }
@@ -87,6 +91,18 @@ function findSiblingsAtLevel(
   // 第一级是Dashboard，第二级是大模块
   const segments = pathname.split('/').filter(Boolean);
 
+  // 对于overview特殊处理
+  if (level === 1 && segments[1]?.toLowerCase() === 'overview') {
+    // 返回所有主模块，而不仅仅是Overview自己
+    return navItems
+      .filter((item) => item.title.toLowerCase() !== 'dashboard')
+      .map((item) => ({
+        title: item.title,
+        // 如果有子模块，链接到第一个子模块，否则链接到模块本身
+        link: item.items?.length ? item.items[0].url : item.url
+      }));
+  }
+
   // 对于第二级（大模块层级）
   if (level === 1) {
     // 返回除了Dashboard以外的所有主模块
@@ -110,7 +126,7 @@ function findSiblingsAtLevel(
     );
 
     if (parentModule?.items?.length) {
-      // 返回该模块的所有子模块
+      // 只返回子模块，不包含父模块本身
       return parentModule.items.map((item) => ({
         title: item.title,
         link: item.url
@@ -125,6 +141,23 @@ export function useBreadcrumbs() {
   const pathname = usePathname();
 
   const breadcrumbs = useMemo(() => {
+    // 处理根路径跳转到dashboard/overview的情况
+    if (pathname === '/' || pathname === '/dashboard') {
+      return [
+        { title: 'Dashboard', link: '/dashboard' },
+        {
+          title: 'Overview',
+          link: '/dashboard/overview',
+          siblings: navItems
+            .filter((item) => item.title.toLowerCase() !== 'dashboard')
+            .map((item) => ({
+              title: item.title,
+              link: item.items?.length ? item.items[0].url : item.url
+            }))
+        }
+      ];
+    }
+
     // Check if we have a custom mapping for this exact path
     if (routeMapping[pathname]) {
       const mappedBreadcrumbs = [...routeMapping[pathname]];
@@ -134,6 +167,19 @@ export function useBreadcrumbs() {
         // Skip adding siblings for Dashboard
         if (index === 0 && crumb.title.toLowerCase() === 'dashboard') {
           return crumb;
+        }
+
+        // 特殊处理overview
+        if (crumb.title.toLowerCase() === 'overview') {
+          return {
+            ...crumb,
+            siblings: navItems
+              .filter((item) => item.title.toLowerCase() !== 'dashboard')
+              .map((item) => ({
+                title: item.title,
+                link: item.items?.length ? item.items[0].url : item.url
+              }))
+          };
         }
 
         // For other items, add appropriate siblings and children
@@ -190,6 +236,17 @@ export function useBreadcrumbs() {
 
       // 第一级是Dashboard，不添加下拉
       if (index === 0 && segment.toLowerCase() === 'dashboard') {
+        return breadcrumb;
+      }
+
+      // 处理overview作为特殊情况
+      if (index === 1 && segment.toLowerCase() === 'overview') {
+        breadcrumb.siblings = navItems
+          .filter((item) => item.title.toLowerCase() !== 'dashboard')
+          .map((item) => ({
+            title: item.title,
+            link: item.items?.length ? item.items[0].url : item.url
+          }));
         return breadcrumb;
       }
 
