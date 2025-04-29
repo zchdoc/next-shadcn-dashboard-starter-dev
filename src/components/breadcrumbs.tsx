@@ -103,17 +103,30 @@ export function Breadcrumbs() {
   const items = useBreadcrumbs();
   if (items.length === 0) return null;
 
+  // 过滤掉可能的无效面包屑项
+  const validItems = items.filter(
+    (item) =>
+      // 确保有标题
+      item.title &&
+      // 排除URL中可能包含的特殊片段
+      !item.title.includes('.') &&
+      !item.title.includes('?') &&
+      !item.title.includes('&')
+  );
+
+  if (validItems.length === 0) return null;
+
   return (
     <Breadcrumb>
       <BreadcrumbList>
-        {items.map((item, index) => (
+        {validItems.map((item, index) => (
           <Fragment key={item.title}>
             <BreadcrumbWithDropdown
               item={item}
-              isLast={index === items.length - 1}
+              isLast={index === validItems.length - 1}
               index={index}
             />
-            {index < items.length - 1 && (
+            {index < validItems.length - 1 && (
               <BreadcrumbSeparator className='hidden md:block'>
                 <IconSlash />
               </BreadcrumbSeparator>

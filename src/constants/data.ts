@@ -84,6 +84,12 @@ export const navItems: NavItem[] = [
         url: '/dashboard/bookmark/zch',
         icon: 'userPen',
         shortcut: ['dbz', 'dbz']
+      },
+      {
+        title: 'Chrome',
+        url: '/dashboard/bookmark/chrome',
+        icon: 'userPen',
+        shortcut: ['dbc', 'dbc']
       }
     ]
   }
