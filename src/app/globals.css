@@ -122,6 +122,23 @@
   }
 }
 
+/* 3D Transform Styles for Bookmark Galaxy */
+.perspective-[1000px] {
+  perspective: 1000px;
+}
+
+.transform-style-preserve-3d {
+  transform-style: preserve-3d;
+}
+
+.backface-visibility-hidden {
+  backface-visibility: hidden;
+}
+
+.transform-[initial] {
+  transform: initial;
+}
+
 /* View Transition Wave Effect */
 ::view-transition-old(root),
 ::view-transition-new(root) {

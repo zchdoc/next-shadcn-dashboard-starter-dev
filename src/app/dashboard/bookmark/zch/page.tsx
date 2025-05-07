@@ -4,6 +4,7 @@ import { BookmarkContent } from '@/components/bookmark/bookmark-content';
 import { BookmarkList } from '@/components/bookmark/bookmark-list';
 import { BookmarkGrid } from '@/components/bookmark/bookmark-grid';
 import { BookmarkFlow } from '@/components/bookmark/bookmark-flow';
+import BookmarkGalaxy from '@/components/bookmark/bookmark-galaxy';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -234,7 +235,9 @@ export default function BookmarkPage() {
         // https://chat.360.cn/chat
         { title: '360Chat', url: 'https://chat.360.cn/chat' },
         // https://xinghuo.xfyun.cn/
-        { title: 'XingHuo', url: 'https://xinghuo.xfyun.cn/' }
+        { title: 'XingHuo', url: 'https://xinghuo.xfyun.cn/' },
+        // https://chat.qwen.ai
+        { title: 'Qwen', url: 'https://chat.qwen.ai/' }
       ]
     },
     aiWithShell: {
@@ -318,9 +321,9 @@ export default function BookmarkPage() {
     Object.keys(bookmarkData)[0]
   ]);
   const [isClient, setIsClient] = useState(false);
-  const [viewMode, setViewMode] = useState<'list' | 'card' | 'grid' | 'flow'>(
-    'flow'
-  );
+  const [viewMode, setViewMode] = useState<
+    'list' | 'card' | 'grid' | 'flow' | 'galaxy'
+  >('list');
   // 在客户端加载时从 localStorage 读取保存的选择
   useEffect(() => {
     setIsClient(true);
@@ -332,9 +335,11 @@ export default function BookmarkPage() {
     const savedViewMode = localStorage.getItem('bookmarkViewMode');
     if (
       savedViewMode &&
-      ['list', 'card', 'grid', 'flow'].includes(savedViewMode)
+      ['list', 'card', 'grid', 'flow', 'galaxy'].includes(savedViewMode)
     ) {
-      setViewMode(savedViewMode as 'list' | 'card' | 'grid' | 'flow');
+      setViewMode(
+        savedViewMode as 'list' | 'card' | 'grid' | 'flow' | 'galaxy'
+      );
     }
   }, []);
   // 保存选择和视图模式到本地存储
@@ -346,11 +351,12 @@ export default function BookmarkPage() {
   };
 
   const toggleViewMode = () => {
-    const modes: ('list' | 'card' | 'grid' | 'flow')[] = [
+    const modes: ('list' | 'card' | 'grid' | 'flow' | 'galaxy')[] = [
       'list',
       'card',
       'grid',
-      'flow'
+      'flow',
+      'galaxy'
     ];
     const currentIndex = modes.indexOf(viewMode);
     const nextIndex = (currentIndex + 1) % modes.length;
@@ -512,7 +518,9 @@ export default function BookmarkPage() {
                         ? '切换到网格视图'
                         : viewMode === 'grid'
                           ? '切换到3D流视图'
-                          : '切换到列表视图'
+                          : viewMode === 'flow'
+                            ? '切换到星系视图'
+                            : '切换到列表视图'
                   }
                 >
                   {viewMode === 'list' ? (
@@ -521,6 +529,8 @@ export default function BookmarkPage() {
                     <Grid3X3 className='h-4 w-4' />
                   ) : viewMode === 'grid' ? (
                     <Layers3 className='h-4 w-4' />
+                  ) : viewMode === 'flow' ? (
+                    <ListIcon className='h-4 w-4' />
                   ) : (
                     <ListIcon className='h-4 w-4' />
                   )}
@@ -531,7 +541,9 @@ export default function BookmarkPage() {
                         ? '卡片视图'
                         : viewMode === 'grid'
                           ? '网格视图'
-                          : '3D流视图'}
+                          : viewMode === 'flow'
+                            ? '3D流视图'
+                            : '星系视图'}
                   </span>
                 </Button>
               </div>
@@ -572,8 +584,13 @@ export default function BookmarkPage() {
                     bookmarks={allSelectedBookmarks}
                     showGroup={true}
                   />
-                ) : (
+                ) : viewMode === 'flow' ? (
                   <BookmarkFlow
+                    bookmarks={allSelectedBookmarks}
+                    showGroup={true}
+                  />
+                ) : (
+                  <BookmarkGalaxy
                     bookmarks={allSelectedBookmarks}
                     showGroup={true}
                   />
