@@ -32,7 +32,9 @@ export function BookmarkFlow({
 
     window.addEventListener('mousemove', handleMouseMove);
 
-    // 添加矩阵效果动画
+    /* 
+    // ===== 矩阵效果代码开始 =====
+    // 如需恢复矩阵效果，取消注释此部分代码
     const canvas = document.createElement('canvas');
     const canvasContainer = document.getElementById('matrix-effect');
     if (canvasContainer) {
@@ -95,6 +97,8 @@ export function BookmarkFlow({
         };
       }
     }
+    // ===== 矩阵效果代码结束 =====
+    */
 
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
@@ -149,17 +153,17 @@ export function BookmarkFlow({
   return (
     <div
       ref={flowRef}
-      className='relative h-full min-h-[60vh] w-full overflow-hidden rounded-lg bg-black/5 p-8 backdrop-blur-sm dark:bg-white/5'
+      className='relative w-full rounded-lg bg-black/5 p-8 backdrop-blur-sm dark:bg-white/5'
       style={{
         perspective: '1000px',
         transformStyle: 'preserve-3d'
       }}
     >
-      {/* 矩阵效果 */}
-      <div
+      {/* 矩阵效果 - 已注释禁用 */}
+      {/* <div
         id='matrix-effect'
         className='pointer-events-none absolute inset-0 opacity-5'
-      />
+      /> */}
 
       {/* 背景光效果 */}
       <div
@@ -182,7 +186,7 @@ export function BookmarkFlow({
         }}
       />
 
-      <div className='relative z-10 h-full w-full'>
+      <div className='relative z-10'>
         {Object.entries(bookmarksByGroup).map(
           ([group, groupBookmarks], groupIndex) => (
             <motion.div

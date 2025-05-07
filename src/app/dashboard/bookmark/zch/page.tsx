@@ -366,7 +366,7 @@ export default function BookmarkPage() {
     }))
   );
   return (
-    <ScrollArea className='h-[calc(100dvh-52px)]'>
+    <div className='h-[calc(100dvh-52px)] overflow-auto'>
       <div className='flex flex-1 p-4 md:px-6'>
         <div className='flex w-full flex-col'>
           {/* 顶部区域 */}
@@ -531,7 +531,9 @@ export default function BookmarkPage() {
           <div className='flex-1 pb-6'>
             {isClient ? (
               <div
-                className={`bg-card rounded-lg border shadow-sm ${viewMode === 'flow' ? 'h-[calc(100vh-130px)] overflow-hidden p-0' : 'p-4'}`}
+                className={`bg-card rounded-lg border shadow-sm ${
+                  viewMode === 'flow' ? 'p-0' : 'p-4'
+                }`}
               >
                 {viewMode !== 'flow' && (
                   <div className='mb-3 flex items-center justify-between border-b pb-2'>
@@ -571,6 +573,6 @@ export default function BookmarkPage() {
           </div>
         </div>
       </div>
-    </ScrollArea>
+    </div>
   );
 }
