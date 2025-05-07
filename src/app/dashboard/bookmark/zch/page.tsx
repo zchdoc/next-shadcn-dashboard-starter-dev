@@ -319,7 +319,7 @@ export default function BookmarkPage() {
   ]);
   const [isClient, setIsClient] = useState(false);
   const [viewMode, setViewMode] = useState<'list' | 'card' | 'grid' | 'flow'>(
-    'list'
+    'flow'
   );
   // 在客户端加载时从 localStorage 读取保存的选择
   useEffect(() => {
@@ -531,7 +531,7 @@ export default function BookmarkPage() {
           <div className='flex-1 pb-6'>
             {isClient ? (
               <div
-                className={`bg-card rounded-lg border p-4 shadow-sm ${viewMode === 'flow' ? 'overflow-hidden p-0' : ''}`}
+                className={`bg-card rounded-lg border shadow-sm ${viewMode === 'flow' ? 'h-[calc(100vh-130px)] overflow-hidden p-0' : 'p-4'}`}
               >
                 {viewMode !== 'flow' && (
                   <div className='mb-3 flex items-center justify-between border-b pb-2'>

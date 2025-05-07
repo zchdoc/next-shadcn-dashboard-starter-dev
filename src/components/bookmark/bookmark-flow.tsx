@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ChevronDown, ChevronUp } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 interface BookmarkFlowProps {
   bookmarks: Array<{ title: string; url: string; group?: string }>;
@@ -11,6 +13,9 @@ export function BookmarkFlow({
   showGroup = false
 }: BookmarkFlowProps) {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>(
+    {}
+  );
   const flowRef = useRef<HTMLDivElement>(null);
 
   // 处理鼠标移动，用于3D视差效果
@@ -26,6 +31,71 @@ export function BookmarkFlow({
     };
 
     window.addEventListener('mousemove', handleMouseMove);
+
+    // 添加矩阵效果动画
+    const canvas = document.createElement('canvas');
+    const canvasContainer = document.getElementById('matrix-effect');
+    if (canvasContainer) {
+      canvasContainer.innerHTML = '';
+      canvasContainer.appendChild(canvas);
+
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        canvas.width = canvasContainer.offsetWidth;
+        canvas.height = canvasContainer.offsetHeight;
+
+        // 矩阵效果的字符
+        const matrix =
+          'abcdefghijklmnopqrstuvwxyz0123456789@#$%^&*()_+-=[]{}|;:,.<>?';
+        const characters = matrix.split('');
+        const fontSize = 10;
+        const columns = canvas.width / fontSize;
+
+        // 每一列的当前位置
+        const drops: number[] = [];
+        for (let i = 0; i < columns; i++) {
+          drops[i] = Math.floor((Math.random() * canvas.height) / fontSize);
+        }
+
+        // 绘制矩阵效果
+        const draw = () => {
+          if (!ctx) return;
+
+          ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+          ctx.fillStyle = '#0f0';
+          ctx.font = fontSize + 'px monospace';
+
+          for (let i = 0; i < drops.length; i++) {
+            // 随机选择一个字符
+            const text =
+              characters[Math.floor(Math.random() * characters.length)];
+
+            // x 坐标为当前列 * 字体大小
+            // y 坐标为当前下降的位置 * 字体大小
+            ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+            // 字符下降到底部或随机重置
+            if (drops[i] * fontSize > canvas.height || Math.random() > 0.99) {
+              drops[i] = 0;
+            }
+
+            // 移动到下一个位置
+            drops[i]++;
+          }
+        };
+
+        const matrixInterval = setInterval(draw, 30);
+
+        // 清理函数
+        return () => {
+          clearInterval(matrixInterval);
+          window.removeEventListener('mousemove', handleMouseMove);
+        };
+      }
+    }
+
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
     };
@@ -44,6 +114,15 @@ export function BookmarkFlow({
     {} as Record<string, typeof bookmarks>
   );
 
+  // 初始化所有分组为展开状态
+  useEffect(() => {
+    const initialExpanded: Record<string, boolean> = {};
+    Object.keys(bookmarksByGroup).forEach((group) => {
+      initialExpanded[group] = true;
+    });
+    setExpandedGroups(initialExpanded);
+  }, []);
+
   // 为不同群组生成不同的颜色
   const getColor = (index: number) => {
     const colors = [
@@ -59,6 +138,14 @@ export function BookmarkFlow({
     return colors[index % colors.length];
   };
 
+  // 切换分组展开/折叠
+  const toggleGroup = (group: string) => {
+    setExpandedGroups((prev) => ({
+      ...prev,
+      [group]: !prev[group]
+    }));
+  };
+
   return (
     <div
       ref={flowRef}
@@ -68,10 +155,30 @@ export function BookmarkFlow({
         transformStyle: 'preserve-3d'
       }}
     >
+      {/* 矩阵效果 */}
+      <div
+        id='matrix-effect'
+        className='pointer-events-none absolute inset-0 opacity-5'
+      />
+
+      {/* 背景光效果 */}
       <div
         className='pointer-events-none absolute inset-0 bg-gradient-to-br from-black/5 to-transparent opacity-30 dark:from-white/5 dark:to-transparent'
         style={{
           transform: `rotateX(${mousePosition.y * -5}deg) rotateY(${mousePosition.x * 5}deg)`
+        }}
+      />
+
+      {/* 动态网格背景 */}
+      <div
+        className='pointer-events-none absolute inset-0'
+        style={{
+          backgroundImage:
+            'radial-gradient(circle, rgba(255,255,255,0.05) 1px, transparent 1px)',
+          backgroundSize: '30px 30px',
+          transform: `rotate(${mousePosition.x * 2}deg)`,
+          opacity: 0.3,
+          transition: 'transform 0.3s ease-out'
         }}
       />
 
@@ -86,55 +193,95 @@ export function BookmarkFlow({
               transition={{ duration: 0.5, delay: groupIndex * 0.1 }}
             >
               {showGroup && (
-                <h3
-                  className={`mb-4 text-base font-bold ${getColor(groupIndex)}`}
-                >
-                  {group}
-                  <div className='mt-1 h-0.5 w-20 bg-current opacity-60' />
-                </h3>
+                <div className='mb-4 flex items-center'>
+                  <motion.h3
+                    className={`text-base font-bold ${getColor(groupIndex)} flex items-center`}
+                    whileHover={{ scale: 1.02 }}
+                  >
+                    {/* 分组标题点击切换展开/折叠 */}
+                    <Button
+                      variant='ghost'
+                      size='sm'
+                      className={`mr-2 px-1 ${getColor(groupIndex)}`}
+                      onClick={() => toggleGroup(group)}
+                    >
+                      {expandedGroups[group] ? (
+                        <ChevronUp className='h-4 w-4' />
+                      ) : (
+                        <ChevronDown className='h-4 w-4' />
+                      )}
+                    </Button>
+                    <span>{group}</span>
+                    <motion.div
+                      className='ml-2 h-0.5 w-20 bg-current opacity-60'
+                      initial={{ width: 0 }}
+                      animate={{ width: 80 }}
+                      transition={{ duration: 0.8, delay: 0.2 }}
+                    />
+                    <span className='ml-3 text-xs opacity-70'>
+                      ({groupBookmarks.length})
+                    </span>
+                  </motion.h3>
+                </div>
               )}
 
-              <div className='flex flex-wrap gap-3'>
-                {groupBookmarks.map((bookmark, index) => (
-                  <motion.a
-                    key={`${bookmark.group}-${bookmark.title}`}
-                    href={bookmark.url}
-                    target='_blank'
-                    rel='noopener noreferrer'
-                    className='relative rounded-lg border border-white/10 bg-white/10 px-4 py-2 shadow-lg backdrop-blur-lg transition-all hover:border-white/30 dark:border-black/20 dark:bg-black/20 dark:hover:border-white/10'
-                    style={{
-                      transformStyle: 'preserve-3d',
-                      transform: `translate3d(${(index % 3) * 10}px, ${Math.floor(index / 3) * 5}px, ${index * 2}px)`,
-                      zIndex: index
-                    }}
-                    initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    transition={{
-                      duration: 0.3,
-                      delay: groupIndex * 0.1 + index * 0.05
-                    }}
-                    whileHover={{
-                      scale: 1.05,
-                      boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.2)',
-                      zIndex: 50
-                    }}
+              <AnimatePresence>
+                {expandedGroups[group] && (
+                  <motion.div
+                    className='flex flex-wrap gap-3'
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.3 }}
                   >
-                    <div className='flex items-center'>
-                      <span className={`font-medium ${getColor(groupIndex)}`}>
-                        {bookmark.title}
-                      </span>
-                      <span className='ml-2 text-xs opacity-50'>
-                        {bookmark.url.replace(/^https?:\/\//, '').split('/')[0]}
-                      </span>
-                    </div>
+                    {groupBookmarks.map((bookmark, index) => (
+                      <motion.a
+                        key={`${bookmark.group}-${bookmark.title}`}
+                        href={bookmark.url}
+                        target='_blank'
+                        rel='noopener noreferrer'
+                        className='relative rounded-lg border border-white/10 bg-white/10 px-4 py-3 shadow-lg backdrop-blur-lg transition-all hover:border-white/30 dark:border-black/20 dark:bg-black/20 dark:hover:border-white/10'
+                        style={{
+                          transformStyle: 'preserve-3d',
+                          transform: `translate3d(${(index % 3) * 10}px, ${Math.floor(index / 3) * 5}px, ${index * 2}px)`,
+                          zIndex: index
+                        }}
+                        initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        transition={{
+                          duration: 0.3,
+                          delay: groupIndex * 0.1 + index * 0.05
+                        }}
+                        whileHover={{
+                          scale: 1.05,
+                          boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.2)',
+                          zIndex: 50
+                        }}
+                      >
+                        <div className='flex flex-col items-center'>
+                          <span
+                            className={`font-medium ${getColor(groupIndex)}`}
+                          >
+                            {bookmark.title}
+                          </span>
+                          <span className='mt-1 max-w-[150px] truncate text-xs opacity-50'>
+                            {
+                              bookmark.url
+                                .replace(/^https?:\/\//, '')
+                                .split('/')[0]
+                            }
+                          </span>
+                        </div>
 
-                    {/* 发光效果 */}
-                    <div
-                      className={`pointer-events-none absolute -inset-[1px] rounded-lg bg-gradient-to-r opacity-0 transition-opacity hover:opacity-30 ${getColor(groupIndex).replace('text-', 'from-').replace('-400', '-500')} to-transparent`}
-                    />
-                  </motion.a>
-                ))}
-              </div>
+                        {/* 发光效果 */}
+                        <div
+                          className={`pointer-events-none absolute -inset-[1px] rounded-lg bg-gradient-to-r opacity-0 transition-opacity hover:opacity-40 ${getColor(groupIndex).replace('text-', 'from-').replace('-400', '-500')} to-transparent`}
+                        />
+                      </motion.a>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </motion.div>
           )
         )}
