@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, ChevronUp } from 'lucide-react';
+import { ChevronDown, ChevronUp, FolderOpen, FolderClosed } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface BookmarkFlowProps {
@@ -150,6 +150,32 @@ export function BookmarkFlow({
     }));
   };
 
+  // 展开所有分组
+  const expandAll = () => {
+    const allExpanded: Record<string, boolean> = {};
+    Object.keys(bookmarksByGroup).forEach((group) => {
+      allExpanded[group] = true;
+    });
+    setExpandedGroups(allExpanded);
+  };
+
+  // 折叠所有分组
+  const collapseAll = () => {
+    const allCollapsed: Record<string, boolean> = {};
+    Object.keys(bookmarksByGroup).forEach((group) => {
+      allCollapsed[group] = false;
+    });
+    setExpandedGroups(allCollapsed);
+  };
+
+  // 检查是否所有分组都已展开或折叠
+  const areAllExpanded = Object.values(expandedGroups).every(
+    (value) => value === true
+  );
+  const areAllCollapsed = Object.values(expandedGroups).every(
+    (value) => value === false
+  );
+
   return (
     <div
       ref={flowRef}
@@ -187,6 +213,32 @@ export function BookmarkFlow({
       />
 
       <div className='relative z-10'>
+        {/* 全部展开/折叠控制按钮 */}
+        {showGroup && (
+          <div className='mb-6 flex justify-end space-x-2'>
+            <Button
+              variant='outline'
+              size='sm'
+              className={`text-xs ${areAllExpanded ? 'opacity-50' : ''}`}
+              onClick={expandAll}
+              disabled={areAllExpanded}
+            >
+              <FolderOpen className='mr-1 h-4 w-4' />
+              展开全部
+            </Button>
+            <Button
+              variant='outline'
+              size='sm'
+              className={`text-xs ${areAllCollapsed ? 'opacity-50' : ''}`}
+              onClick={collapseAll}
+              disabled={areAllCollapsed}
+            >
+              <FolderClosed className='mr-1 h-4 w-4' />
+              折叠全部
+            </Button>
+          </div>
+        )}
+
         {Object.entries(bookmarksByGroup).map(
           ([group, groupBookmarks], groupIndex) => (
             <motion.div
