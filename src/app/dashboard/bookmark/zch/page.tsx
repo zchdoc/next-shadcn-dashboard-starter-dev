@@ -501,9 +501,10 @@ export default function BookmarkPage() {
 
                 {/* 视图切换按钮 */}
                 <Button
-                  variant='ghost'
-                  size='icon'
+                  variant='outline'
+                  size='sm'
                   onClick={toggleViewMode}
+                  className='flex items-center gap-2'
                   title={
                     viewMode === 'list'
                       ? '切换到卡片视图'
@@ -515,14 +516,23 @@ export default function BookmarkPage() {
                   }
                 >
                   {viewMode === 'list' ? (
-                    <LayoutGrid className='h-5 w-5' />
+                    <LayoutGrid className='h-4 w-4' />
                   ) : viewMode === 'card' ? (
-                    <Grid3X3 className='h-5 w-5' />
+                    <Grid3X3 className='h-4 w-4' />
                   ) : viewMode === 'grid' ? (
-                    <Layers3 className='h-5 w-5' />
+                    <Layers3 className='h-4 w-4' />
                   ) : (
-                    <ListIcon className='h-5 w-5' />
+                    <ListIcon className='h-4 w-4' />
                   )}
+                  <span className='text-xs'>
+                    {viewMode === 'list'
+                      ? '列表视图'
+                      : viewMode === 'card'
+                        ? '卡片视图'
+                        : viewMode === 'grid'
+                          ? '网格视图'
+                          : '3D流视图'}
+                  </span>
                 </Button>
               </div>
             </div>
