@@ -70,6 +70,7 @@ export function ThemeSelector() {
           <SelectValue placeholder='Select a theme' />
         </SelectTrigger>
         <SelectContent align='end'>
+          {/*Default*/}
           <SelectGroup>
             <SelectLabel>Default</SelectLabel>
             {DEFAULT_THEMES.map((theme) => (
@@ -79,6 +80,7 @@ export function ThemeSelector() {
             ))}
           </SelectGroup>
           <SelectSeparator />
+          {/*Scaled*/}
           <SelectGroup>
             <SelectLabel>Scaled</SelectLabel>
             {SCALED_THEMES.map((theme) => (
@@ -87,6 +89,8 @@ export function ThemeSelector() {
               </SelectItem>
             ))}
           </SelectGroup>
+          <SelectSeparator />
+          {/*Monospaced*/}
           <SelectGroup>
             <SelectLabel>Monospaced</SelectLabel>
             {MONO_THEMES.map((theme) => (
