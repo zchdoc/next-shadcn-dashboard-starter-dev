@@ -1,6 +1,9 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { BookmarkContent } from '@/components/bookmark/bookmark-content';
+import { BookmarkList } from '@/components/bookmark/bookmark-list';
+import { BookmarkGrid } from '@/components/bookmark/bookmark-grid';
+import { BookmarkFlow } from '@/components/bookmark/bookmark-flow';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -16,6 +19,8 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
+import { LayoutGrid, ListIcon, Grid3X3, Layers3 } from 'lucide-react';
+
 interface BookmarkData {
   [key: string]: {
     title: string;
@@ -87,7 +92,7 @@ export default function BookmarkPage() {
       links: [
         { title: 'X', url: 'https://x.com/' },
         { title: 'Bsky', url: 'https://bsky.app' },
-        { title: 'Teddit', url: 'https://www.reddit.com' },
+        { title: 'Reddit', url: 'https://www.reddit.com' },
         { title: 'Telegram', url: 'https://web.telegram.org/a/' },
         { title: 'Discord', url: 'https://discord.com/channels/@me' },
         { title: 'Ins', url: 'https://www.instagram.com/' },
@@ -313,6 +318,9 @@ export default function BookmarkPage() {
     Object.keys(bookmarkData)[0]
   ]);
   const [isClient, setIsClient] = useState(false);
+  const [viewMode, setViewMode] = useState<'list' | 'card' | 'grid' | 'flow'>(
+    'list'
+  );
   // 在客户端加载时从 localStorage 读取保存的选择
   useEffect(() => {
     setIsClient(true);
@@ -320,13 +328,35 @@ export default function BookmarkPage() {
     if (saved) {
       setSelectedGroups(JSON.parse(saved));
     }
+
+    const savedViewMode = localStorage.getItem('bookmarkViewMode');
+    if (
+      savedViewMode &&
+      ['list', 'card', 'grid', 'flow'].includes(savedViewMode)
+    ) {
+      setViewMode(savedViewMode as 'list' | 'card' | 'grid' | 'flow');
+    }
   }, []);
-  // 保存选择到本地存储
+  // 保存选择和视图模式到本地存储
   const saveSelection = () => {
     localStorage.setItem(
       'bookmarkSelectedGroups',
       JSON.stringify(selectedGroups)
     );
+  };
+
+  const toggleViewMode = () => {
+    const modes: ('list' | 'card' | 'grid' | 'flow')[] = [
+      'list',
+      'card',
+      'grid',
+      'flow'
+    ];
+    const currentIndex = modes.indexOf(viewMode);
+    const nextIndex = (currentIndex + 1) % modes.length;
+    const newMode = modes[nextIndex];
+    setViewMode(newMode);
+    localStorage.setItem('bookmarkViewMode', newMode);
   };
   // 合并所有选中分组的链接
   const allSelectedBookmarks = selectedGroups.flatMap((groupKey) =>
@@ -468,27 +498,75 @@ export default function BookmarkPage() {
                     </div>
                   </DialogContent>
                 </Dialog>
-                {/* {isClient && (
-              <p className="text-sm text-muted-foreground">
-                已选择:{' '}
-                {selectedGroups
-                  .map((key) => bookmarkData[key].title)
-                  .join(', ')}
-              </p>
-            )} */}
+
+                {/* 视图切换按钮 */}
+                <Button
+                  variant='ghost'
+                  size='icon'
+                  onClick={toggleViewMode}
+                  title={
+                    viewMode === 'list'
+                      ? '切换到卡片视图'
+                      : viewMode === 'card'
+                        ? '切换到网格视图'
+                        : viewMode === 'grid'
+                          ? '切换到3D流视图'
+                          : '切换到列表视图'
+                  }
+                >
+                  {viewMode === 'list' ? (
+                    <LayoutGrid className='h-5 w-5' />
+                  ) : viewMode === 'card' ? (
+                    <Grid3X3 className='h-5 w-5' />
+                  ) : viewMode === 'grid' ? (
+                    <Layers3 className='h-5 w-5' />
+                  ) : (
+                    <ListIcon className='h-5 w-5' />
+                  )}
+                </Button>
               </div>
             </div>
           </div>
           {/* 主要内容区域 */}
           <div className='flex-1 pb-6'>
             {isClient ? (
-              <BookmarkContent
-                bookmarks={allSelectedBookmarks}
-                groupTitle=''
-                cardsPerRow={6}
-                showGroup={true}
-                settingsKey={'zch-bookmark'}
-              />
+              <div
+                className={`bg-card rounded-lg border p-4 shadow-sm ${viewMode === 'flow' ? 'overflow-hidden p-0' : ''}`}
+              >
+                {viewMode !== 'flow' && (
+                  <div className='mb-3 flex items-center justify-between border-b pb-2'>
+                    <h2 className='font-medium'>我的书签</h2>
+                    <p className='text-muted-foreground text-xs'>
+                      共 {allSelectedBookmarks.length} 个书签，来自{' '}
+                      {selectedGroups.length} 个分组
+                    </p>
+                  </div>
+                )}
+                {viewMode === 'list' ? (
+                  <BookmarkList
+                    bookmarks={allSelectedBookmarks}
+                    showGroup={true}
+                  />
+                ) : viewMode === 'card' ? (
+                  <BookmarkContent
+                    bookmarks={allSelectedBookmarks}
+                    groupTitle=''
+                    cardsPerRow={6}
+                    showGroup={true}
+                    settingsKey={'zch-bookmark'}
+                  />
+                ) : viewMode === 'grid' ? (
+                  <BookmarkGrid
+                    bookmarks={allSelectedBookmarks}
+                    showGroup={true}
+                  />
+                ) : (
+                  <BookmarkFlow
+                    bookmarks={allSelectedBookmarks}
+                    showGroup={true}
+                  />
+                )}
+              </div>
             ) : null}
           </div>
         </div>
