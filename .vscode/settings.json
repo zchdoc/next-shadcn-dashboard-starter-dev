@@ -10,7 +10,7 @@
   "terminal.integrated.defaultProfile.windows": "Command Prompt",
   "terminal.integrated.defaultProfile.linux": null,
   "terminal.integrated.defaultProfile.osx": null,
-  "editor.fontFamily": "Maple Mono NF CN, Monaco, 'Courier New', monospace, Menlo,Fira Code",
+  "editor.fontFamily": "JetBrains Mono, Microsoft YaHei UI, Consolas, 'Courier New', monospace",
   "editor.fontSize": 16,
   "npm.packageManager": "npm",
   "workbench.iconTheme": "vs-minimal",

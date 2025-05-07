@@ -1,5 +1,4 @@
 'use client';
-
 import { useThemeConfig } from '@/components/active-theme';
 import { Label } from '@/components/ui/label';
 import {
@@ -12,7 +11,6 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select';
-
 const DEFAULT_THEMES = [
   {
     name: 'Default',
@@ -31,7 +29,6 @@ const DEFAULT_THEMES = [
     value: 'amber'
   }
 ];
-
 const SCALED_THEMES = [
   {
     name: 'Default',
@@ -42,17 +39,14 @@ const SCALED_THEMES = [
     value: 'blue-scaled'
   }
 ];
-
 const MONO_THEMES = [
   {
     name: 'Mono',
     value: 'mono-scaled'
   }
 ];
-
 export function ThemeSelector() {
   const { activeTheme, setActiveTheme } = useThemeConfig();
-
   return (
     <div className='flex items-center gap-2'>
       <Label htmlFor='theme-selector' className='sr-only'>
