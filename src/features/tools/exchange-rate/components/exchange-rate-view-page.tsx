@@ -14,7 +14,8 @@ import {
 export default function ExchangeRateViewPage() {
   const [fromCurrency, setFromCurrency] = useState(DEFAULT_FROM_CURRENCY);
   const [toCurrency, setToCurrency] = useState(DEFAULT_TO_CURRENCY);
-  const [apiProvider, setApiProvider] = useState<ApiProviderType>('alltick');
+  const [apiProvider, setApiProvider] =
+    useState<ApiProviderType>('exchangerate-api');
 
   const handleCurrencyChange = (from: string, to: string) => {
     setFromCurrency(from);

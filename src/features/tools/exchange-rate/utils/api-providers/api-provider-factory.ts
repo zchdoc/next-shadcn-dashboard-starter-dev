@@ -40,6 +40,7 @@ export class ApiProviderFactory {
    * @returns 默认 API 提供者类型
    */
   static getDefaultProviderType(): ApiProviderType {
-    return 'alltick'; // 默认使用 AllTick API
+    // 默认使用 AllTick API
+    return 'exchangerate-api';
   }
 }

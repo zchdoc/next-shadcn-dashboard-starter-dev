@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
 
     // 构建 API URL
     const apiUrl = `${API_BASE_URL}/kline?token=${API_KEY}&query=${encodedQuery}`;
-
+    console.log('alltick-apiUrl', apiUrl);
     // 发送请求到 AllTick API
     const response = await fetch(apiUrl, {
       method: 'GET',

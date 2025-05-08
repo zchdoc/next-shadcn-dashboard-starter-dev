@@ -19,7 +19,7 @@ export const currencies: Currency[] = [
 ];
 
 // Default exchange rate for USD to CNY
-export const DEFAULT_EXCHANGE_RATE = 7.31;
+export const DEFAULT_EXCHANGE_RATE = 0;
 
 // Default from and to currencies
 export const DEFAULT_FROM_CURRENCY = 'USD';
