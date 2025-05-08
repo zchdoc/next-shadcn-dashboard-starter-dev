@@ -521,6 +521,93 @@ export function ExchangeRateChart({
             </p>
           </div>
         )}
+
+        {/* 常用汇率链接 */}
+        <div className='mt-6'>
+          <div className='mb-2 text-sm font-medium'>常用金融数据平台:</div>
+          <div className='grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-3'>
+            <a
+              href='https://gushitong.baidu.com/foreign/global-CNYUSD'
+              target='_blank'
+              rel='noopener noreferrer'
+              className='text-primary hover:text-primary/80 text-sm transition-colors'
+              title='https://gushitong.baidu.com/foreign/global-CNYUSD'
+            >
+              百度股市通
+            </a>
+            <a
+              href='https://www.google.com/finance/quote/USD-CNY'
+              target='_blank'
+              rel='noopener noreferrer'
+              className='text-primary hover:text-primary/80 text-sm transition-colors'
+              title='https://www.google.com/finance/quote/USD-CNY'
+            >
+              谷歌金融
+            </a>
+          </div>
+
+          <div className='mt-4 mb-2 text-sm font-medium'>API控制面板:</div>
+          <div className='grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-3'>
+            <a
+              href='https://app.exchangerate-api.com/dashboard'
+              target='_blank'
+              rel='noopener noreferrer'
+              className='text-primary hover:text-primary/80 text-sm transition-colors'
+              title='https://app.exchangerate-api.com/dashboard'
+            >
+              dashboard-exchangerate-api
+            </a>
+            <a
+              href='https://alltick.co/dashboard'
+              target='_blank'
+              rel='noopener noreferrer'
+              className='text-primary hover:text-primary/80 text-sm transition-colors'
+              title='https://alltick.co/dashboard'
+            >
+              dashboard-alltick
+            </a>
+            <a
+              href='https://dashboard.juhe.cn/data/index/my'
+              target='_blank'
+              rel='noopener noreferrer'
+              className='text-primary hover:text-primary/80 text-sm transition-colors'
+              title='https://dashboard.juhe.cn/data/index/my'
+            >
+              dashboard-juhe
+            </a>
+          </div>
+
+          <div className='mt-4 mb-2 text-sm font-medium'>API请求地址:</div>
+          <div className='grid grid-cols-1 gap-2'>
+            <a
+              href='https://v6.exchangerate-api.com/v6/ce4e516209655820db1afeae/latest/USD'
+              target='_blank'
+              rel='noopener noreferrer'
+              className='text-primary hover:text-primary/80 text-sm break-all transition-colors'
+              title='https://v6.exchangerate-api.com/v6/ce4e516209655820db1afeae/latest/USD'
+            >
+              req-exchangerate-api
+            </a>
+            <a
+              href='https://quote.alltick.io/quote-stock-b-api/kline?token=105b9f7b81c8493ddcf6334d49a3f2f0-c-app'
+              target='_blank'
+              rel='noopener noreferrer'
+              className='text-primary hover:text-primary/80 text-sm break-all transition-colors'
+              title='https://quote.alltick.io/quote-stock-b-api/kline?token=105b9f7b81c8493ddcf6334d49a3f2f0-c-app'
+            >
+              req-alltick
+            </a>
+            <a
+              href='http://op.juhe.cn/onebox/exchange/currency?key=d34b5e115bfd16290dd1d3a061b26bb5&from=USD&to=CNY&version=2'
+              target='_blank'
+              rel='noopener noreferrer'
+              className='text-primary hover:text-primary/80 text-sm break-all transition-colors'
+              title='http://op.juhe.cn/onebox/exchange/currency?key=d34b5e115bfd16290dd1d3a061b26bb5&from=USD&to=CNY&version=2'
+            >
+              req-juhe
+            </a>
+          </div>
+        </div>
       </CardContent>
     </Card>
   );
