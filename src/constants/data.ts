@@ -33,8 +33,7 @@ export const navItems: NavItem[] = [
     title: 'Account',
     url: '/dashboard/profile',
     icon: 'billing',
-    isActive: true,
-
+    isActive: false,
     items: [
       {
         title: 'Profile',
@@ -62,7 +61,7 @@ export const navItems: NavItem[] = [
     title: 'Tools',
     url: '/dashboard/tools/exchange-rate',
     icon: 'tools',
-    isActive: true,
+    isActive: false,
     shortcut: ['t', 't'],
     items: [
       {
@@ -77,7 +76,7 @@ export const navItems: NavItem[] = [
     title: 'Bookmark',
     url: '/dashboard/bookmark/zch',
     icon: 'bookmark',
-    isActive: true,
+    isActive: false,
     items: [
       {
         title: 'Zch',
