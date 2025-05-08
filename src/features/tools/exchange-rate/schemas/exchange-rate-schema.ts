@@ -12,7 +12,8 @@ export const exchangeRateSchema = z.object({
     .positive({ message: 'Rate must be a positive number' }),
   useCustomRate: z.boolean().default(false),
   apiProvider: z.custom<ApiProviderType>(
-    (val) => val === 'alltick' || val === 'exchangerate-api',
+    (val) =>
+      val === 'alltick' || val === 'exchangerate-api' || val === 'juhe-api',
     { message: 'Please select a valid API provider' }
   )
 });

@@ -1,9 +1,10 @@
 import { ExchangeRateApiProvider } from './api-provider';
 import { AllTickApiProviderImpl } from './alltick-api-provider';
 import { ExchangeRateApiProviderImpl } from './exchange-rate-api-provider';
+import { JuheApiExchangeProviderImpl } from './juhe-api-exchange-provider';
 
 // API 提供者类型
-export type ApiProviderType = 'alltick' | 'exchangerate-api';
+export type ApiProviderType = 'alltick' | 'exchangerate-api' | 'juhe-api';
 
 /**
  * API 提供者工厂
@@ -12,7 +13,8 @@ export type ApiProviderType = 'alltick' | 'exchangerate-api';
 export class ApiProviderFactory {
   private static providers: Record<ApiProviderType, ExchangeRateApiProvider> = {
     alltick: new AllTickApiProviderImpl(),
-    'exchangerate-api': new ExchangeRateApiProviderImpl()
+    'exchangerate-api': new ExchangeRateApiProviderImpl(),
+    'juhe-api': new JuheApiExchangeProviderImpl()
   };
 
   /**
@@ -40,7 +42,7 @@ export class ApiProviderFactory {
    * @returns 默认 API 提供者类型
    */
   static getDefaultProviderType(): ApiProviderType {
-    // 默认使用 AllTick API
+    // 默认使用 ExchangeRate API
     return 'exchangerate-api';
   }
 }

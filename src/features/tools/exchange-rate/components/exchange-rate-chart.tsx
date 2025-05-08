@@ -527,11 +527,11 @@ export function ExchangeRateChart({
           <div className='mb-2 text-sm font-medium'>常用金融数据平台:</div>
           <div className='grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-3'>
             <a
-              href='https://gushitong.baidu.com/foreign/global-CNYUSD'
+              href='https://gushitong.baidu.com/foreign/global-USDCNY'
               target='_blank'
               rel='noopener noreferrer'
               className='text-primary hover:text-primary/80 text-sm transition-colors'
-              title='https://gushitong.baidu.com/foreign/global-CNYUSD'
+              title='https://gushitong.baidu.com/foreign/global-USDCNY'
             >
               百度股市通
             </a>
