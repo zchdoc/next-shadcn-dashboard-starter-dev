@@ -173,6 +173,59 @@ export function ExchangeRateForm({
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
+            {/* Result Display - Moved to top */}
+            {convertedAmount !== null ? (
+              <div className='bg-muted mb-4 rounded-lg border p-4'>
+                <h3 className='text-lg font-medium'>Result</h3>
+                <div className='mt-2 flex flex-col gap-2 md:flex-row md:items-center'>
+                  <p className='text-xl font-semibold'>
+                    {amount} {fromCurrency} =
+                  </p>
+                  <p className='text-primary text-2xl font-bold'>
+                    {convertedAmount.toFixed(2)} {toCurrency}
+                  </p>
+                </div>
+                <p className='text-muted-foreground mt-2 text-sm'>
+                  1 {fromCurrency} = {rate} {toCurrency}
+                </p>
+              </div>
+            ) : (
+              <div className='bg-muted mb-4 rounded-lg border p-4 text-center'>
+                <p className='text-muted-foreground text-lg'>
+                  Enter an amount to see the conversion result
+                </p>
+              </div>
+            )}
+
+            {/* Amount - Moved up near the top */}
+            <FormField
+              control={form.control}
+              name='amount'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Amount</FormLabel>
+                  <FormControl>
+                    <Input
+                      type='number'
+                      step='0.01'
+                      placeholder='Enter amount'
+                      {...field}
+                      onChange={(e) => {
+                        field.onChange(e);
+                        form.handleSubmit(onSubmit)();
+                      }}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Convert Button - Moved up */}
+            <Button type='submit' className='w-full'>
+              Convert
+            </Button>
+
             <div className='flex flex-col items-center gap-4 md:flex-row'>
               {/* From Currency */}
               <FormField
@@ -245,30 +298,6 @@ export function ExchangeRateForm({
                 )}
               />
             </div>
-
-            {/* Amount */}
-            <FormField
-              control={form.control}
-              name='amount'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Amount</FormLabel>
-                  <FormControl>
-                    <Input
-                      type='number'
-                      step='0.01'
-                      placeholder='Enter amount'
-                      {...field}
-                      onChange={(e) => {
-                        field.onChange(e);
-                        form.handleSubmit(onSubmit)();
-                      }}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
 
             {/* API Provider Selection */}
             <FormField
@@ -372,30 +401,8 @@ export function ExchangeRateForm({
                 )}
               />
             </div>
-
-            <Button type='submit' className='w-full'>
-              Convert
-            </Button>
           </form>
         </Form>
-
-        {/* Result Display */}
-        {convertedAmount !== null && (
-          <div className='bg-muted mt-6 rounded-lg border p-4'>
-            <h3 className='text-lg font-medium'>Result</h3>
-            <div className='mt-2 flex flex-col gap-2 md:flex-row md:items-center'>
-              <p className='text-xl font-semibold'>
-                {amount} {fromCurrency} =
-              </p>
-              <p className='text-primary text-2xl font-bold'>
-                {convertedAmount.toFixed(2)} {toCurrency}
-              </p>
-            </div>
-            <p className='text-muted-foreground mt-2 text-sm'>
-              1 {fromCurrency} = {rate} {toCurrency}
-            </p>
-          </div>
-        )}
       </CardContent>
       <CardFooter className='text-muted-foreground flex flex-col items-start text-sm'>
         <p>

@@ -5,8 +5,8 @@ import {
   generateDatesForLastDays
 } from './api-provider';
 
-// 聚合数据 API Key
-const API_KEY = 'd34b5e115bfd16290dd1d3a061b26bb5';
+// 使用我们的代理API而不是直接调用聚合数据API
+const API_PROXY_URL = '/api/exchange-rate/juhe';
 
 // 聚合数据 API 响应接口
 interface JuheApiResponse {
@@ -33,9 +33,6 @@ interface JuheExchangeRateResult {
 export class JuheApiExchangeProviderImpl implements ExchangeRateApiProvider {
   name = '聚合数据汇率';
 
-  // API URL
-  private API_URL = 'http://op.juhe.cn/onebox/exchange/currency';
-
   /**
    * 获取实时汇率
    * @param fromCurrency 源货币代码
@@ -51,8 +48,8 @@ export class JuheApiExchangeProviderImpl implements ExchangeRateApiProvider {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 5000); // 5秒超时
 
-      // 构建API请求URL
-      const url = `${this.API_URL}?key=${API_KEY}&from=${fromCurrency}&to=${toCurrency}&version=2`;
+      // 构建API请求URL - 使用代理API
+      const url = `${API_PROXY_URL}?from=${fromCurrency}&to=${toCurrency}`;
 
       const response = await fetch(url, {
         signal: controller.signal
