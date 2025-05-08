@@ -40,9 +40,9 @@ import {
 import { bookmarkDataZch, BookmarkData } from '@/constants/bookmarks-zch';
 
 export default function BookmarkPage() {
-  const [selectedGroups, setSelectedGroups] = useState<string[]>([
-    Object.keys(bookmarkDataZch)[0]
-  ]);
+  const [selectedGroups, setSelectedGroups] = useState<string[]>(
+    Object.keys(bookmarkDataZch)
+  );
   const [isClient, setIsClient] = useState(false);
   const [viewMode, setViewMode] = useState<
     'list' | 'card' | 'grid' | 'flow' | 'galaxy' | 'hologram' | 'card3d'
