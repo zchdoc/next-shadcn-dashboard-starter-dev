@@ -21,6 +21,15 @@ import {
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
 import { LayoutGrid, ListIcon, Grid3X3, Layers3 } from 'lucide-react';
+import BookmarkHologram from '@/components/bookmark/bookmark-hologram';
+import BookmarkCard3D from '@/components/bookmark/bookmark-card3d';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select';
 
 interface BookmarkData {
   [key: string]: {
@@ -322,7 +331,7 @@ export default function BookmarkPage() {
   ]);
   const [isClient, setIsClient] = useState(false);
   const [viewMode, setViewMode] = useState<
-    'list' | 'card' | 'grid' | 'flow' | 'galaxy'
+    'list' | 'card' | 'grid' | 'flow' | 'galaxy' | 'hologram' | 'card3d'
   >('list');
   // 在客户端加载时从 localStorage 读取保存的选择
   useEffect(() => {
@@ -335,10 +344,19 @@ export default function BookmarkPage() {
     const savedViewMode = localStorage.getItem('bookmarkViewMode');
     if (
       savedViewMode &&
-      ['list', 'card', 'grid', 'flow', 'galaxy'].includes(savedViewMode)
+      ['list', 'card', 'grid', 'flow', 'galaxy', 'hologram', 'card3d'].includes(
+        savedViewMode
+      )
     ) {
       setViewMode(
-        savedViewMode as 'list' | 'card' | 'grid' | 'flow' | 'galaxy'
+        savedViewMode as
+          | 'list'
+          | 'card'
+          | 'grid'
+          | 'flow'
+          | 'galaxy'
+          | 'hologram'
+          | 'card3d'
       );
     }
   }, []);
@@ -351,13 +369,15 @@ export default function BookmarkPage() {
   };
 
   const toggleViewMode = () => {
-    const modes: ('list' | 'card' | 'grid' | 'flow' | 'galaxy')[] = [
-      'list',
-      'card',
-      'grid',
-      'flow',
-      'galaxy'
-    ];
+    const modes: (
+      | 'list'
+      | 'card'
+      | 'grid'
+      | 'flow'
+      | 'galaxy'
+      | 'hologram'
+      | 'card3d'
+    )[] = ['list', 'card', 'grid', 'flow', 'galaxy', 'hologram', 'card3d'];
     const currentIndex = modes.indexOf(viewMode);
     const nextIndex = (currentIndex + 1) % modes.length;
     const newMode = modes[nextIndex];
@@ -505,47 +525,91 @@ export default function BookmarkPage() {
                   </DialogContent>
                 </Dialog>
 
-                {/* 视图切换按钮 */}
-                <Button
-                  variant='outline'
-                  size='sm'
-                  onClick={toggleViewMode}
-                  className='flex items-center gap-2'
-                  title={
-                    viewMode === 'list'
-                      ? '切换到卡片视图'
-                      : viewMode === 'card'
-                        ? '切换到网格视图'
-                        : viewMode === 'grid'
-                          ? '切换到3D流视图'
-                          : viewMode === 'flow'
-                            ? '切换到星系视图'
-                            : '切换到列表视图'
-                  }
-                >
-                  {viewMode === 'list' ? (
-                    <LayoutGrid className='h-4 w-4' />
-                  ) : viewMode === 'card' ? (
-                    <Grid3X3 className='h-4 w-4' />
-                  ) : viewMode === 'grid' ? (
-                    <Layers3 className='h-4 w-4' />
-                  ) : viewMode === 'flow' ? (
-                    <ListIcon className='h-4 w-4' />
-                  ) : (
-                    <ListIcon className='h-4 w-4' />
-                  )}
-                  <span className='text-xs'>
-                    {viewMode === 'list'
-                      ? '列表视图'
-                      : viewMode === 'card'
-                        ? '卡片视图'
-                        : viewMode === 'grid'
-                          ? '网格视图'
-                          : viewMode === 'flow'
-                            ? '3D流视图'
-                            : '星系视图'}
-                  </span>
-                </Button>
+                {/* 视图切换控件组 */}
+                <div className='ml-auto flex items-center gap-2'>
+                  <Button
+                    variant='outline'
+                    size='sm'
+                    onClick={toggleViewMode}
+                    className='flex items-center gap-2'
+                    title={
+                      viewMode === 'list'
+                        ? '切换到卡片视图'
+                        : viewMode === 'card'
+                          ? '切换到网格视图'
+                          : viewMode === 'grid'
+                            ? '切换到3D流视图'
+                            : viewMode === 'flow'
+                              ? '切换到星系视图'
+                              : viewMode === 'galaxy'
+                                ? '切换到全息视图'
+                                : viewMode === 'hologram'
+                                  ? '切换到3D卡片视图'
+                                  : '切换到列表视图'
+                    }
+                  >
+                    {viewMode === 'list' ? (
+                      <LayoutGrid className='h-4 w-4' />
+                    ) : viewMode === 'card' ? (
+                      <Grid3X3 className='h-4 w-4' />
+                    ) : viewMode === 'grid' ? (
+                      <Layers3 className='h-4 w-4' />
+                    ) : viewMode === 'flow' ? (
+                      <ListIcon className='h-4 w-4' />
+                    ) : viewMode === 'galaxy' ? (
+                      <ListIcon className='h-4 w-4' />
+                    ) : viewMode === 'hologram' ? (
+                      <ListIcon className='h-4 w-4' />
+                    ) : (
+                      <ListIcon className='h-4 w-4' />
+                    )}
+                    <span className='text-xs'>
+                      {viewMode === 'list'
+                        ? '列表视图'
+                        : viewMode === 'card'
+                          ? '卡片视图'
+                          : viewMode === 'grid'
+                            ? '网格视图'
+                            : viewMode === 'flow'
+                              ? '3D流视图'
+                              : viewMode === 'galaxy'
+                                ? '星系视图'
+                                : viewMode === 'hologram'
+                                  ? '全息视图'
+                                  : '3D卡片视图'}
+                    </span>
+                  </Button>
+
+                  <Select
+                    value={viewMode}
+                    onValueChange={(
+                      value:
+                        | 'list'
+                        | 'card'
+                        | 'grid'
+                        | 'flow'
+                        | 'galaxy'
+                        | 'hologram'
+                        | 'card3d'
+                    ) => {
+                      setViewMode(value);
+                      localStorage.setItem('bookmarkViewMode', value);
+                    }}
+                  >
+                    <SelectTrigger className='h-8 w-[120px]'>
+                      <SelectValue placeholder='选择视图' />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value='list'>列表视图</SelectItem>
+                      <SelectItem value='card'>卡片视图</SelectItem>
+                      <SelectItem value='grid'>网格视图</SelectItem>
+                      <SelectItem value='flow'>3D流视图</SelectItem>
+                      <SelectItem value='galaxy'>星系视图</SelectItem>
+                      <SelectItem value='hologram'>全息视图</SelectItem>
+                      <SelectItem value='card3d'>3D卡片视图</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
             </div>
           </div>
@@ -589,8 +653,18 @@ export default function BookmarkPage() {
                     bookmarks={allSelectedBookmarks}
                     showGroup={true}
                   />
-                ) : (
+                ) : viewMode === 'galaxy' ? (
                   <BookmarkGalaxy
+                    bookmarks={allSelectedBookmarks}
+                    showGroup={true}
+                  />
+                ) : viewMode === 'hologram' ? (
+                  <BookmarkHologram
+                    bookmarks={allSelectedBookmarks}
+                    showGroup={true}
+                  />
+                ) : (
+                  <BookmarkCard3D
                     bookmarks={allSelectedBookmarks}
                     showGroup={true}
                   />
