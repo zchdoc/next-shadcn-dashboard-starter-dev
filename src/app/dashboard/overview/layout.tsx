@@ -10,7 +10,13 @@ import {
 } from '@/components/ui/card';
 import { IconTrendingDown, IconTrendingUp } from '@tabler/icons-react';
 import React from 'react';
-
+import type { Metadata } from 'next';
+const title = 'Z1.Tool';
+export const metadata: Metadata = {
+  title: title,
+  description:
+    'Build tool box site with Basic dashboard with Next.js and Shadcn'
+};
 export default function OverViewLayout({
   sales,
   pie_stats,

@@ -7,17 +7,7 @@ import { cookies } from 'next/headers';
 import { headers } from 'next/headers';
 const title = 'Z1.Tool';
 export const metadata: Metadata = {
-  title: title,
-  description:
-    'Build tool box site with Basic dashboard with Next.js and Shadcn',
-  icons: {
-    icon: [
-      {
-        url: 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%2210 0 100 100%22><text y=%22.90em%22 font-size=%2290%22>👋</text></svg>',
-        type: 'image/svg+xml'
-      }
-    ]
-  }
+  title: 'Dashboard : Kanban view'
 };
 
 export default async function DashboardLayout({
