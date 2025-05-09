@@ -67,6 +67,20 @@ export const bookmarkDataZch: BookmarkData = {
       }
     ]
   },
+  socialMedia: {
+    title: 'Social Media',
+    links: [
+      { title: 'X', url: 'https://x.com/' },
+      { title: 'Bsky', url: 'https://bsky.app' },
+      { title: 'Reddit', url: 'https://www.reddit.com' },
+      { title: 'Telegram', url: 'https://web.telegram.org/a/' },
+      { title: 'Discord', url: 'https://discord.com/channels/@me' },
+      { title: 'Ins', url: 'https://www.instagram.com/' },
+      { title: 'LinuxDo', url: 'https://linux.do/' },
+      { title: 'Zhihu', url: 'https://www.zhihu.com' },
+      { title: '52Pj', url: 'https://www.52pojie.cn/' }
+    ]
+  },
   aiEn: {
     title: 'AI EN',
     links: [
@@ -148,20 +162,6 @@ export const bookmarkDataZch: BookmarkData = {
     links: [
       { title: 'OLlaMa', url: 'https://ollama.ai/' },
       { title: 'LMStudio', url: 'https://lmstudio.ai/' }
-    ]
-  },
-  socialMedia: {
-    title: 'Social Media',
-    links: [
-      { title: 'X', url: 'https://x.com/' },
-      { title: 'Bsky', url: 'https://bsky.app' },
-      { title: 'Reddit', url: 'https://www.reddit.com' },
-      { title: 'Telegram', url: 'https://web.telegram.org/a/' },
-      { title: 'Discord', url: 'https://discord.com/channels/@me' },
-      { title: 'Ins', url: 'https://www.instagram.com/' },
-      { title: 'LinuxDo', url: 'https://linux.do/' },
-      { title: 'Zhihu', url: 'https://www.zhihu.com' },
-      { title: '52Pj', url: 'https://www.52pojie.cn/' }
     ]
   },
   tools: {
