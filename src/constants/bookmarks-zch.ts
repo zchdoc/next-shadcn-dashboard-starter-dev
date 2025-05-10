@@ -165,6 +165,11 @@ export const bookmarkDataZch: BookmarkData = {
   mineSite: {
     title: 'Mine Site',
     links: [
+      // https://vercel.com/zchdocs-projects/next-shadcn-dashboard-starter-dev/deployments
+      {
+        title: 'vercel-deployments',
+        url: 'https://vercel.com/zchdocs-projects/next-shadcn-dashboard-starter-dev/deployments'
+      },
       { title: 'Att', url: 'https://att.wwzh.xyz/' },
       // https://zchdoc.github.io/html-chrome-bookmark-render/
       {
