@@ -2,16 +2,13 @@ export interface BookmarkLink {
   title: string;
   url: string;
 }
-
 export interface BookmarkGroup {
   title: string;
   links: BookmarkLink[];
 }
-
 export interface BookmarkData {
   [key: string]: BookmarkGroup;
 }
-
 export const bookmarkDataZch: BookmarkData = {
   xbClientLogin: {
     title: 'XB Client Login',
@@ -99,7 +96,12 @@ export const bookmarkDataZch: BookmarkData = {
       {
         title: 'Fireworks',
         url: 'https://fireworks.ai/models/fireworks/f1-preview/playground'
-      }
+      },
+      {
+        title: 'CoZeEn',
+        url: 'https://www.coze.com/space/7322025004764364806/bot'
+      },
+      { title: 'CiCi', url: 'https://www.ciciai.com/' }
     ]
   },
   aiCn: {
@@ -115,53 +117,12 @@ export const bookmarkDataZch: BookmarkData = {
       { title: 'LingYi', url: 'https://platform.lingyiwanwu.com/' },
       { title: '360Chat', url: 'https://chat.360.cn/chat' },
       { title: 'XingHuo', url: 'https://xinghuo.xfyun.cn/' },
-      { title: 'Qwen', url: 'https://chat.qwen.ai/' }
-    ]
-  },
-  aiWithShell: {
-    title: 'AI Shelled',
-    links: [
-      { title: 'Copilot', url: 'https://github.com/features/copilot' },
-      { title: 'JuChat', url: 'https://www.juchats.com/chat' },
-      { title: 'OAiFree', url: 'https://shared.oaifree.com/' },
-      {
-        title: 'CoZeEn',
-        url: 'https://www.coze.com/space/7322025004764364806/bot'
-      },
-      { title: 'CiCi', url: 'https://www.ciciai.com/' },
+      { title: 'Qwen', url: 'https://chat.qwen.ai/' },
       {
         title: 'CoZeCn',
         url: 'https://www.coze.cn/space/7346541960162869283/bot'
       },
       { title: 'DouBao', url: 'https://www.doubao.com/chat/' }
-    ]
-  },
-  aiRanking: {
-    title: 'AI Ranking',
-    links: [
-      { title: 'R-SuperClue', url: 'https://www.superclueai.com' },
-      { title: 'R-LMsys', url: 'https://chat.lmsys.org/?leaderboard' },
-      { title: 'R-Aider', url: 'https://aider.chat/docs/leaderboards' },
-      {
-        title: 'R-OpenRouter',
-        url: 'https://openrouter.ai/rankings/programming?view=month'
-      }
-    ]
-  },
-  aiApiMerchant: {
-    title: 'AI API Merchant',
-    links: [
-      { title: 'OpenRChat', url: 'https://openrouter.ai/chat' },
-      { title: 'HuggingFace', url: 'https://huggingface.co/' },
-      { title: 'HuggingChat', url: 'https://huggingface.co/chat/' },
-      { title: 'SiliconFlow', url: 'https://cloud.siliconflow.cn/' }
-    ]
-  },
-  aiLocal: {
-    title: 'AI Local',
-    links: [
-      { title: 'OLlaMa', url: 'https://ollama.ai/' },
-      { title: 'LMStudio', url: 'https://lmstudio.ai/' }
     ]
   },
   tools: {
@@ -204,8 +165,22 @@ export const bookmarkDataZch: BookmarkData = {
   mineSite: {
     title: 'Mine Site',
     links: [
-      { title: 'NextNav', url: 'https://nextnav.wwzh.xyz/' },
       { title: 'Att', url: 'https://att.wwzh.xyz/' },
+      // https://zchdoc.github.io/html-chrome-bookmark-render/
+      {
+        title: 'Html-Chrome-Bookmark-Render',
+        url: 'https://zchdoc.github.io/html-chrome-bookmark-render/'
+      },
+      // https://navgit.wwzh.xyz/pages/my-bookmarks-simple/index.html?key=mine
+      {
+        title: 'My-Bookmarks-Simple',
+        url: 'https://navgit.wwzh.xyz/pages/my-bookmarks-simple/index.html?key=mine'
+      },
+      // https://tool.wwzh.xyz/dashboard/bookmark/chrome-bookmark
+      {
+        title: 'Z.ToolV1',
+        url: 'https://tool.wwzh.xyz/dashboard/bookmark/chrome-bookmark'
+      },
       {
         title: 'Pin-Tree-Dev',
         url: 'https://ptd.wwzh.xyz/'
@@ -236,6 +211,42 @@ export const bookmarkDataZch: BookmarkData = {
       { title: 'Gitlab', url: 'https://gitlab.com/' },
       { title: 'Csdn-git', url: 'https://gitcode.com/' },
       { title: 'Github-m', url: 'https://github.com/trending?since=monthly' }
+    ]
+  },
+  aiWithShell: {
+    title: 'AI Shelled',
+    links: [
+      { title: 'Copilot', url: 'https://github.com/features/copilot' },
+      { title: 'JuChat', url: 'https://www.juchats.com/chat' },
+      { title: 'OAiFree', url: 'https://shared.oaifree.com/' }
+    ]
+  },
+  aiRanking: {
+    title: 'AI Ranking',
+    links: [
+      { title: 'R-SuperClue', url: 'https://www.superclueai.com' },
+      { title: 'R-LMsys', url: 'https://chat.lmsys.org/?leaderboard' },
+      { title: 'R-Aider', url: 'https://aider.chat/docs/leaderboards' },
+      {
+        title: 'R-OpenRouter',
+        url: 'https://openrouter.ai/rankings/programming?view=month'
+      }
+    ]
+  },
+  aiApiMerchant: {
+    title: 'AI API Merchant',
+    links: [
+      { title: 'OpenRChat', url: 'https://openrouter.ai/chat' },
+      { title: 'HuggingFace', url: 'https://huggingface.co/' },
+      { title: 'HuggingChat', url: 'https://huggingface.co/chat/' },
+      { title: 'SiliconFlow', url: 'https://cloud.siliconflow.cn/' }
+    ]
+  },
+  aiLocal: {
+    title: 'AI Local',
+    links: [
+      { title: 'OLlaMa', url: 'https://ollama.ai/' },
+      { title: 'LMStudio', url: 'https://lmstudio.ai/' }
     ]
   },
   translation: {
