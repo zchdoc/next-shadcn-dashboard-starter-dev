@@ -1,11 +1,20 @@
-import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
-import { NextRequest } from 'next/server';
-
-const isProtectedRoute = createRouteMatcher(['/dashboard(.*)']);
+import { clerkMiddleware } from '@clerk/nextjs/server';
+import type { NextRequest } from 'next/server';
 
 export default clerkMiddleware(async (auth, req: NextRequest) => {
-  if (isProtectedRoute(req)) await auth.protect();
+  const path = req.nextUrl.pathname;
+
+  // 先检查是否公开路径
+  if (path.startsWith('/dashboard/bookmark/zch')) {
+    return; // 不执行认证
+  }
+
+  // 再检查是否需要保护的路径
+  if (path.startsWith('/dashboard')) {
+    await auth.protect();
+  }
 });
+
 export const config = {
   matcher: [
     // Skip Next.js internals and all static files, unless found in search params

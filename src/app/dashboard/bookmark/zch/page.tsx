@@ -256,7 +256,7 @@ export default function BookmarkPage() {
                           {bookmarkDataZch[groupKey].links.map(
                             (link, index) => (
                               <div
-                                key={index}
+                                key={`${link.title}-${link.url}`}
                                 className='ml-4 flex items-center gap-4'
                               >
                                 <div className='font-medium'>{link.title}</div>
@@ -444,7 +444,7 @@ export default function BookmarkPage() {
                 }}
                 transition={{
                   duration: 2,
-                  repeat: Infinity,
+                  repeat: Number.POSITIVE_INFINITY,
                   repeatType: 'reverse',
                   ease: 'easeInOut'
                 }}
@@ -460,7 +460,7 @@ export default function BookmarkPage() {
               }}
               transition={{
                 duration: 2.5,
-                repeat: Infinity,
+                repeat: Number.POSITIVE_INFINITY,
                 repeatType: 'reverse',
                 ease: 'easeInOut'
               }}
