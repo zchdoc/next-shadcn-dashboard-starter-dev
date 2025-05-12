@@ -69,6 +69,12 @@ export const navItems: NavItem[] = [
         url: '/dashboard/tools/exchange-rate',
         icon: 'currency',
         shortcut: ['e', 'r']
+      },
+      {
+        title: 'Protocol Analyzer',
+        url: '/dashboard/tools/protocol/analyzer/xb',
+        icon: 'code',
+        shortcut: ['p', 'a']
       }
     ]
   },
