@@ -39,10 +39,6 @@ import {
 } from '@/components/ui/select';
 import { bookmarkDataZch, BookmarkData } from '@/constants/bookmarks-zch';
 
-export const metadata = {
-  title: 'Dashboard : Bookmark zch'
-};
-
 export default function BookmarkPage() {
   const [selectedGroups, setSelectedGroups] = useState<string[]>(
     Object.keys(bookmarkDataZch)

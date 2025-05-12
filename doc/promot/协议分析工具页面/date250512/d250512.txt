@@ -1,120 +1,188 @@
 先查看当前项目的项目结构 tree.desc.txt 文件做了一点点总结,然后帮我分析并协助完成如下功能:
 我们当前使用的是 mac系统, mac 系统版本 15.4.1 (24E263)
 我准备在当前项目中添加一个协议分析器工具,在 src/app/dashboard/tools 添加目录
-protocol-xb-analyzer合适呢还是 依次添加多层目录 protocol/xb/analyzer 合适呢
-
+protocol-analyzer-xb 合适呢还是 依次添加多层目录 protocol/analyzer/xb 合适呢 (xb是硬件提供商公司缩写,我们还有其他的硬件厂商,后续添加)
 注: 协议分析器工具是一个 硬件通讯协议分析的工具,比如我有一包来自硬件的数据包:
-
 0000000000000000000000000001ba1e0001ba1e0000000000000303005301010000000000004dc5000000ff0100000bb80000030500000000000000000000000100c200000000000024040820321903f38000010000000002e300240408203223cde90a4500000000000000009f9e
-
 这个数据包包含了很多信息比如前 50 字节(100个字符) 包含的信息如下:
+静态ID(16字节高字节在前)+
+设备机器号(4字节高字节在前)+
+从设备机器号(4字节高字节在前;00000000表示主设备;非零表示中转设备)+
+协议类型(2字节高字节在前;0000表示主设备协议;非零表示中转设备协议)+
+设备类型(2字节高字节在前)+
+数据长度(2字节高字节在前)+
+数据类型帧(也叫关键帧2字节)+
+随机码(4字节高字节在前)+
+数据(从关键帧开始)+
+CRC校验(2字节高字节在前)
+数据信息(从关键帧开始开始):
+//纪录帧 1字节
+DataBuf[0] = 0x01;            
+//消费类型 1字节: 1大钱包消费;2补助钱包消费;3混合消费
+DataBuf[1] = DevWork.constype;
+//随机码 4字节
+DataBuf[2] = 0;
+DataBuf[3] = 0;
+DataBuf[4] = 0;
+DataBuf[5] = 0;
+//帐号 4字节
+DataBuf[2+4] = (u8)(CardBace1.ID>>24);
+DataBuf[3+4] = (u8)(CardBace1.ID>>16);
+DataBuf[4+4] = (u8)((CardBace1.ID>>8)&0xFF);
+DataBuf[5+4] = (u8)(CardBace1.ID&0xFF);
+//卡号 4字节
+DataBuf[6+4] = (u8)(CardBace1.CardID>>24);
+DataBuf[7+4] = (u8)(CardBace1.CardID>>16);
+DataBuf[8+4] = (u8)((CardBace1.CardID>>8)&0xFF);
+DataBuf[9+4] = (u8)(CardBace1.CardID&0xFF);
+//卡序号 1字节
+DataBuf[10+4] = (u8)CardBace2.CardNO;
+//卡总额 4字节
+DataBuf[11+4] = (u8)(CardBace2.Money>>24);
+DataBuf[12+4] = (u8)((CardBace2.Money>>16)&0xFF);  
+DataBuf[13+4] = (u8)((CardBace2.Money>>8)&0xFF);
+DataBuf[14+4] = (u8)(CardBace2.Money&0xFF);
+//钱包余额(卡余额) 4字节
+DataBuf[15+4] = (u8)((CardXF.Bal>>24)&0xFF);
+DataBuf[16+4] = (u8)((CardXF.Bal>>16)&0xFF);
+DataBuf[17+4] = (u8)((CardXF.Bal>>8)&0xFF);
+DataBuf[18+4] = (u8)(CardXF.Bal&0xFF);
+//管理费金额(优惠打折) 4字节
+DataBuf[19+4] = (u8)((DevWork.operatecost>>24)&0xFF);
+DataBuf[20+4] = (u8)((DevWork.operatecost>>16)&0xFF);
+DataBuf[21+4] = (u8)((DevWork.operatecost>>8)&0xFF);
+DataBuf[22+4] = (u8)(DevWork.operatecost&0xFF);
+//补助余额 4字节
+DataBuf[23+4] = (u8)(CardBZ.Bal>>24);
+DataBuf[24+4] = (u8)(CardBZ.Bal>>16);
+DataBuf[25+4] = (u8)((CardBZ.Bal>>8)&0xFF);
+DataBuf[26+4] = (u8)(CardBZ.Bal&0xFF);
+//大钱包消费金额 4字节
+DataBuf[27+4] = (u8)((DevWork.consumemoney>>24)&0xFF);
+DataBuf[28+4] = (u8)((DevWork.consumemoney>>16)&0xFF);
+DataBuf[29+4] = (u8)((DevWork.consumemoney>>8)&0xFF);
+DataBuf[30+4] = (u8)(DevWork.consumemoney&0xFF);
+//大钱包计数器 2字节
+DataBuf[31+4] =  (u8)(CardXF.Times>>8);
+DataBuf[32+4] =  (u8)(CardXF.Times&0xFF);
+//补助计数器 2字节
+DataBuf[33+4] =  (u8)(CardBZ.Times>>8);
+DataBuf[34+4] =  (u8)(CardBZ.Times&0xFF);
+//补助消费金额(操作金额) 4字节
+DataBuf[35+4] = (u8)((DevWork.subsidymoney>>24)&0xFF);    
+DataBuf[36+4] = (u8)((DevWork.subsidymoney>>16)&0xFF);
+DataBuf[37+4] = (u8)((DevWork.subsidymoney>>8)&0xFF);
+DataBuf[38+4] = (u8)(DevWork.subsidymoney&0xFF);
+//消费时间 6字节
+DataBuf[39+4] =  HEX_TO_BCD(DevTime.year);
+DataBuf[40+4] =  HEX_TO_BCD(DevTime.month);
+DataBuf[41+4] =  HEX_TO_BCD(DevTime.day);
+DataBuf[42+4] =  HEX_TO_BCD(DevTime.hour);
+DataBuf[43+4] =  HEX_TO_BCD(DevTime.min);
+DataBuf[44+4] =  HEX_TO_BCD(DevTime.sec);	 
+//记录序号 2字节
+DataBuf[45+4] =  (u8)(dev_data.DevData.recordnmb>>8);
+DataBuf[46+4] =  (u8)(dev_data.DevData.recordnmb&0xFF);
+//打折优惠 最高位为1表示优惠,为0表示加上的手续费
+DataBuf[47+4] =  DevWork.mealtype;  
+//未发送记录条数 2字节
+DataBu[52] = (u8)(dev_data.DevData.recordnumber>>8);		
+DataBu[53] = (u8)(dev_data.DevData.recordnumber&0xFF);
+//最新批次黑名单 2 字节
+DataBu[54] = (u8)((DevBlackList.lastbatchblacklist>>8)&0xFF);
+DataBu[55] = (u8)(DevBlackList.lastbatchblacklist&0xFF);	  
+//最后一个增量黑名单 4 字节
+DataBu[56] = (u8)((DevBlackList.lastaddblacklist>>24)&0xFF);   
+DataBu[57] = (u8)((DevBlackList.lastaddblacklist>>16)&0xFF);
+DataBu[58] = (u8)((DevBlackList.lastaddblacklist>>8)&0xFF);
+DataBu[59] = (u8)(DevBlackList.lastaddblacklist&0xFF);
+//设备状态:bit 0:黑名单是否已经发送完毕 bit 1:终端是否有补助授权 bit 2: 终端是否有联机注册授权
+DataBu[60]  =  dev_status.DevStatus.onlinestatus;
+//当前设备时间 6 字节
+DataBu[61] = HEX_TO_BCD(DevTime.year);
+DataBu[62] = HEX_TO_BCD(DevTime.month);
+DataBu[63] = HEX_TO_BCD(DevTime.day);
+DataBu[64] = HEX_TO_BCD(DevTime.hour);
+DataBu[65] = HEX_TO_BCD(DevTime.min);
+DataBu[66] = HEX_TO_BCD(DevTime.sec);
+//物理卡号 4 字节
+DataBu[67] = wulikahao[0];
+DataBu[68] = wulikahao[1];
+DataBu[69] = wulikahao[2];
+DataBu[70] = wulikahao[3];
+//使用量4字节
+//使用时长 4 字节
+//CRC校验
 
- 静态ID(16字节高字节在前)+
- 设备机器号(4字节高字节在前)+
- 从设备机器号(4字节高字节在前;00000000表示主设备;非零表示中转设备)+
- 协议类型(2字节高字节在前;0000表示主设备协议;非零表示中转设备协议)+
- 设备类型(2字节高字节在前)+
- 数据长度(2字节高字节在前)+
- 数据类型帧(关键帧)0x01+0x01+
- 随机码(4字节高字节在前,可选)+
- 数据+
- .....
+注意我上面谢的数据有部分是重合的:
+"数据类型帧(也叫关键帧2字节)+
+随机码(4字节高字节在前)+
+数据(从关键帧开始)+
+CRC校验(2字节高字节在前)"
+这部分是完整的数据
 
- 数据信息 从 0101 开始:
-//命令子命令
-        DataBuf[0] = 0x01;            //纪录帧
-		DataBuf[1] = DevWork.constype;//消费类型：1大钱包消费；2补助钱包消费；3混合消费
-        //4字节的随机码
-		DataBuf[2] = 0;
-		DataBuf[3] = 0;
-		DataBuf[4] = 0;
-		DataBuf[5] = 0;
-		//帐号
-        DataBuf[2+4] = (u8)(CardBace1.ID>>24);
-		DataBuf[3+4] = (u8)(CardBace1.ID>>16);
-		DataBuf[4+4] = (u8)((CardBace1.ID>>8)&0xFF);
-		DataBuf[5+4] = (u8)(CardBace1.ID&0xFF);
-        //卡号
-		DataBuf[6+4] = (u8)(CardBace1.CardID>>24);
-		DataBuf[7+4] = (u8)(CardBace1.CardID>>16);
-		DataBuf[8+4] = (u8)((CardBace1.CardID>>8)&0xFF);
-		DataBuf[9+4] = (u8)(CardBace1.CardID&0xFF); 
-	
-		DataBuf[10+4] =      CardBace2.CardNO;        //卡序号
-       //卡总额
-		DataBuf[11+4] = (u8)(CardBace2.Money>>24);
-		DataBuf[12+4] = (u8)((CardBace2.Money>>16)&0xFF);  
-		DataBuf[13+4] = (u8)((CardBace2.Money>>8)&0xFF);
-		DataBuf[14+4] = (u8)(CardBace2.Money&0xFF);
-       //钱包余额(卡余额)
-		DataBuf[15+4] = (u8)((CardXF.Bal>>24)&0xFF);
-		DataBuf[16+4] = (u8)((CardXF.Bal>>16)&0xFF);
-		DataBuf[17+4] = (u8)((CardXF.Bal>>8)&0xFF);
-		DataBuf[18+4] = (u8)(CardXF.Bal&0xFF);
-       //管理费金额（优惠打折）
-		DataBuf[19+4] = (u8)((DevWork.operatecost>>24)&0xFF);
-		DataBuf[20+4] = (u8)((DevWork.operatecost>>16)&0xFF);
-		DataBuf[21+4] = (u8)((DevWork.operatecost>>8)&0xFF);
-		DataBuf[22+4] = (u8)(DevWork.operatecost&0xFF);
+如上面的示例包的数据 可以解析为 
 
-       //补助余额
-		DataBuf[23+4] = (u8)(CardBZ.Bal>>24);
-		DataBuf[24+4] = (u8)(CardBZ.Bal>>16);
-		DataBuf[25+4] = (u8)((CardBZ.Bal>>8)&0xFF);
-		DataBuf[26+4] = (u8)(CardBZ.Bal&0xFF);
-	
-	   //钱包消费金额
-		DataBuf[27+4] = (u8)((DevWork.consumemoney>>24)&0xFF);
-		DataBuf[28+4] = (u8)((DevWork.consumemoney>>16)&0xFF);
-		DataBuf[29+4] = (u8)((DevWork.consumemoney>>8)&0xFF);
-		DataBuf[30+4] = (u8)(DevWork.consumemoney&0xFF);
-	
-		DataBuf[31+4] =  (u8)(CardXF.Times>>8);		  //消费区操作次数
-		DataBuf[32+4] =  (u8)(CardXF.Times&0xFF);
-		DataBuf[33+4] =  (u8)(CardBZ.Times>>8);		  //补助区操作次数
-		DataBuf[34+4] =  (u8)(CardBZ.Times&0xFF);
-		
-		DataBuf[35+4] = (u8)((DevWork.subsidymoney>>24)&0xFF);    //补助消费金额(操作金额)
-		DataBuf[36+4] = (u8)((DevWork.subsidymoney>>16)&0xFF);    //补助消费金额(操作金额)
-		DataBuf[37+4] = (u8)((DevWork.subsidymoney>>8)&0xFF);
-		DataBuf[38+4] = (u8)(DevWork.subsidymoney&0xFF);
-		//消费时间	
-		DataBuf[39+4] =  HEX_TO_BCD(DevTime.year);
-		DataBuf[40+4] =  HEX_TO_BCD(DevTime.month);
-		DataBuf[41+4] =  HEX_TO_BCD(DevTime.day);
-		DataBuf[42+4] =  HEX_TO_BCD(DevTime.hour);
-	
-		DataBuf[43+4] =  HEX_TO_BCD(DevTime.min);
-		DataBuf[44+4] =  HEX_TO_BCD(DevTime.sec);	 
-		DataBuf[45+4] =  (u8)(dev_data.DevData.recordnmb>>8);		    //记录序号
-	    DataBuf[46+4] =  (u8)(dev_data.DevData.recordnmb&0xFF);
-		DataBuf[47+4] =  DevWork.mealtype;  //最高位为1表示优惠,为0表示加上的手续费
+整体结构:
+静态ID(16字节高字节在前):0000000000000000000000000001ba1e
+设备机器号(4字节高字节在前):0001ba1e
+从设备机器号(4字节高字节在前;00000000表示主设备;非零表示中转设备):00000000
+协议类型(2字节高字节在前;0000表示主设备协议;非零表示中转设备协议):0000
+设备类型(2字节高字节在前):0303
+数据长度(2字节高字节在前):0053
+数据类型帧(也叫关键帧2字节):0101
+随机码(4字节高字节在前):00000000
+数据:01010000000000004dc5000000ff0100000bb80000030500000000000000000000000100c200000000000024040820321903f38000010000000002e300240408203223cde90a450000000000000000
+CRC校验码(2字节高字节在前):9f9e
+数据信息(从关键帧开始开始):
+//纪录帧 1字节:01
+//消费类型 1字节: 1大钱包消费;2补助钱包消费;3混合消费:01
+//随机码 4字节:00000000
+//帐号 4字节:00004dc5
+//卡号 4字节:000000ff
+//卡序号 1字节:01
+//卡总额 4字节:00000bb8
+//钱包余额(卡余额) 4字节:00000305
+//管理费金额(优惠打折) 4字节:00000000
+//补助余额 4字节:00000000
+//大钱包消费金额 4字节:00000001
+//大钱包计数器 2字节:00c2
+//补助计数器 2字节:0000
+//补助消费金额(操作金额) 4字节:00000000
+//消费时间 6字节:240408203219
+//记录序号 2字节:03f3
+//打折优惠 1字节:最高位为1表示优惠,为0表示加上的手续费:80
+//未发送记录条数 2字节:0001
+//最新批次黑名单 2 字节:0000
+//最后一个增量黑名单 4 字节:000002e3
+//设备状态1字节:黑名单是否已经发送完毕 bit 1:终端是否有补助授权 bit 2: 终端是否有联机注册授权:00
+//当前设备时间 6 字节:240408203223
+//物理卡号 4 字节:cde90a45
+//使用量 4 字节:00000000
+//使用时长 4 字节:00000000
+//CRC 2 字节:9f9e
 
-	   DataBu[52] = (u8)(dev_data.DevData.recordnumber>>8);		//未发送记录条数
-	   DataBu[53] = (u8)(dev_data.DevData.recordnumber&0xFF);
-	   DataBu[54] = (u8)((DevBlackList.lastbatchblacklist>>8)&0xFF);
-	   DataBu[55] = (u8)(DevBlackList.lastbatchblacklist&0xFF);	  	   
-													  
+上面我只写了十六进制,实际还需要写出来十进制方便开发调试.
 
-	   DataBu[56] = (u8)((DevBlackList.lastaddblacklist>>24)&0xFF);   //最后一个增量   
-	   DataBu[57] = (u8)((DevBlackList.lastaddblacklist>>16)&0xFF);   //最后一个增量   
-	   DataBu[58] = (u8)((DevBlackList.lastaddblacklist>>8)&0xFF);
-	   DataBu[59] = (u8)(DevBlackList.lastaddblacklist&0xFF);
-       // bit 0:黑名单是否已经发送完毕 bit 1:终端是否有补助授权 bit 2: 终端是否有联机注册授权
-	   DataBu[60]  =  dev_status.DevStatus.onlinestatus;				  
-	 
-	   DataBu[61] = HEX_TO_BCD(DevTime.year);
-	   DataBu[62] = HEX_TO_BCD(DevTime.month);
-	   DataBu[63] = HEX_TO_BCD(DevTime.day);
-	   DataBu[64] = HEX_TO_BCD(DevTime.hour);
-	   DataBu[65] = HEX_TO_BCD(DevTime.min);
-	   DataBu[66] = HEX_TO_BCD(DevTime.sec);
-	   DataBu[67] = wulikahao[0]; //物理卡号
-	   DataBu[68] = wulikahao[1];
-	   DataBu[69] = wulikahao[2];
-	   DataBu[70] = wulikahao[3];
+我需要做一个分析功能,人工看太慢了,
+我希望定一个一个实体类,包含了每个字段的意义和长度,另外还有一些附加信息比如,版本号总数据长度等,
+这些附加的信息可以先不现实或者显示为默认的 0
 
+需要先在  src/constants/data.ts 添加路由 再实现功能
+主要功能:
+1. 一个输入框,用户可以输入一包数据,如上面的示例中的数据包内容,
+2. 一个下拉选择框,这个下拉框叫做下位机发送,下拉的内容有:消费数据,状态包,补助请求(我们目前只实现消费数据其他先忽略,但是下拉内容要有多个)
+3. 一个按钮,名字叫做解析,点击后根据用户的选择进行格式解析,目前只有选择消费数据才能解析,用户选择其他的提示 xxx暂不可用,如 状态包暂不可用
 
-我需要做一个分析功能,人工看太慢了,我希望定一个一个实体类,包含了
-每个字段的意义和长度,另外还有一些附加信息比如,版本号总数据长度等,
+分析的结果就是包含了分段后的每个字段的数据的十进制和十六进制(原始包就是十六进制的)的值,
+
+如 用户输入 0000000000000000000000000001ba1e0001ba1e0000000000000303005301010000000000004dc5000000ff0100000bb80000030500000000000000000000000100c200000000000024040820321903f38000010000000002e300240408203223cde90a4500000000000000009f9e
+我们需要输出 
+ 静态ID(16字节) dec:113182 hex:0000000000000000000000000001ba1e
+ 机器号(4字节) dec:113182 hex:0001ba1e
+ ......
+
+输出要分三部分,可以用选项卡实现,
+第一个选项卡是全部的字段信息,第二个选项卡为协议头数据 第三个选项卡为协议体数据
+
 可以帮我实现吗
