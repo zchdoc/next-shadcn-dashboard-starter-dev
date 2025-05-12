@@ -36,13 +36,19 @@ const parseBCDDateTime = (hex: string): string => {
   if (hex.length !== 12) {
     return '日期格式无效';
   }
-
-  const year = Number.parseInt(hex.substring(0, 2), 16);
-  const month = Number.parseInt(hex.substring(2, 4), 16);
-  const day = Number.parseInt(hex.substring(4, 6), 16);
-  const hour = Number.parseInt(hex.substring(6, 8), 16);
-  const minute = Number.parseInt(hex.substring(8, 10), 16);
-  const second = Number.parseInt(hex.substring(10, 12), 16);
+  // 240103203220
+  // const year = Number.parseInt(hex.substring(0, 2), 16);
+  // const month = Number.parseInt(hex.substring(2, 4), 16);
+  // const day = Number.parseInt(hex.substring(4, 6), 16);
+  // const hour = Number.parseInt(hex.substring(6, 8), 16);
+  // const minute = Number.parseInt(hex.substring(8, 10), 16);
+  // const second = Number.parseInt(hex.substring(10, 12), 16);
+  const year = hex.substring(0, 2);
+  const month = hex.substring(2, 4);
+  const day = hex.substring(4, 6);
+  const hour = hex.substring(6, 8);
+  const minute = hex.substring(8, 10);
+  const second = hex.substring(10, 12);
 
   // Format: 20YY-MM-DD HH:MM:SS
   return `20${year.toString().padStart(2, '0')}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')} ${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}:${second.toString().padStart(2, '0')}`;
@@ -285,7 +291,7 @@ export const parseProtocolData = (hexData: string): ProtocolData => {
   );
 
   // 消费时间
-  const consumptionTimeHex = cleanedHexData.substring(79 * 2, (79 + 6) * 2);
+  const consumptionTimeHex = cleanedHexData.substring(73 * 2, (73 + 6) * 2);
   body.consumptionTime = {
     label: '消费时间',
     size: 6,
@@ -295,7 +301,7 @@ export const parseProtocolData = (hexData: string): ProtocolData => {
   };
 
   // 当前设备时间
-  const currentDeviceTimeHex = cleanedHexData.substring(97 * 2, (97 + 6) * 2);
+  const currentDeviceTimeHex = cleanedHexData.substring(91 * 2, (91 + 6) * 2);
   body.currentDeviceTime = {
     label: '当前设备时间',
     size: 6,
