@@ -20,8 +20,17 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from '@/components/ui/table';
+import { Badge } from '@/components/ui/badge';
 import { parseProtocolData } from './protocol-parser';
-import { ProtocolData } from './types';
+import { ProtocolData, ProtocolField } from './types';
 
 export default function ProtocolAnalyzerPage() {
   const [inputData, setInputData] = useState('');
@@ -31,14 +40,12 @@ export default function ProtocolAnalyzerPage() {
 
   const handleAnalyze = () => {
     if (!inputData.trim()) {
-      setError('Please enter protocol data');
+      setError('请输入协议数据');
       return;
     }
 
     if (protocolType !== 'consumption') {
-      setError(
-        `${getProtocolTypeLabel(protocolType)} is currently not available`
-      );
+      setError(`${getProtocolTypeLabel(protocolType)}暂不可用`);
       return;
     }
 
@@ -47,9 +54,7 @@ export default function ProtocolAnalyzerPage() {
       setParsedData(data);
       setError('');
     } catch (err) {
-      setError(
-        `Error parsing data: ${err instanceof Error ? err.message : 'Invalid format'}`
-      );
+      setError(`解析错误: ${err instanceof Error ? err.message : '格式无效'}`);
       setParsedData(null);
     }
   };
@@ -57,144 +62,177 @@ export default function ProtocolAnalyzerPage() {
   const getProtocolTypeLabel = (type: string) => {
     switch (type) {
       case 'consumption':
-        return 'Consumption Data';
+        return '消费数据';
       case 'status':
-        return 'Status Package';
+        return '状态包';
       case 'subsidy':
-        return 'Subsidy Request';
+        return '补助请求';
       default:
         return type;
     }
   };
 
-  // Function to render a field item
-  const renderFieldItem = (key: string, value: any) => (
-    <div key={key} className='rounded-md border p-3'>
-      <div className='font-medium'>
-        {value.label} ({value.size} bytes)
-      </div>
-      <div className='mt-1 grid grid-cols-2 gap-2'>
-        <div className='text-muted-foreground text-sm break-all'>
-          Hex: {value.hex}
-        </div>
-        <div className='text-muted-foreground text-sm'>Dec: {value.dec}</div>
-      </div>
+  // 渲染协议字段表格
+  const renderFieldTable = (fields: Record<string, ProtocolField>) => (
+    <div className='overflow-hidden rounded-md border'>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead className='w-[200px]'>字段名称</TableHead>
+            <TableHead className='w-[70px]'>字节数</TableHead>
+            <TableHead>十六进制值</TableHead>
+            <TableHead>十进制值/解释</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {Object.entries(fields).map(([key, field]) => (
+            <TableRow key={key} className='hover:bg-muted/50'>
+              <TableCell className='font-medium'>{field.label}</TableCell>
+              <TableCell>{field.size}</TableCell>
+              <TableCell className='font-mono text-xs'>{field.hex}</TableCell>
+              <TableCell>
+                {typeof field.dec === 'string' ? (
+                  field.dec
+                ) : (
+                  <div className='flex flex-col'>
+                    <span>{field.dec.toLocaleString()}</span>
+                    {field.description && (
+                      <span className='text-muted-foreground text-xs'>
+                        {field.description}
+                      </span>
+                    )}
+                  </div>
+                )}
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
     </div>
   );
 
-  return (
-    <div className='container mx-auto py-6'>
-      <Card className='mb-6'>
-        <CardHeader className='pb-3'>
-          <CardTitle>XB Protocol Analyzer</CardTitle>
-          <CardDescription>
-            Analyze hardware communication protocol data packets
-          </CardDescription>
+  // 渲染原始数据可视化
+  const renderRawDataPreview = () => {
+    if (!parsedData) return null;
+
+    const rawData = parsedData.rawData;
+    const groups = [];
+
+    for (let i = 0; i < rawData.length; i += 2) {
+      groups.push(rawData.substring(i, i + 2));
+    }
+
+    return (
+      <Card className='mb-4'>
+        <CardHeader className='py-2'>
+          <CardTitle className='text-sm'>原始协议数据</CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className='space-y-4'>
-            <div>
-              <label className='mb-1 block text-sm font-medium'>
-                Protocol Data (Hex)
-              </label>
-              <Input
-                placeholder='Enter hex data packet...'
-                value={inputData}
-                onChange={(e) => setInputData(e.target.value)}
-                className='font-mono'
-              />
-            </div>
+        <CardContent className='flex-wrap py-2 font-mono text-xs break-all'>
+          {groups.map((byte, index) => (
+            <Badge key={index} variant='outline' className='m-1'>
+              {byte}
+            </Badge>
+          ))}
+        </CardContent>
+      </Card>
+    );
+  };
 
-            <div className='flex gap-4'>
-              <div className='w-64'>
-                <label className='mb-1 block text-sm font-medium'>
-                  Device Type
-                </label>
-                <Select value={protocolType} onValueChange={setProtocolType}>
-                  <SelectTrigger>
-                    <SelectValue placeholder='Select protocol type' />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value='consumption'>
-                      Consumption Data
-                    </SelectItem>
-                    <SelectItem value='status'>Status Package</SelectItem>
-                    <SelectItem value='subsidy'>Subsidy Request</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <Button onClick={handleAnalyze} className='mt-6'>
-                Analyze
-              </Button>
-            </div>
-
-            {error && (
-              <Alert variant='destructive'>
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            )}
+  return (
+    <div className='container mx-auto py-4'>
+      <Card className='mb-4'>
+        <CardHeader className='pb-2'>
+          <CardTitle>XB协议分析器</CardTitle>
+          <CardDescription>分析硬件通信协议数据包</CardDescription>
+        </CardHeader>
+        <CardContent className='space-y-3'>
+          <div>
+            <label className='mb-1 block text-sm font-medium'>
+              协议数据（十六进制）
+            </label>
+            <Input
+              placeholder='输入十六进制数据包...'
+              value={inputData}
+              onChange={(e) => setInputData(e.target.value)}
+              className='font-mono'
+            />
           </div>
+
+          <div className='flex items-end gap-4'>
+            <div className='w-48'>
+              <label className='mb-1 block text-sm font-medium'>
+                下位机发送
+              </label>
+              <Select value={protocolType} onValueChange={setProtocolType}>
+                <SelectTrigger>
+                  <SelectValue placeholder='选择协议类型' />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value='consumption'>消费数据</SelectItem>
+                  <SelectItem value='status'>状态包</SelectItem>
+                  <SelectItem value='subsidy'>补助请求</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <Button onClick={handleAnalyze}>解析</Button>
+          </div>
+
+          {error && (
+            <Alert variant='destructive'>
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
         </CardContent>
       </Card>
 
       {parsedData && (
-        <Card>
-          <CardHeader className='pb-3'>
-            <CardTitle>Analysis Results</CardTitle>
-            <CardDescription>Protocol data parsed successfully</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Tabs defaultValue='all'>
-              <TabsList className='mb-4'>
-                <TabsTrigger value='all'>All Fields</TabsTrigger>
-                <TabsTrigger value='header'>Protocol Header</TabsTrigger>
-                <TabsTrigger value='body'>Protocol Body</TabsTrigger>
-              </TabsList>
+        <>
+          {renderRawDataPreview()}
 
-              <ScrollArea className='h-[60vh] rounded-md border p-4'>
-                <TabsContent value='all' className='mt-0 space-y-4'>
-                  <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
-                    {/* CRC field at the top */}
-                    {renderFieldItem('crc', parsedData.crc)}
+          <Card>
+            <CardHeader className='pb-2'>
+              <CardTitle>解析结果</CardTitle>
+              <CardDescription>协议数据解析完成</CardDescription>
+            </CardHeader>
+            <CardContent className='p-1 sm:p-3'>
+              <Tabs defaultValue='all' className='w-full'>
+                <TabsList className='mb-2 w-full justify-start'>
+                  <TabsTrigger value='all'>全部字段</TabsTrigger>
+                  <TabsTrigger value='header'>协议头</TabsTrigger>
+                  <TabsTrigger value='body'>协议体</TabsTrigger>
+                </TabsList>
 
-                    {/* Header fields */}
-                    <h3 className='col-span-2 mt-2 text-lg font-semibold'>
-                      Protocol Header
-                    </h3>
-                    {Object.entries(parsedData.header).map(([key, value]) =>
-                      renderFieldItem(key, value)
-                    )}
+                <ScrollArea className='h-[70vh]'>
+                  <TabsContent value='all' className='mt-0 space-y-4'>
+                    <div>
+                      <h3 className='mb-2 text-lg font-semibold'>CRC校验</h3>
+                      {renderFieldTable({ crc: parsedData.crc })}
+                    </div>
 
-                    {/* Body fields */}
-                    <h3 className='col-span-2 mt-2 text-lg font-semibold'>
-                      Protocol Body
-                    </h3>
-                    {Object.entries(parsedData.body).map(([key, value]) =>
-                      renderFieldItem(key, value)
-                    )}
-                  </div>
-                </TabsContent>
+                    <div>
+                      <h3 className='mb-2 text-lg font-semibold'>协议头</h3>
+                      {renderFieldTable(parsedData.header)}
+                    </div>
 
-                <TabsContent value='header' className='mt-0 space-y-4'>
-                  <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
-                    {Object.entries(parsedData.header).map(([key, value]) =>
-                      renderFieldItem(key, value)
-                    )}
-                  </div>
-                </TabsContent>
+                    <div>
+                      <h3 className='mb-2 text-lg font-semibold'>协议体</h3>
+                      {renderFieldTable(parsedData.body)}
+                    </div>
+                  </TabsContent>
 
-                <TabsContent value='body' className='mt-0 space-y-4'>
-                  <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
-                    {Object.entries(parsedData.body).map(([key, value]) =>
-                      renderFieldItem(key, value)
-                    )}
-                  </div>
-                </TabsContent>
-              </ScrollArea>
-            </Tabs>
-          </CardContent>
-        </Card>
+                  <TabsContent value='header' className='mt-0'>
+                    {renderFieldTable(parsedData.header)}
+                  </TabsContent>
+
+                  <TabsContent value='body' className='mt-0'>
+                    {renderFieldTable(parsedData.body)}
+                  </TabsContent>
+                </ScrollArea>
+              </Tabs>
+            </CardContent>
+          </Card>
+        </>
       )}
     </div>
   );

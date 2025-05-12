@@ -34,7 +34,7 @@ const extractField = (
  */
 const parseBCDDateTime = (hex: string): string => {
   if (hex.length !== 12) {
-    return 'Invalid date format';
+    return '日期格式无效';
   }
 
   const year = parseInt(hex.substring(0, 2), 16);
@@ -56,103 +56,203 @@ export const parseProtocolData = (hexData: string): ProtocolData => {
   hexData = hexData.replace(/[^0-9A-Fa-f]/g, '');
 
   if (hexData.length < 200) {
-    throw new Error('Data packet is too short');
+    throw new Error('数据包长度不足');
   }
 
   // Parse header fields
   const header = {
-    staticId: extractField(hexData, 0, 16, 'Static ID'),
-    deviceId: extractField(hexData, 16, 4, 'Device ID'),
-    fromDeviceId: extractField(hexData, 20, 4, 'From Device ID'),
-    protocolType: extractField(hexData, 24, 2, 'Protocol Type'),
-    deviceType: extractField(hexData, 26, 2, 'Device Type'),
-    dataLength: extractField(hexData, 28, 2, 'Data Length'),
-    frameType: extractField(hexData, 30, 2, 'Frame Type'),
-    randomCode: extractField(hexData, 32, 4, 'Random Code')
+    staticId: extractField(hexData, 0, 16, '静态ID', '设备固定标识符'),
+    deviceId: extractField(hexData, 16, 4, '设备机器号', '设备的唯一标识符'),
+    fromDeviceId: extractField(
+      hexData,
+      20,
+      4,
+      '从设备机器号',
+      '00000000表示主设备，非零表示中转设备'
+    ),
+    protocolType: extractField(
+      hexData,
+      24,
+      2,
+      '协议类型',
+      '0000表示主设备协议，非零表示中转设备协议'
+    ),
+    deviceType: extractField(hexData, 26, 2, '设备类型', '设备的类型标识'),
+    dataLength: extractField(hexData, 28, 2, '数据长度', '后续数据的字节数'),
+    frameType: extractField(hexData, 30, 2, '数据类型帧', '也称为关键帧'),
+    randomCode: extractField(hexData, 32, 4, '随机码', '数据包的随机标识符')
   };
 
   // Parse body fields - starting from index 36 (after header)
   const body = {
-    recordFrame: extractField(hexData, 16, 1, 'Record Frame'),
-    consumptionType: extractField(hexData, 17, 1, 'Consumption Type'),
-    randomCodeData: extractField(hexData, 18, 4, 'Random Code Data'),
-    accountId: extractField(hexData, 22, 4, 'Account ID'),
-    cardId: extractField(hexData, 26, 4, 'Card ID'),
-    cardNo: extractField(hexData, 30, 4, 'Card No.'),
-    totalAmount: extractField(hexData, 34, 4, 'Total Amount'),
-    walletBalance: extractField(hexData, 38, 4, 'Wallet Balance'),
-    managementFee: extractField(hexData, 42, 4, 'Management Fee'),
-    subsidyBalance: extractField(hexData, 46, 4, 'Subsidy Balance'),
+    recordFrame: extractField(hexData, 36, 1, '记录帧', '数据帧类型标识'),
+    consumptionType: extractField(
+      hexData,
+      37,
+      1,
+      '消费类型',
+      '1:大钱包消费; 2:补助钱包消费; 3:混合消费'
+    ),
+    randomCodeData: extractField(
+      hexData,
+      38,
+      4,
+      '随机码数据',
+      '内部随机标识符'
+    ),
+    accountId: extractField(hexData, 42, 4, '账号', '用户账号标识'),
+    cardId: extractField(hexData, 46, 4, '卡号', '卡片唯一标识'),
+    cardNo: extractField(hexData, 50, 1, '卡序号', '卡片序列号'),
+    totalAmount: extractField(hexData, 51, 4, '卡总额', '卡片总金额'),
+    walletBalance: extractField(hexData, 55, 4, '钱包余额', '钱包当前余额'),
+    managementFee: extractField(
+      hexData,
+      59,
+      4,
+      '管理费金额',
+      '优惠打折或手续费'
+    ),
+    subsidyBalance: extractField(
+      hexData,
+      63,
+      4,
+      '补助余额',
+      '补助钱包当前余额'
+    ),
     mainWalletConsumption: extractField(
       hexData,
-      50,
+      67,
       4,
-      'Main Wallet Consumption'
+      '大钱包消费金额',
+      '本次从主钱包消费的金额'
     ),
-    mainWalletCounter: extractField(hexData, 71, 2, 'Main Wallet Counter'),
-    subsidyCounter: extractField(hexData, 73, 2, 'Subsidy Counter'),
-    subsidyConsumption: extractField(hexData, 75, 4, 'Subsidy Consumption'),
-    consumptionTime: extractField(hexData, 0, 0, 'Consumption Time'),
-    recordNo: extractField(hexData, 0, 0, 'Record No'),
-    discountFlag: extractField(hexData, 0, 0, 'Discount Flag'),
-    unsentRecordCount: extractField(hexData, 0, 0, 'Unsent Record Count'),
-    latestBatchBlacklist: extractField(hexData, 0, 0, 'Latest Batch Blacklist'),
+    mainWalletCounter: extractField(
+      hexData,
+      71,
+      2,
+      '大钱包计数器',
+      '主钱包消费计数'
+    ),
+    subsidyCounter: extractField(
+      hexData,
+      73,
+      2,
+      '补助计数器',
+      '补助钱包消费计数'
+    ),
+    subsidyConsumption: extractField(
+      hexData,
+      75,
+      4,
+      '补助消费金额',
+      '本次从补助钱包消费的金额'
+    ),
+    consumptionTime: extractField(
+      hexData,
+      79,
+      6,
+      '消费时间',
+      'BCD格式的消费时间'
+    ),
+    recordNo: extractField(hexData, 85, 2, '记录序号', '消费记录唯一序号'),
+    discountFlag: extractField(
+      hexData,
+      87,
+      1,
+      '打折优惠',
+      '最高位为1表示优惠，为0表示加上的手续费'
+    ),
+    unsentRecordCount: extractField(
+      hexData,
+      88,
+      2,
+      '未发送记录条数',
+      '设备中未上传的记录数量'
+    ),
+    latestBatchBlacklist: extractField(
+      hexData,
+      90,
+      2,
+      '最新批次黑名单',
+      '最新的黑名单批次号'
+    ),
     lastIncrementalBlacklist: extractField(
       hexData,
-      0,
-      0,
-      'Last Incremental Blacklist'
+      92,
+      4,
+      '最后一个增量黑名单',
+      '最后处理的增量黑名单标识'
     ),
-    deviceStatus: extractField(hexData, 0, 0, 'Device Status'),
-    currentDeviceTime: extractField(hexData, 0, 0, 'Current Device Time'),
-    physicalCardNo: extractField(hexData, 0, 0, 'Physical Card No'),
-    usageAmount: extractField(hexData, 0, 0, 'Usage Amount'),
-    usageDuration: extractField(hexData, 0, 0, 'Usage Duration')
+    deviceStatus: extractField(
+      hexData,
+      96,
+      1,
+      '设备状态',
+      'bit0:黑名单发送完毕 bit1:终端有补助授权 bit2:终端有联机注册授权'
+    ),
+    currentDeviceTime: extractField(
+      hexData,
+      97,
+      6,
+      '当前设备时间',
+      'BCD格式的设备当前时间'
+    ),
+    physicalCardNo: extractField(
+      hexData,
+      103,
+      4,
+      '物理卡号',
+      '卡片的物理识别号'
+    ),
+    usageAmount: extractField(hexData, 107, 4, '使用量', '设备使用的资源量'),
+    usageDuration: extractField(hexData, 111, 4, '使用时长', '设备使用的时长')
   };
 
-  // Extract consumption time as a special case (BCD format)
+  // 更新特殊字段的显示数据
+  // 消费类型
+  body.consumptionType.description = getConsumptionTypeDescription(
+    body.consumptionType.dec as number
+  );
+
+  // 设备状态
+  body.deviceStatus.description = getDeviceStatusDescription(
+    body.deviceStatus.dec as number
+  );
+
+  // 打折优惠
+  body.discountFlag.description = getDiscountFlagDescription(
+    body.discountFlag.dec as number
+  );
+
+  // 消费时间
   const consumptionTimeHex = hexData.substring(79 * 2, (79 + 6) * 2);
   body.consumptionTime = {
-    label: 'Consumption Time',
+    label: '消费时间',
     size: 6,
     hex: consumptionTimeHex,
-    dec: parseBCDDateTime(consumptionTimeHex)
+    dec: parseBCDDateTime(consumptionTimeHex),
+    description: 'BCD格式的时间戳'
   };
 
-  // Continue with remaining body fields
-  body.recordNo = extractField(hexData, 85, 2, 'Record No');
-  body.discountFlag = extractField(hexData, 87, 1, 'Discount Flag');
-  body.unsentRecordCount = extractField(hexData, 88, 2, 'Unsent Record Count');
-  body.latestBatchBlacklist = extractField(
-    hexData,
-    90,
-    2,
-    'Latest Batch Blacklist'
-  );
-  body.lastIncrementalBlacklist = extractField(
-    hexData,
-    92,
-    4,
-    'Last Incremental Blacklist'
-  );
-  body.deviceStatus = extractField(hexData, 96, 1, 'Device Status');
-
-  // Extract current device time (BCD format)
+  // 当前设备时间
   const currentDeviceTimeHex = hexData.substring(97 * 2, (97 + 6) * 2);
   body.currentDeviceTime = {
-    label: 'Current Device Time',
+    label: '当前设备时间',
     size: 6,
     hex: currentDeviceTimeHex,
-    dec: parseBCDDateTime(currentDeviceTimeHex)
+    dec: parseBCDDateTime(currentDeviceTimeHex),
+    description: 'BCD格式的时间戳'
   };
-
-  body.physicalCardNo = extractField(hexData, 103, 4, 'Physical Card No');
-  body.usageAmount = extractField(hexData, 107, 4, 'Usage Amount');
-  body.usageDuration = extractField(hexData, 111, 4, 'Usage Duration');
 
   // Extract CRC (last 2 bytes)
   const dataLength = hexData.length / 2;
-  const crc = extractField(hexData, dataLength - 2, 2, 'CRC Checksum');
+  const crc = extractField(
+    hexData,
+    dataLength - 2,
+    2,
+    'CRC校验码',
+    '数据包完整性校验值'
+  );
 
   return {
     header,
@@ -168,13 +268,13 @@ export const parseProtocolData = (hexData: string): ProtocolData => {
 export const getConsumptionTypeDescription = (value: number): string => {
   switch (value) {
     case 1:
-      return 'Main Wallet Consumption';
+      return '大钱包消费';
     case 2:
-      return 'Subsidy Wallet Consumption';
+      return '补助钱包消费';
     case 3:
-      return 'Mixed Consumption';
+      return '混合消费';
     default:
-      return 'Unknown';
+      return '未知消费类型';
   }
 };
 
@@ -185,23 +285,23 @@ export const getDeviceStatusDescription = (value: number): string => {
   const descriptions = [];
 
   if (value & 0x01) {
-    descriptions.push('Blacklist sent completely');
+    descriptions.push('黑名单已发送完毕');
   }
 
   if (value & 0x02) {
-    descriptions.push('Terminal has subsidy authorization');
+    descriptions.push('终端有补助授权');
   }
 
   if (value & 0x04) {
-    descriptions.push('Terminal has online registration authorization');
+    descriptions.push('终端有联机注册授权');
   }
 
-  return descriptions.length > 0 ? descriptions.join(', ') : 'No flags set';
+  return descriptions.length > 0 ? descriptions.join('，') : '无标志位设置';
 };
 
 /**
  * Get a description for a discount flag value
  */
 export const getDiscountFlagDescription = (value: number): string => {
-  return value & 0x80 ? 'Discount applied' : 'Service fee applied';
+  return value & 0x80 ? '优惠已应用' : '服务费已应用';
 };
