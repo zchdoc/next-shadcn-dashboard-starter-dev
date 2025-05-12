@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
   Card,
   CardContent,
@@ -29,8 +29,11 @@ import {
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { parseProtocolData } from './protocol-parser';
-import { ProtocolData, ProtocolField } from './types';
+import type { ProtocolData, ProtocolField } from './types';
 import { Separator } from '@/components/ui/separator';
+import { Button } from '@/components/ui/button';
+import { ChevronsUp } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function ProtocolAnalyzerPage() {
   const [inputData, setInputData] = useState('');
@@ -38,6 +41,8 @@ export default function ProtocolAnalyzerPage() {
   const [parsedData, setParsedData] = useState<ProtocolData | null>(null);
   const [error, setError] = useState('');
   const [isInputValid, setIsInputValid] = useState(false);
+  const [showScrollTop, setShowScrollTop] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   // 检查输入是否有效
   useEffect(() => {
@@ -49,7 +54,27 @@ export default function ProtocolAnalyzerPage() {
     if (protocolType && isInputValid) {
       handleAnalyze();
     }
-  }, [protocolType]);
+  }, [protocolType, isInputValid]);
+
+  // 监听滚动
+  useEffect(() => {
+    const handleScroll = () => {
+      if (containerRef.current) {
+        setShowScrollTop(containerRef.current.scrollTop > 100);
+      }
+    };
+
+    const container = containerRef.current;
+    if (container) {
+      container.addEventListener('scroll', handleScroll);
+    }
+
+    return () => {
+      if (container) {
+        container.removeEventListener('scroll', handleScroll);
+      }
+    };
+  }, []);
 
   const handleAnalyze = () => {
     if (!inputData.trim()) {
@@ -69,6 +94,15 @@ export default function ProtocolAnalyzerPage() {
     } catch (err) {
       setError(`解析错误: ${err instanceof Error ? err.message : '格式无效'}`);
       setParsedData(null);
+    }
+  };
+
+  const scrollToTop = () => {
+    if (containerRef.current) {
+      containerRef.current.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
     }
   };
 
@@ -108,7 +142,7 @@ export default function ProtocolAnalyzerPage() {
                   field.dec
                 ) : (
                   <div className='flex flex-col'>
-                    <span>{field.dec.toLocaleString()}</span>
+                    <span>{String(field.dec)}</span>
                     {field.description && (
                       <span className='text-muted-foreground text-xs'>
                         {field.description}
@@ -139,8 +173,12 @@ export default function ProtocolAnalyzerPage() {
       <div className='mb-6 rounded-md border p-3'>
         <h3 className='mb-2 text-base font-medium'>原始协议数据</h3>
         <div className='flex flex-wrap font-mono text-xs break-all'>
-          {groups.map((byte, index) => (
-            <Badge key={index} variant='outline' className='m-0.5'>
+          {groups.map((byte, i) => (
+            <Badge
+              key={`byte-${i}-${byte}`}
+              variant='outline'
+              className='m-0.5'
+            >
               {byte}
             </Badge>
           ))}
@@ -150,8 +188,8 @@ export default function ProtocolAnalyzerPage() {
   };
 
   return (
-    <div className='flex h-full w-full justify-center overflow-y-auto'>
-      <div className='container mx-auto mb-20 max-w-6xl px-4 py-4 md:px-6'>
+    <div ref={containerRef} className='h-[calc(100dvh-52px)] overflow-auto'>
+      <div className='container mx-auto max-w-6xl px-4 py-4 md:px-6'>
         {/* 紧凑的输入控件区域 */}
         <div className='mb-4 flex flex-col space-y-3 md:flex-row md:items-end md:space-y-0 md:space-x-4'>
           <div className='flex-grow'>
@@ -171,7 +209,7 @@ export default function ProtocolAnalyzerPage() {
               onValueChange={setProtocolType}
               disabled={!isInputValid}
             >
-              <SelectTrigger>
+              <SelectTrigger className='w-full'>
                 <SelectValue placeholder='选择协议类型以解析' />
               </SelectTrigger>
               <SelectContent>
@@ -250,6 +288,53 @@ export default function ProtocolAnalyzerPage() {
           </Card>
         )}
       </div>
+
+      {/* 回到顶部按钮 */}
+      <AnimatePresence>
+        {showScrollTop && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.5 }}
+            transition={{ duration: 0.3 }}
+            className='fixed right-8 bottom-8 z-50'
+            onClick={scrollToTop}
+          >
+            <Button
+              className='bg-primary hover:bg-primary/90 dark:bg-primary/90 dark:hover:bg-primary border-primary-foreground/20 relative z-10 flex h-14 w-14 items-center justify-center rounded-full border-2 p-0 shadow-lg'
+              aria-label='回到顶部'
+              title='回到顶部'
+            >
+              <motion.div
+                animate={{
+                  scale: [1, 1.1, 1]
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Number.POSITIVE_INFINITY,
+                  repeatType: 'reverse',
+                  ease: 'easeInOut'
+                }}
+              >
+                <ChevronsUp className='text-primary-foreground h-7 w-7' />
+              </motion.div>
+            </Button>
+            <motion.div
+              className='bg-primary/20 pointer-events-none absolute inset-0 rounded-full blur-sm'
+              animate={{
+                scale: [0.85, 1.05, 0.85],
+                opacity: [0.3, 0.5, 0.3]
+              }}
+              transition={{
+                duration: 2.5,
+                repeat: Number.POSITIVE_INFINITY,
+                repeatType: 'reverse',
+                ease: 'easeInOut'
+              }}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

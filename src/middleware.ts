@@ -5,7 +5,10 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
   const path = req.nextUrl.pathname;
 
   // 先检查是否公开路径
-  if (path.startsWith('/dashboard/bookmark/zch')) {
+  if (
+    path.startsWith('/dashboard/bookmark/zch') ||
+    path.startsWith('/dashboard/tools/protocol/analyzer/xb')
+  ) {
     return; // 不执行认证
   }
 
