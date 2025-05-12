@@ -170,20 +170,20 @@ export const bookmarkDataZch: BookmarkData = {
         title: 'vercel-deployments',
         url: 'https://vercel.com/zchdocs-projects/next-shadcn-dashboard-starter-dev/deployments'
       },
-      { title: 'Att', url: 'https://att.wwzh.xyz/' },
+      { title: 'att', url: 'https://att.wwzh.xyz/' },
       // https://zchdoc.github.io/html-chrome-bookmark-render/
       {
-        title: 'Html-Chrome-Bookmark-Render',
+        title: 'html-chrome-bookmark-render',
         url: 'https://zchdoc.github.io/html-chrome-bookmark-render/'
       },
       // https://navgit.wwzh.xyz/pages/my-bookmarks-simple/index.html?key=mine
       {
-        title: 'My-Bookmarks-Simple',
+        title: 'zpbstp',
         url: 'https://navgit.wwzh.xyz/pages/my-bookmarks-simple/index.html?key=mine'
       },
       // https://tool.wwzh.xyz/dashboard/bookmark/chrome-bookmark
       {
-        title: 'Z.ToolV1',
+        title: 'Z.Tool-v1',
         url: 'https://tool.wwzh.xyz/dashboard/bookmark/chrome-bookmark'
       },
       {
