@@ -189,7 +189,7 @@ export default function ProtocolAnalyzerPage() {
 
   return (
     <div ref={containerRef} className='h-[calc(100dvh-52px)] overflow-auto'>
-      <div className='container mx-auto max-w-6xl px-4 py-4 md:px-6'>
+      <div className='mx-auto w-[98%] px-4 py-4 md:px-6'>
         {/* 紧凑的输入控件区域 */}
         <div className='mb-4 flex flex-col space-y-3 md:flex-row md:items-end md:space-y-0 md:space-x-4'>
           <div className='flex-grow'>

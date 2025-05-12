@@ -1,10 +1,10 @@
-import { ProtocolData, ProtocolField } from './types';
+import type { ProtocolData, ProtocolField } from './types';
 
 /**
  * Convert hex string to decimal number
  */
 const hexToDec = (hex: string): number => {
-  return parseInt(hex, 16);
+  return Number.parseInt(hex, 16);
 };
 
 /**
@@ -37,12 +37,12 @@ const parseBCDDateTime = (hex: string): string => {
     return '日期格式无效';
   }
 
-  const year = parseInt(hex.substring(0, 2), 16);
-  const month = parseInt(hex.substring(2, 4), 16);
-  const day = parseInt(hex.substring(4, 6), 16);
-  const hour = parseInt(hex.substring(6, 8), 16);
-  const minute = parseInt(hex.substring(8, 10), 16);
-  const second = parseInt(hex.substring(10, 12), 16);
+  const year = Number.parseInt(hex.substring(0, 2), 16);
+  const month = Number.parseInt(hex.substring(2, 4), 16);
+  const day = Number.parseInt(hex.substring(4, 6), 16);
+  const hour = Number.parseInt(hex.substring(6, 8), 16);
+  const minute = Number.parseInt(hex.substring(8, 10), 16);
+  const second = Number.parseInt(hex.substring(10, 12), 16);
 
   // Format: 20YY-MM-DD HH:MM:SS
   return `20${year.toString().padStart(2, '0')}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')} ${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}:${second.toString().padStart(2, '0')}`;
@@ -53,159 +53,219 @@ const parseBCDDateTime = (hex: string): string => {
  */
 export const parseProtocolData = (hexData: string): ProtocolData => {
   // Remove any whitespace or non-hex characters
-  hexData = hexData.replace(/[^0-9A-Fa-f]/g, '');
+  const cleanedHexData = hexData.replace(/[^0-9A-Fa-f]/g, '');
 
-  if (hexData.length < 200) {
+  if (cleanedHexData.length < 200) {
     throw new Error('数据包长度不足');
   }
 
   // Parse header fields
   const header = {
-    staticId: extractField(hexData, 0, 16, '静态ID', '设备固定标识符'),
-    deviceId: extractField(hexData, 16, 4, '设备机器号', '设备的唯一标识符'),
+    staticId: extractField(cleanedHexData, 0, 16, '静态ID', '设备固定标识符'),
+    deviceId: extractField(
+      cleanedHexData,
+      16,
+      4,
+      '设备机器号',
+      '设备的唯一标识符'
+    ),
     fromDeviceId: extractField(
-      hexData,
+      cleanedHexData,
       20,
       4,
       '从设备机器号',
       '00000000表示主设备，非零表示中转设备'
     ),
     protocolType: extractField(
-      hexData,
+      cleanedHexData,
       24,
       2,
       '协议类型',
       '0000表示主设备协议，非零表示中转设备协议'
     ),
-    deviceType: extractField(hexData, 26, 2, '设备类型', '设备的类型标识'),
-    dataLength: extractField(hexData, 28, 2, '数据长度', '后续数据的字节数'),
-    frameType: extractField(hexData, 30, 2, '数据类型帧', '也称为关键帧'),
-    randomCode: extractField(hexData, 32, 4, '随机码', '数据包的随机标识符')
+    deviceType: extractField(
+      cleanedHexData,
+      26,
+      2,
+      '设备类型',
+      '设备的类型标识'
+    ),
+    dataLength: extractField(
+      cleanedHexData,
+      28,
+      2,
+      '数据长度',
+      '后续数据的字节数'
+    ),
+    frameType: extractField(
+      cleanedHexData,
+      30,
+      2,
+      '数据类型帧',
+      '也称为关键帧'
+    ),
+    randomCode: extractField(
+      cleanedHexData,
+      32,
+      4,
+      '随机码',
+      '数据包的随机标识符'
+    )
   };
 
-  // Parse body fields - starting from index 36 (after header)
+  // Parse body fields - starting from index 30 (after header)
   const body = {
-    recordFrame: extractField(hexData, 36, 1, '记录帧', '数据帧类型标识'),
+    recordFrame: extractField(
+      cleanedHexData,
+      30,
+      1,
+      '记录帧',
+      '数据帧类型标识'
+    ),
     consumptionType: extractField(
-      hexData,
-      37,
+      cleanedHexData,
+      31,
       1,
       '消费类型',
       '1:大钱包消费; 2:补助钱包消费; 3:混合消费'
     ),
     randomCodeData: extractField(
-      hexData,
-      38,
+      cleanedHexData,
+      32,
       4,
       '随机码数据',
       '内部随机标识符'
     ),
-    accountId: extractField(hexData, 42, 4, '账号', '用户账号标识'),
-    cardId: extractField(hexData, 46, 4, '卡号', '卡片唯一标识'),
-    cardNo: extractField(hexData, 50, 1, '卡序号', '卡片序列号'),
-    totalAmount: extractField(hexData, 51, 4, '卡总额', '卡片总金额'),
-    walletBalance: extractField(hexData, 55, 4, '钱包余额', '钱包当前余额'),
+    accountId: extractField(cleanedHexData, 36, 4, '账号', '用户账号标识'),
+    cardId: extractField(cleanedHexData, 40, 4, '卡号', '卡片唯一标识'),
+    cardNo: extractField(cleanedHexData, 44, 1, '卡序号', '卡片序列号'),
+    totalAmount: extractField(cleanedHexData, 45, 4, '卡总额', '卡片总金额'),
+    walletBalance: extractField(
+      cleanedHexData,
+      49,
+      4,
+      '钱包余额',
+      '钱包当前余额'
+    ),
     managementFee: extractField(
-      hexData,
-      59,
+      cleanedHexData,
+      53,
       4,
       '管理费金额',
       '优惠打折或手续费'
     ),
     subsidyBalance: extractField(
-      hexData,
-      63,
+      cleanedHexData,
+      57,
       4,
       '补助余额',
       '补助钱包当前余额'
     ),
     mainWalletConsumption: extractField(
-      hexData,
-      67,
+      cleanedHexData,
+      61,
       4,
       '大钱包消费金额',
       '本次从主钱包消费的金额'
     ),
     mainWalletCounter: extractField(
-      hexData,
-      71,
+      cleanedHexData,
+      65,
       2,
       '大钱包计数器',
       '主钱包消费计数'
     ),
     subsidyCounter: extractField(
-      hexData,
-      73,
+      cleanedHexData,
+      67,
       2,
       '补助计数器',
       '补助钱包消费计数'
     ),
     subsidyConsumption: extractField(
-      hexData,
-      75,
+      cleanedHexData,
+      69,
       4,
       '补助消费金额',
       '本次从补助钱包消费的金额'
     ),
     consumptionTime: extractField(
-      hexData,
-      79,
+      cleanedHexData,
+      73,
       6,
       '消费时间',
       'BCD格式的消费时间'
     ),
-    recordNo: extractField(hexData, 85, 2, '记录序号', '消费记录唯一序号'),
+    recordNo: extractField(
+      cleanedHexData,
+      79,
+      2,
+      '记录序号',
+      '消费记录唯一序号'
+    ),
     discountFlag: extractField(
-      hexData,
-      87,
+      cleanedHexData,
+      81,
       1,
       '打折优惠',
       '最高位为1表示优惠，为0表示加上的手续费'
     ),
     unsentRecordCount: extractField(
-      hexData,
-      88,
+      cleanedHexData,
+      82,
       2,
       '未发送记录条数',
       '设备中未上传的记录数量'
     ),
     latestBatchBlacklist: extractField(
-      hexData,
-      90,
+      cleanedHexData,
+      84,
       2,
       '最新批次黑名单',
       '最新的黑名单批次号'
     ),
     lastIncrementalBlacklist: extractField(
-      hexData,
-      92,
+      cleanedHexData,
+      86,
       4,
       '最后一个增量黑名单',
       '最后处理的增量黑名单标识'
     ),
     deviceStatus: extractField(
-      hexData,
-      96,
+      cleanedHexData,
+      90,
       1,
       '设备状态',
       'bit0:黑名单发送完毕 bit1:终端有补助授权 bit2:终端有联机注册授权'
     ),
     currentDeviceTime: extractField(
-      hexData,
-      97,
+      cleanedHexData,
+      91,
       6,
       '当前设备时间',
       'BCD格式的设备当前时间'
     ),
     physicalCardNo: extractField(
-      hexData,
-      103,
+      cleanedHexData,
+      97,
       4,
       '物理卡号',
       '卡片的物理识别号'
     ),
-    usageAmount: extractField(hexData, 107, 4, '使用量', '设备使用的资源量'),
-    usageDuration: extractField(hexData, 111, 4, '使用时长', '设备使用的时长')
+    usageAmount: extractField(
+      cleanedHexData,
+      101,
+      4,
+      '使用量',
+      '设备使用的资源量'
+    ),
+    usageDuration: extractField(
+      cleanedHexData,
+      105,
+      4,
+      '使用时长',
+      '设备使用的时长'
+    )
   };
 
   // 更新特殊字段的显示数据
@@ -225,7 +285,7 @@ export const parseProtocolData = (hexData: string): ProtocolData => {
   );
 
   // 消费时间
-  const consumptionTimeHex = hexData.substring(79 * 2, (79 + 6) * 2);
+  const consumptionTimeHex = cleanedHexData.substring(79 * 2, (79 + 6) * 2);
   body.consumptionTime = {
     label: '消费时间',
     size: 6,
@@ -235,7 +295,7 @@ export const parseProtocolData = (hexData: string): ProtocolData => {
   };
 
   // 当前设备时间
-  const currentDeviceTimeHex = hexData.substring(97 * 2, (97 + 6) * 2);
+  const currentDeviceTimeHex = cleanedHexData.substring(97 * 2, (97 + 6) * 2);
   body.currentDeviceTime = {
     label: '当前设备时间',
     size: 6,
@@ -245,9 +305,9 @@ export const parseProtocolData = (hexData: string): ProtocolData => {
   };
 
   // Extract CRC (last 2 bytes)
-  const dataLength = hexData.length / 2;
+  const dataLength = cleanedHexData.length / 2;
   const crc = extractField(
-    hexData,
+    cleanedHexData,
     dataLength - 2,
     2,
     'CRC校验码',
@@ -258,7 +318,7 @@ export const parseProtocolData = (hexData: string): ProtocolData => {
     header,
     body,
     crc,
-    rawData: hexData
+    rawData: cleanedHexData
   };
 };
 
