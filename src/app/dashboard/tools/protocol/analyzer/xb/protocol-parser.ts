@@ -73,25 +73,41 @@ export const parseProtocolData = (hexData: string): ProtocolData => {
 
   // Parse body fields - starting from index 36 (after header)
   const body = {
-    recordFrame: extractField(hexData, 36, 1, 'Record Frame'),
-    consumptionType: extractField(hexData, 37, 1, 'Consumption Type'),
-    randomCodeData: extractField(hexData, 38, 4, 'Random Code Data'),
-    accountId: extractField(hexData, 42, 4, 'Account ID'),
-    cardId: extractField(hexData, 46, 4, 'Card ID'),
-    cardNo: extractField(hexData, 50, 1, 'Card No'),
-    totalAmount: extractField(hexData, 51, 4, 'Total Amount'),
-    walletBalance: extractField(hexData, 55, 4, 'Wallet Balance'),
-    managementFee: extractField(hexData, 59, 4, 'Management Fee'),
-    subsidyBalance: extractField(hexData, 63, 4, 'Subsidy Balance'),
+    recordFrame: extractField(hexData, 16, 1, 'Record Frame'),
+    consumptionType: extractField(hexData, 17, 1, 'Consumption Type'),
+    randomCodeData: extractField(hexData, 18, 4, 'Random Code Data'),
+    accountId: extractField(hexData, 22, 4, 'Account ID'),
+    cardId: extractField(hexData, 26, 4, 'Card ID'),
+    cardNo: extractField(hexData, 30, 4, 'Card No.'),
+    totalAmount: extractField(hexData, 34, 4, 'Total Amount'),
+    walletBalance: extractField(hexData, 38, 4, 'Wallet Balance'),
+    managementFee: extractField(hexData, 42, 4, 'Management Fee'),
+    subsidyBalance: extractField(hexData, 46, 4, 'Subsidy Balance'),
     mainWalletConsumption: extractField(
       hexData,
-      67,
+      50,
       4,
       'Main Wallet Consumption'
     ),
     mainWalletCounter: extractField(hexData, 71, 2, 'Main Wallet Counter'),
     subsidyCounter: extractField(hexData, 73, 2, 'Subsidy Counter'),
-    subsidyConsumption: extractField(hexData, 75, 4, 'Subsidy Consumption')
+    subsidyConsumption: extractField(hexData, 75, 4, 'Subsidy Consumption'),
+    consumptionTime: extractField(hexData, 0, 0, 'Consumption Time'),
+    recordNo: extractField(hexData, 0, 0, 'Record No'),
+    discountFlag: extractField(hexData, 0, 0, 'Discount Flag'),
+    unsentRecordCount: extractField(hexData, 0, 0, 'Unsent Record Count'),
+    latestBatchBlacklist: extractField(hexData, 0, 0, 'Latest Batch Blacklist'),
+    lastIncrementalBlacklist: extractField(
+      hexData,
+      0,
+      0,
+      'Last Incremental Blacklist'
+    ),
+    deviceStatus: extractField(hexData, 0, 0, 'Device Status'),
+    currentDeviceTime: extractField(hexData, 0, 0, 'Current Device Time'),
+    physicalCardNo: extractField(hexData, 0, 0, 'Physical Card No'),
+    usageAmount: extractField(hexData, 0, 0, 'Usage Amount'),
+    usageDuration: extractField(hexData, 0, 0, 'Usage Duration')
   };
 
   // Extract consumption time as a special case (BCD format)

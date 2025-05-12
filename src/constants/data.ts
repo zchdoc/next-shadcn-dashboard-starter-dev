@@ -73,7 +73,7 @@ export const navItems: NavItem[] = [
       {
         title: 'Protocol Analyzer',
         url: '/dashboard/tools/protocol/analyzer/xb',
-        icon: 'code',
+        icon: 'chevronsLeftRightEllipsis',
         shortcut: ['p', 'a']
       }
     ]

@@ -35,6 +35,10 @@ import {
   IconTools,
   IconCurrencyDollar
 } from '@tabler/icons-react';
+import {
+  ChevronRightCircleIcon,
+  ChevronsLeftRightEllipsis
+} from 'lucide-react';
 
 export type Icon = React.ComponentType<IconProps>;
 
@@ -72,5 +76,8 @@ export const Icons = {
   check: IconCheck,
   bookmark: IconBookmark,
   tools: IconTools,
-  currency: IconCurrencyDollar
+  currency: IconCurrencyDollar,
+  chevronRightCircleIcon: ChevronRightCircleIcon,
+  // ChevronsLeftRightEllipsis,
+  chevronsLeftRightEllipsis: ChevronsLeftRightEllipsis
 };
