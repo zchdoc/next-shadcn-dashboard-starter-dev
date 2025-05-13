@@ -65,7 +65,7 @@ export const navItems: NavItem[] = [
     shortcut: ['t', 't'],
     items: [
       {
-        title: 'ExchangeRate',
+        title: 'Exchange Rate',
         url: '/dashboard/tools/exchange-rate',
         icon: 'currency',
         shortcut: ['e', 'r']
