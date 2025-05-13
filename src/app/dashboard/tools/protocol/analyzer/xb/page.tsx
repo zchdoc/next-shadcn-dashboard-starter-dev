@@ -188,7 +188,11 @@ export default function ProtocolAnalyzerPage() {
   };
 
   return (
-    <div ref={containerRef} className='h-[calc(100dvh-52px)] overflow-auto'>
+    <div
+      ref={containerRef}
+      className='h-[calc(100dvh-52px)] overflow-auto'
+      style={{ scrollbarGutter: 'stable' }}
+    >
       <div className='mx-auto w-[98%] px-4 py-4 md:px-6'>
         {/* 紧凑的输入控件区域 */}
         <div className='mb-4 flex flex-col space-y-3 md:flex-row md:items-end md:space-y-0 md:space-x-4'>
