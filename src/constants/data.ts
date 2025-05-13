@@ -75,6 +75,12 @@ export const navItems: NavItem[] = [
         url: '/dashboard/tools/protocol/analyzer/xb',
         icon: 'chevronsLeftRightEllipsis',
         shortcut: ['p', 'a']
+      },
+      {
+        title: 'Timestamp Converter',
+        url: '/dashboard/tools/timestamp/to/time',
+        icon: 'userPen',
+        shortcut: ['t', 'c']
       }
     ]
   },

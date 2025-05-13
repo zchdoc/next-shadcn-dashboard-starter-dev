@@ -7,7 +7,7 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
   // 先检查是否公开路径
   if (
     path.startsWith('/dashboard/bookmark/zch') ||
-    path.startsWith('/dashboard/tools/protocol/analyzer/xb')
+    path.startsWith('/dashboard/tools/')
   ) {
     return; // 不执行认证
   }
