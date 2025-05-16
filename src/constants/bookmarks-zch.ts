@@ -18,12 +18,8 @@ export const bookmarkDataZch: BookmarkData = {
       { title: 'A3c', url: 'http://a3c.4000063966.com:8081' },
       { title: 'A4c', url: 'http://a4c.4000063966.com:8081' },
       { title: 'Cdzc', url: 'http://cdz.4000063966.com:8081' },
-      { title: 'Gxcdzc', url: 'http://chongdian.4000063966.com:81' }
-    ]
-  },
-  xbLogin: {
-    title: 'XB Login',
-    links: [
+      { title: 'Gxcdzc', url: 'http://chongdian.4000063966.com:81' },
+      //
       { title: 'J1cb', url: 'http://1.singbon.com:81/xb/login.do' },
       { title: 'A2cb', url: 'http://a2.4000063966.com:81/xb/login.do' },
       { title: 'A3cb', url: 'http://a3c.4000063966.com:8081/xb/login.do' },
@@ -32,12 +28,8 @@ export const bookmarkDataZch: BookmarkData = {
       {
         title: 'Gxcdzcb',
         url: 'http://chongdian.4000063966.com:81/singbon/backgroud/system/admin/login.do'
-      }
-    ]
-  },
-  xbInfoQuery: {
-    title: 'XB Info Query',
-    links: [
+      },
+      //
       {
         title: 'J1Query',
         url: 'http://1.singbon.com:81/netInterface/singbon/companyIndex.do'
@@ -64,6 +56,49 @@ export const bookmarkDataZch: BookmarkData = {
       }
     ]
   },
+  // xbLogin: {
+  //   title: 'XB Login',
+  //   links: [
+  //     { title: 'J1cb', url: 'http://1.singbon.com:81/xb/login.do' },
+  //     { title: 'A2cb', url: 'http://a2.4000063966.com:81/xb/login.do' },
+  //     { title: 'A3cb', url: 'http://a3c.4000063966.com:8081/xb/login.do' },
+  //     { title: 'A4cb', url: 'http://a4c.4000063966.com:8081/xb/login.do' },
+  //     { title: 'Cdzcb', url: 'http://cdz.4000063966.com:8084/login' },
+  //     {
+  //       title: 'Gxcdzcb',
+  //       url: 'http://chongdian.4000063966.com:81/singbon/backgroud/system/admin/login.do'
+  //     }
+  //   ]
+  // },
+  // xbInfoQuery: {
+  //   title: 'XB Info Query',
+  //   links: [
+  //     {
+  //       title: 'J1Query',
+  //       url: 'http://1.singbon.com:81/netInterface/singbon/companyIndex.do'
+  //     },
+  //     {
+  //       title: 'A2Query',
+  //       url: 'http://a2.4000063966.com:81/netInterface/singbon/companyIndex.do'
+  //     },
+  //     {
+  //       title: 'A3Query',
+  //       url: 'http://a3c.4000063966.com:8081/netInterface/singbon/companyIndex.do'
+  //     },
+  //     {
+  //       title: 'A4Query',
+  //       url: 'http://a4c.4000063966.com:8081/netInterface/singbon/companyIndex.do'
+  //     },
+  //     {
+  //       title: 'CdzQuery',
+  //       url: 'http://cdz.4000063966.com:8081/netInterface/singbon/companyIndex.do'
+  //     },
+  //     {
+  //       title: 'JustQuery',
+  //       url: 'https://navgit.wwzh.xyz/pages/xb-tools/xb-encrypt-js.html'
+  //     }
+  //   ]
+  // },
   socialMedia: {
     title: 'Social Media',
     links: [

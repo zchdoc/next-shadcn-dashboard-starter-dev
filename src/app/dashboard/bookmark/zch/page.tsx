@@ -25,7 +25,10 @@ import {
   ListIcon,
   Grid3X3,
   Layers3,
-  ChevronsUp
+  ChevronsUp,
+  AlignLeft,
+  AlignCenter,
+  AlignRight
 } from 'lucide-react';
 import BookmarkHologram from '@/components/bookmark/bookmark-hologram';
 import BookmarkCard3D from '@/components/bookmark/bookmark-card3d';
@@ -38,6 +41,7 @@ import {
   SelectValue
 } from '@/components/ui/select';
 import { bookmarkDataZch, BookmarkData } from '@/constants/bookmarks-zch';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 
 export default function BookmarkPage() {
   const [selectedGroups, setSelectedGroups] = useState<string[]>(
@@ -49,6 +53,9 @@ export default function BookmarkPage() {
   >('list');
   const [showScrollTop, setShowScrollTop] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const [alignment, setAlignment] = useState<'left' | 'center' | 'right'>(
+    'center'
+  );
 
   useEffect(() => {
     setIsClient(true);
@@ -75,6 +82,14 @@ export default function BookmarkPage() {
           | 'card3d'
       );
     }
+
+    const savedAlignment = localStorage.getItem('bookmarkListAlignment');
+    if (
+      savedAlignment &&
+      ['left', 'center', 'right'].includes(savedAlignment)
+    ) {
+      setAlignment(savedAlignment as 'left' | 'center' | 'right');
+    }
   }, []);
 
   useEffect(() => {
@@ -95,6 +110,10 @@ export default function BookmarkPage() {
       }
     };
   }, []);
+
+  useEffect(() => {
+    localStorage.setItem('bookmarkListAlignment', alignment);
+  }, [alignment]);
 
   const saveSelection = () => {
     localStorage.setItem(
@@ -370,7 +389,29 @@ export default function BookmarkPage() {
               >
                 {viewMode !== 'flow' && (
                   <div className='mb-3 flex items-center justify-between border-b pb-2'>
-                    <h2 className='font-medium'>我的书签</h2>
+                    <h2 className='flex items-center gap-4 font-medium'>
+                      我的书签
+                      {/* 对齐方式控件 */}
+                      <ToggleGroup
+                        type='single'
+                        value={alignment}
+                        onValueChange={(value) => {
+                          if (value)
+                            setAlignment(value as 'left' | 'center' | 'right');
+                        }}
+                        className='ml-2'
+                      >
+                        <ToggleGroupItem value='left' aria-label='左对齐'>
+                          <AlignLeft className='h-4 w-4' />
+                        </ToggleGroupItem>
+                        <ToggleGroupItem value='center' aria-label='居中对齐'>
+                          <AlignCenter className='h-4 w-4' />
+                        </ToggleGroupItem>
+                        <ToggleGroupItem value='right' aria-label='右对齐'>
+                          <AlignRight className='h-4 w-4' />
+                        </ToggleGroupItem>
+                      </ToggleGroup>
+                    </h2>
                     <p className='text-muted-foreground text-xs'>
                       共 {allSelectedBookmarks.length} 个书签，来自{' '}
                       {selectedGroups.length} 个分组
@@ -381,6 +422,7 @@ export default function BookmarkPage() {
                   <BookmarkList
                     bookmarks={allSelectedBookmarks}
                     showGroup={true}
+                    alignment={alignment}
                   />
                 ) : viewMode === 'card' ? (
                   <BookmarkContent
