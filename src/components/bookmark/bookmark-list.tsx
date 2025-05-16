@@ -129,47 +129,36 @@ export function BookmarkList({
               <div className='mb-2 flex items-center justify-between border-b pb-1'>
                 <div className='flex items-center gap-2'>
                   <h3 className='text-sm font-semibold'>{group}</h3>
-                  {/* 紧凑步进器 */}
+                  {/* 分页风格步进器 */}
                   <div className='bg-muted flex h-6 items-center rounded-md border px-1'>
                     <Button
                       type='button'
                       size='icon'
                       variant='ghost'
-                      className='h-5 w-4 rounded p-0'
+                      className='h-5 w-5 rounded p-0'
                       onClick={() =>
                         updateLinksPerRow(group, Math.max(1, linksPerRow - 1))
                       }
                       disabled={linksPerRow <= 1}
                       tabIndex={-1}
                     >
-                      -
+                      {'-'}
                     </Button>
-                    <Input
-                      type='number'
-                      min={1}
-                      max={30}
-                      value={linksPerRow}
-                      onChange={(e) => {
-                        let v = Number(e.target.value);
-                        if (Number.isNaN(v)) v = 1;
-                        v = Math.max(1, Math.min(30, v));
-                        updateLinksPerRow(group, v);
-                      }}
-                      className='h-5 w-14 appearance-none border-none bg-transparent text-center text-xs focus-visible:ring-0 focus-visible:ring-offset-0'
-                      style={{ boxShadow: 'none' }}
-                    />
+                    <span className='w-8 text-center text-xs select-none'>
+                      {linksPerRow}
+                    </span>
                     <Button
                       type='button'
                       size='icon'
                       variant='ghost'
-                      className='h-5 w-4 rounded p-0'
+                      className='h-5 w-5 rounded p-0'
                       onClick={() =>
                         updateLinksPerRow(group, Math.min(30, linksPerRow + 1))
                       }
                       disabled={linksPerRow >= 30}
                       tabIndex={-1}
                     >
-                      +
+                      {'+'}
                     </Button>
                   </div>
                 </div>
