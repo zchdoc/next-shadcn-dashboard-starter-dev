@@ -22,8 +22,10 @@ interface BookmarkListProps {
 
 // 分组默认每行显示数量
 const groupDefaultLinksPerRow: Record<string, number> = {
-  'XB Client Login': 6
+  'XB Client Login': 6,
   // 其它分组可自定义
+  Tools: 6,
+  Net: 6
 };
 const DEFAULT_LINKS_PER_ROW = 30;
 

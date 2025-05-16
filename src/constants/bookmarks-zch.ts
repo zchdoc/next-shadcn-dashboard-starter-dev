@@ -194,12 +194,7 @@ export const bookmarkDataZch: BookmarkData = {
       {
         title: 'Rmb-Chinese-Convert',
         url: 'https://navgit.wwzh.xyz/pages/rmb_convert/RMB_2_Chinese_Up.html'
-      }
-    ]
-  },
-  mineSite: {
-    title: 'Mine Site',
-    links: [
+      },
       // https://vercel.com/zchdocs-projects/next-shadcn-dashboard-starter-dev/deployments
       {
         title: 'vercel-deployments',
@@ -230,9 +225,16 @@ export const bookmarkDataZch: BookmarkData = {
       }
     ]
   },
-  searchEngines: {
-    title: 'Search Engines',
+
+  net: {
+    title: 'Net',
     links: [
+      { title: 'Github', url: 'https://github.com/zchdoc' },
+      { title: 'Gitee', url: 'https://gitee.com/' },
+      { title: 'Codeup', url: 'https://codeup.aliyun.com/' },
+      { title: 'Gitlab', url: 'https://gitlab.com/' },
+      { title: 'Csdn-git', url: 'https://gitcode.com/' },
+      { title: 'Github-m', url: 'https://github.com/trending?since=monthly' },
       { title: 'Google', url: 'https://www.google.com' },
       { title: 'DuckDuckGo', url: 'https://www.duckduckgo.com' },
       { title: 'Bing', url: 'https://www.bing.com' },
@@ -241,17 +243,91 @@ export const bookmarkDataZch: BookmarkData = {
       { title: 'So360', url: 'https://www.so.com/' }
     ]
   },
-  git: {
-    title: 'Git',
+  translation: {
+    title: 'Translation',
     links: [
-      { title: 'Github', url: 'https://github.com/zchdoc' },
-      { title: 'Gitee', url: 'https://gitee.com/' },
-      { title: 'Codeup', url: 'https://codeup.aliyun.com/' },
-      { title: 'Gitlab', url: 'https://gitlab.com/' },
-      { title: 'Csdn-git', url: 'https://gitcode.com/' },
-      { title: 'Github-m', url: 'https://github.com/trending?since=monthly' }
+      { title: 'Google', url: 'https://translate.google.com/' },
+      {
+        title: 'GoogleHK',
+        url: 'https://translate.google.com.hk/?hl=zh-CN&sl=auto&tl=en&op=translate'
+      },
+      { title: 'Bing', url: 'https://cn.bing.com/translator' },
+      { title: 'Baidu', url: 'https://fanyi.baidu.com/' },
+      { title: 'Youdao', url: 'https://fanyi.youdao.com/#/TextTranslate' },
+      {
+        title: 'Immersive',
+        url: 'https://app.immersivetranslate.com/text'
+      },
+      {
+        title: 'Tencent',
+        url: 'https://fanyi.qq.com/'
+      },
+      {
+        title: 'Oxford',
+        url: 'https://www.oed.com/'
+      },
+      {
+        title: 'Cambridge',
+        url: 'https://dictionary.cambridge.org/zhs/'
+      },
+      { title: 'DeepL', url: 'https://www.deepl.com/zh/translator' }
     ]
   },
+  // git: {
+  //   title: 'Git',
+  //   links: [
+  //     { title: 'Github', url: 'https://github.com/zchdoc' },
+  //     { title: 'Gitee', url: 'https://gitee.com/' },
+  //     { title: 'Codeup', url: 'https://codeup.aliyun.com/' },
+  //     { title: 'Gitlab', url: 'https://gitlab.com/' },
+  //     { title: 'Csdn-git', url: 'https://gitcode.com/' },
+  //     { title: 'Github-m', url: 'https://github.com/trending?since=monthly' }
+  //   ]
+  // },
+  // mineSite: {
+  //   title: 'Mine Site',
+  //   links: [
+  //     // https://vercel.com/zchdocs-projects/next-shadcn-dashboard-starter-dev/deployments
+  //     {
+  //       title: 'vercel-deployments',
+  //       url: 'https://vercel.com/zchdocs-projects/next-shadcn-dashboard-starter-dev/deployments'
+  //     },
+  //     { title: 'att', url: 'https://att.wwzh.xyz/' },
+  //     {
+  //       title: 'chrome-bookmark-realtime',
+  //       url: 'https://navgit.wwzh.xyz/pages/chrome-bookmarks-simple-v2/index.html'
+  //     },
+  //     // https://navgit.wwzh.xyz/pages/my-bookmarks-simple/index.html?key=mine
+  //     {
+  //       title: 'zpbstp-bookmarks-simple',
+  //       url: 'https://navgit.wwzh.xyz/pages/my-bookmarks-simple/index.html?key=mine'
+  //     },
+  //     // https://tool.wwzh.xyz/dashboard/bookmark/chrome-bookmark
+  //     {
+  //       title: 'z.tool-v1',
+  //       url: 'https://tool.wwzh.xyz/dashboard/bookmark/chrome-bookmark'
+  //     },
+  //     {
+  //       title: 'pin-tree-dev',
+  //       url: 'https://ptd.wwzh.xyz/'
+  //     },
+  //     {
+  //       title: 'pin-tree-dev-old',
+  //       url: 'https://pintree-dev-z-git-dev24-0720-customjson-zchdocs-projects.vercel.app/'
+  //     }
+  //   ]
+  // },
+  // searchEngines: {
+  //   title: 'Search Engines',
+  //   links: [
+  //     { title: 'Google', url: 'https://www.google.com' },
+  //     { title: 'DuckDuckGo', url: 'https://www.duckduckgo.com' },
+  //     { title: 'Bing', url: 'https://www.bing.com' },
+  //     { title: 'Baidu', url: 'https://www.baidu.com' },
+  //     { title: 'Sogou', url: 'https://www.sogou.com' },
+  //     { title: 'So360', url: 'https://www.so.com/' }
+  //   ]
+  // },
   aiWithShell: {
     title: 'AI Shelled',
     links: [
@@ -286,36 +362,6 @@ export const bookmarkDataZch: BookmarkData = {
     links: [
       { title: 'OLlaMa', url: 'https://ollama.ai/' },
       { title: 'LMStudio', url: 'https://lmstudio.ai/' }
-    ]
-  },
-  translation: {
-    title: 'Translation',
-    links: [
-      { title: 'Google', url: 'https://translate.google.com/' },
-      {
-        title: 'GoogleHK',
-        url: 'https://translate.google.com.hk/?hl=zh-CN&sl=auto&tl=en&op=translate'
-      },
-      { title: 'Bing', url: 'https://cn.bing.com/translator' },
-      { title: 'Baidu', url: 'https://fanyi.baidu.com/' },
-      { title: 'Youdao', url: 'https://fanyi.youdao.com/#/TextTranslate' },
-      {
-        title: 'Immersive',
-        url: 'https://app.immersivetranslate.com/text'
-      },
-      {
-        title: 'Tencent',
-        url: 'https://fanyi.qq.com/'
-      },
-      {
-        title: 'Oxford',
-        url: 'https://www.oed.com/'
-      },
-      {
-        title: 'Cambridge',
-        url: 'https://dictionary.cambridge.org/zhs/'
-      },
-      { title: 'DeepL', url: 'https://www.deepl.com/zh/translator' }
     ]
   }
 };

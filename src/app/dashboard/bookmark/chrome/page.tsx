@@ -381,6 +381,7 @@ export default function BookmarkPage() {
                   <BookmarkList
                     bookmarks={allSelectedBookmarks}
                     showGroup={true}
+                    alignment='center'
                   />
                 ) : viewMode === 'card' ? (
                   <BookmarkContent
