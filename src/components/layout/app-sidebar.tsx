@@ -64,6 +64,10 @@ export default function AppSidebar() {
   const { isOpen } = useMediaQuery();
   const { user } = useUser();
   const router = useRouter();
+
+  // 添加一个状态来跟踪当前打开的模块
+  const [openModule, setOpenModule] = React.useState<string | null>(null);
+
   const handleSwitchTenant = (_tenantId: string) => {
     // Tenant switching functionality would be implemented here
   };
@@ -72,7 +76,21 @@ export default function AppSidebar() {
 
   React.useEffect(() => {
     // Side effects based on sidebar state changes
-  }, [isOpen]);
+  }, []);
+
+  // 初始化时检查当前路径，设置默认打开的模块
+  React.useEffect(() => {
+    // 查找与当前路径匹配的模块
+    const activeModule = navItems.find(
+      (item) =>
+        item.url === pathname ||
+        item.items?.some((subItem) => subItem.url === pathname)
+    );
+
+    if (activeModule) {
+      setOpenModule(activeModule.title);
+    }
+  }, [pathname]);
 
   return (
     <Sidebar collapsible='offcanvas' variant={'inset'}>
@@ -93,7 +111,12 @@ export default function AppSidebar() {
                 <Collapsible
                   key={item.title}
                   asChild
-                  defaultOpen={item.isActive}
+                  open={openModule === item.title}
+                  onOpenChange={(open) => {
+                    // 如果打开，则设置当前模块为打开状态
+                    // 如果关闭，则清除当前打开的模块
+                    setOpenModule(open ? item.title : null);
+                  }}
                   className='group/collapsible'
                 >
                   <SidebarMenuItem>
@@ -101,6 +124,7 @@ export default function AppSidebar() {
                       <SidebarMenuButton
                         tooltip={item.title}
                         isActive={pathname === item.url}
+                        className='cursor-pointer'
                       >
                         {item.icon && <Icon />}
                         <span>{item.title}</span>
@@ -131,6 +155,7 @@ export default function AppSidebar() {
                     asChild
                     tooltip={item.title}
                     isActive={pathname === item.url}
+                    className='cursor-pointer'
                   >
                     <Link href={item.url}>
                       <Icon />
