@@ -1,6 +1,5 @@
 根据 tree.desc.txt 文件了解项目大致结构
 
-
 mac 系统
 
 你需要先查看和了解
@@ -14,12 +13,13 @@ tree.dir.txt
 如果你需要知道执行结果请告诉我，我会将执行结果反馈给你
 
 
-tree -I ".git|.idea|.vscode|.zed|.next|node_modules" > tree.txt
-tree -I ".git|.idea|.vscode|.zed|.next|node_modules" -d >  tree.dir.txt
 
-tree.dir.txt 文件: 只包含了基本的目录和文件结构,不包含子目录
+tree.dir.txt 文件:
+ 由 dir /o /b > tree.dir.txt 命令生成 只包含了基本的目录和文件结构,不包含子目录
 
-tree.txt 文件 包含了整体的目录结构,也包含子目录和子文件
+tree.txt 文件
+    由 tree-cli treee -l 10 -o tree.txt --ignore ".git,.github,.husky,.next,.vscode,node_modules,dist,*.log,*.tmp" 命令生成
+    包含了整体的目录结构,也包含子目录和子文件
 
 项目架构
 

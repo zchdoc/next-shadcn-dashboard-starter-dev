@@ -1,26 +1,87 @@
-.github
-.husky
-.next
-.vscode
-node_modules
-public
-src
-.env.local
-.eslintrc.json
-.gitignore
-.npmrc
-.prettierignore
-.prettierrc
-components.json
-env.example.txt
-LICENSE
-next.config.js
-next-env.d.ts
-package.json
-pnpm-lock.yaml
-postcss.config.js
-README.md
-README.ZCH.TREE.CMD.txt
-README.ZCH.txt
-tree.dir.txt
-tsconfig.json
+.
+├── public
+└── src
+    ├── app
+    │   ├── api
+    │   │   └── exchange-rate
+    │   │       ├── alltick
+    │   │       └── juhe
+    │   ├── auth
+    │   │   ├── sign-in
+    │   │   │   └── [[...sign-in]]
+    │   │   └── sign-up
+    │   │       └── [[...sign-up]]
+    │   └── dashboard
+    │       ├── bookmark
+    │       │   ├── chrome
+    │       │   └── zch
+    │       ├── kanban
+    │       ├── overview
+    │       │   ├── @area_stats
+    │       │   ├── @bar_stats
+    │       │   ├── @pie_stats
+    │       │   └── @sales
+    │       ├── product
+    │       │   └── [productId]
+    │       ├── profile
+    │       │   └── [[...profile]]
+    │       └── tools
+    │           ├── exchange-rate
+    │           ├── protocol
+    │           │   └── analyzer
+    │           │       └── xb
+    │           └── timestamp
+    │               └── to
+    │                   └── time
+    ├── assets
+    │   └── fonts
+    ├── components
+    │   ├── bookmark
+    │   ├── kbar
+    │   ├── layout
+    │   │   └── ThemeToggle
+    │   ├── modal
+    │   ├── tools
+    │   │   └── protocol
+    │   │       └── xb
+    │   └── ui
+    │       └── table
+    ├── config
+    ├── constants
+    ├── features
+    │   ├── auth
+    │   │   └── components
+    │   ├── kanban
+    │   │   ├── components
+    │   │   └── utils
+    │   ├── overview
+    │   │   └── components
+    │   ├── products
+    │   │   └── components
+    │   │       └── product-tables
+    │   ├── profile
+    │   │   ├── components
+    │   │   └── utils
+    │   └── tools
+    │       ├── exchange-rate
+    │       │   ├── components
+    │       │   ├── schemas
+    │       │   └── utils
+    │       │       └── api-providers
+    │       ├── protocol
+    │       │   └── analyzer
+    │       │       └── xb
+    │       │           ├── components
+    │       │           ├── types
+    │       │           └── utils
+    │       ├── protocol-analyzer-xb
+    │       │   ├── components
+    │       │   ├── schemas
+    │       │   └── utils
+    │       └── timestamp-converter
+    │           └── components
+    ├── hooks
+    ├── lib
+    └── types
+
+85 directories
