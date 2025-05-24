@@ -1,7 +1,7 @@
 'use client';
 
 import {
-  ReactNode,
+  type ReactNode,
   createContext,
   useContext,
   useEffect,
@@ -9,7 +9,7 @@ import {
 } from 'react';
 
 const COOKIE_NAME = 'active_theme';
-const DEFAULT_THEME = 'blue';
+const DEFAULT_THEME = 'amber';
 
 function setThemeCookie(theme: string) {
   if (typeof window === 'undefined') return;
