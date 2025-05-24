@@ -38,11 +38,12 @@ export function ActiveThemeProvider({
   useEffect(() => {
     setThemeCookie(activeTheme);
 
-    Array.from(document.body.classList)
-      .filter((className) => className.startsWith('theme-'))
-      .forEach((className) => {
-        document.body.classList.remove(className);
-      });
+    const classesToRemove = Array.from(document.body.classList).filter(
+      (className) => className.startsWith('theme-')
+    );
+    for (const className of classesToRemove) {
+      document.body.classList.remove(className);
+    }
     document.body.classList.add(`theme-${activeTheme}`);
     if (activeTheme.endsWith('-scaled')) {
       document.body.classList.add('theme-scaled');
