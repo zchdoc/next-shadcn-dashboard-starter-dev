@@ -125,17 +125,14 @@ export const bookmarkDataZch: BookmarkData = {
       { title: 'Gemini', url: 'https://gemini.google.com/app' },
       {
         title: 'AiStudio',
-        url: 'https://aistudio.google.com/app/prompts/new_chat'
+        url: 'https://aistudio.google.com'
       },
       { title: 'Perplexity', url: 'https://www.perplexity.ai/' },
       {
         title: 'Fireworks',
         url: 'https://fireworks.ai/models/fireworks/f1-preview/playground'
       },
-      {
-        title: 'CoZeEn',
-        url: 'https://www.coze.com/space/7322025004764364806/bot'
-      },
+      { title: 'CoZeEn', url: 'https://www.coze.com' },
       { title: 'CiCi', url: 'https://www.ciciai.com/' }
     ]
   },
@@ -153,10 +150,7 @@ export const bookmarkDataZch: BookmarkData = {
       { title: '360Chat', url: 'https://chat.360.cn/chat' },
       { title: 'XingHuo', url: 'https://xinghuo.xfyun.cn/' },
       { title: 'Qwen', url: 'https://chat.qwen.ai/' },
-      {
-        title: 'CoZeCn',
-        url: 'https://www.coze.cn/space/7346541960162869283/bot'
-      },
+      { title: 'CoZeCn', url: 'https://www.coze.cn' },
       { title: 'DouBao', url: 'https://www.doubao.com/chat/' }
     ]
   },
@@ -222,10 +216,11 @@ export const bookmarkDataZch: BookmarkData = {
       {
         title: 'pin-tree-dev-old',
         url: 'https://pintree-dev-z-git-dev24-0720-customjson-zchdocs-projects.vercel.app/'
-      }
+      },
+      // chrome://bookmarks/
+      { title: 'chrome-bookmark', url: 'chrome://bookmarks/' }
     ]
   },
-
   net: {
     title: 'Net',
     links: [

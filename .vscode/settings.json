@@ -33,5 +33,7 @@
     "**/.DS_Store": true,
     "**/Thumbs.db": true,
     "**/.vscode": false
-  }
+  },
+  "biome.enabled": true,
+  "workbench.editor.titleScrollbarSizing": "default"
 }
