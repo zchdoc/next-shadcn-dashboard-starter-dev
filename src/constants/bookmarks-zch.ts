@@ -218,7 +218,7 @@ export const bookmarkDataZch: BookmarkData = {
         url: 'https://pintree-dev-z-git-dev24-0720-customjson-zchdocs-projects.vercel.app/'
       },
       // chrome://bookmarks/
-      { title: 'chrome-bookmark', url: 'chrome://bookmarks/' }
+      { title: 'chrome://bookmarks', url: 'chrome://bookmarks' }
     ]
   },
   net: {

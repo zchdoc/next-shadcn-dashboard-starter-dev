@@ -35,5 +35,6 @@
     "**/.vscode": false
   },
   "biome.enabled": true,
-  "workbench.editor.titleScrollbarSizing": "default"
+  "workbench.editor.titleScrollbarSizing": "default",
+  "CodeGPT.apiKey": "CodeGPT Plus"
 }
