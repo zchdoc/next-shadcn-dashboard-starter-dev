@@ -81,6 +81,12 @@ export const navItems: NavItem[] = [
         url: '/dashboard/tools/timestamp/to/time',
         icon: 'userPen',
         shortcut: ['t', 'c']
+      },
+      {
+        title: 'OpenRouter Model List',
+        url: '/dashboard/tools/openrouter/model/list',
+        icon: 'userPen',
+        shortcut: ['t', 'c']
       }
     ]
   },
