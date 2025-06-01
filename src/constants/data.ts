@@ -87,6 +87,12 @@ export const navItems: NavItem[] = [
         url: '/dashboard/tools/openrouter/model/list',
         icon: 'userPen',
         shortcut: ['t', 'c']
+      },
+      {
+        title: 'API认证测试',
+        url: '/dashboard/auth-test',
+        icon: 'settings',
+        shortcut: ['a', 't']
       }
     ]
   },
@@ -107,6 +113,12 @@ export const navItems: NavItem[] = [
         url: '/dashboard/bookmark/chrome',
         icon: 'userPen',
         shortcut: ['bk', 'c']
+      },
+      {
+        title: 'ZchFromApi',
+        url: '/dashboard/bookmark/zchfromapi',
+        icon: 'settings',
+        shortcut: ['bk', 'a']
       }
     ]
   }
