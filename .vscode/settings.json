@@ -14,7 +14,7 @@
   "editor.fontSize": 16,
   "npm.packageManager": "npm",
   "workbench.iconTheme": "vs-minimal",
-  "workbench.colorTheme": "Default Dark Modern",
+  "workbench.colorTheme": "Cursor Dark",
   "liveServer.settings.port": 5501,
   "svg.preview.background": "transparent",
   "security.workspace.trust.enabled": false,
@@ -36,5 +36,6 @@
   },
   "biome.enabled": true,
   "workbench.editor.titleScrollbarSizing": "default",
-  "CodeGPT.apiKey": "CodeGPT Plus"
+  "CodeGPT.apiKey": "CodeGPT Plus",
+  "workbench.tree.indent": 20,
 }
