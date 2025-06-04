@@ -37,5 +37,5 @@
   "biome.enabled": true,
   "workbench.editor.titleScrollbarSizing": "default",
   "CodeGPT.apiKey": "CodeGPT Plus",
-  "workbench.tree.indent": 20,
+  "workbench.tree.indent": 20
 }

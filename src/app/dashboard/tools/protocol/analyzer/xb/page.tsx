@@ -29,7 +29,18 @@ import {
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { parseProtocolData } from './protocol-parser';
-import type { ProtocolData, ProtocolField } from './types';
+import {
+  parseWechatQRCodeData,
+  parseWechatQRCodeRequest,
+  parseWechatQRCodeResponse
+} from './wechat-qrcode-parser';
+import type {
+  ProtocolData,
+  ProtocolField,
+  WechatQRCodeData,
+  WechatQRCodeRequestData,
+  WechatQRCodeResponseData
+} from './types';
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
 import { ChevronsUp } from 'lucide-react';
@@ -38,7 +49,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 export default function ProtocolAnalyzerPage() {
   const [inputData, setInputData] = useState('');
   const [protocolType, setProtocolType] = useState('');
-  const [parsedData, setParsedData] = useState<ProtocolData | null>(null);
+  const [parsedData, setParsedData] = useState<
+    | ProtocolData
+    | WechatQRCodeData
+    | WechatQRCodeRequestData
+    | WechatQRCodeResponseData
+    | null
+  >(null);
   const [error, setError] = useState('');
   const [isInputValid, setIsInputValid] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
@@ -82,13 +99,25 @@ export default function ProtocolAnalyzerPage() {
       return;
     }
 
-    if (protocolType !== 'consumption') {
-      setError(`${getProtocolTypeLabel(protocolType)}暂不可用`);
-      return;
-    }
-
     try {
-      const data = parseProtocolData(inputData);
+      let data:
+        | ProtocolData
+        | WechatQRCodeData
+        | WechatQRCodeRequestData
+        | WechatQRCodeResponseData;
+      if (protocolType === 'consumption') {
+        data = parseProtocolData(inputData);
+      } else if (protocolType === 'wechat-qrcode') {
+        data = parseWechatQRCodeData(inputData);
+      } else if (protocolType === 'wechat-qrcode-request') {
+        data = parseWechatQRCodeRequest(inputData);
+      } else if (protocolType === 'wechat-qrcode-response') {
+        data = parseWechatQRCodeResponse(inputData);
+      } else {
+        setError(`${getProtocolTypeLabel(protocolType)}暂不可用`);
+        return;
+      }
+
       setParsedData(data);
       setError('');
     } catch (err) {
@@ -110,6 +139,12 @@ export default function ProtocolAnalyzerPage() {
     switch (type) {
       case 'consumption':
         return '消费数据';
+      case 'wechat-qrcode':
+        return '微信扫码金额命令';
+      case 'wechat-qrcode-request':
+        return '微信扫码金额命令-上位机';
+      case 'wechat-qrcode-response':
+        return '微信扫码金额命令-下位机';
       case 'status':
         return '状态包';
       case 'subsidy':
@@ -187,6 +222,253 @@ export default function ProtocolAnalyzerPage() {
     );
   };
 
+  // 判断是否为微信扫码金额命令数据
+  const isWechatQRCodeData = (
+    data:
+      | ProtocolData
+      | WechatQRCodeData
+      | WechatQRCodeRequestData
+      | WechatQRCodeResponseData
+  ): data is WechatQRCodeData => {
+    return 'response' in data;
+  };
+
+  // 判断是否为微信扫码金额命令上位机请求数据
+  const isWechatQRCodeRequestData = (
+    data:
+      | ProtocolData
+      | WechatQRCodeData
+      | WechatQRCodeRequestData
+      | WechatQRCodeResponseData
+  ): data is WechatQRCodeRequestData => {
+    return 'body' in data && 'cardType' in data.body && !('response' in data);
+  };
+
+  // 判断是否为微信扫码金额命令下位机响应数据
+  const isWechatQRCodeResponseData = (
+    data:
+      | ProtocolData
+      | WechatQRCodeData
+      | WechatQRCodeRequestData
+      | WechatQRCodeResponseData
+  ): data is WechatQRCodeResponseData => {
+    return (
+      'body' in data &&
+      'status' in data.body &&
+      'cardId' in data.body &&
+      'timestamp' in data.body
+    );
+  };
+
+  // 渲染解析结果内容
+  const renderAnalysisContent = () => {
+    if (!parsedData) return null;
+
+    if (isWechatQRCodeData(parsedData)) {
+      // 渲染微信扫码金额命令解析结果
+      return (
+        <Tabs defaultValue='all' className='w-full'>
+          <TabsList className='mb-4 w-full justify-start'>
+            <TabsTrigger value='all'>全部字段</TabsTrigger>
+            <TabsTrigger value='header'>协议头</TabsTrigger>
+            <TabsTrigger value='body'>请求数据</TabsTrigger>
+            <TabsTrigger value='response'>响应数据</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value='all' className='mt-0 space-y-6'>
+            <div>
+              <h3 className='mb-2 text-base font-medium'>协议头</h3>
+              {renderFieldTable(parsedData.header)}
+            </div>
+
+            <div>
+              <h3 className='mb-2 text-base font-medium'>请求数据</h3>
+              {renderFieldTable(parsedData.body)}
+            </div>
+
+            <div>
+              <h3 className='mb-2 text-base font-medium'>响应数据</h3>
+              {renderFieldTable(parsedData.response)}
+            </div>
+
+            <div>
+              <h3 className='mb-2 text-base font-medium'>校验码</h3>
+              {renderFieldTable({ crc: parsedData.crc })}
+            </div>
+
+            {renderRawDataPreview()}
+          </TabsContent>
+
+          <TabsContent value='header' className='mt-0'>
+            <div>
+              <h3 className='mb-2 text-base font-medium'>协议头</h3>
+              {renderFieldTable(parsedData.header)}
+            </div>
+            {renderRawDataPreview()}
+          </TabsContent>
+
+          <TabsContent value='body' className='mt-0'>
+            <div>
+              <h3 className='mb-2 text-base font-medium'>请求数据</h3>
+              {renderFieldTable(parsedData.body)}
+            </div>
+            {renderRawDataPreview()}
+          </TabsContent>
+
+          <TabsContent value='response' className='mt-0'>
+            <div>
+              <h3 className='mb-2 text-base font-medium'>响应数据</h3>
+              {renderFieldTable(parsedData.response)}
+            </div>
+            {renderRawDataPreview()}
+          </TabsContent>
+        </Tabs>
+      );
+    }
+
+    if (isWechatQRCodeRequestData(parsedData)) {
+      // 渲染微信扫码金额命令上位机请求解析结果
+      return (
+        <Tabs defaultValue='all' className='w-full'>
+          <TabsList className='mb-4 w-full justify-start'>
+            <TabsTrigger value='all'>全部字段</TabsTrigger>
+            <TabsTrigger value='header'>协议头</TabsTrigger>
+            <TabsTrigger value='body'>请求数据</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value='all' className='mt-0 space-y-6'>
+            <div>
+              <h3 className='mb-2 text-base font-medium'>协议头</h3>
+              {renderFieldTable(parsedData.header)}
+            </div>
+
+            <div>
+              <h3 className='mb-2 text-base font-medium'>请求数据</h3>
+              {renderFieldTable(parsedData.body)}
+            </div>
+
+            <div>
+              <h3 className='mb-2 text-base font-medium'>校验码</h3>
+              {renderFieldTable({ crc: parsedData.crc })}
+            </div>
+
+            {renderRawDataPreview()}
+          </TabsContent>
+
+          <TabsContent value='header' className='mt-0'>
+            <div>
+              <h3 className='mb-2 text-base font-medium'>协议头</h3>
+              {renderFieldTable(parsedData.header)}
+            </div>
+            {renderRawDataPreview()}
+          </TabsContent>
+
+          <TabsContent value='body' className='mt-0'>
+            <div>
+              <h3 className='mb-2 text-base font-medium'>请求数据</h3>
+              {renderFieldTable(parsedData.body)}
+            </div>
+            {renderRawDataPreview()}
+          </TabsContent>
+        </Tabs>
+      );
+    }
+
+    if (isWechatQRCodeResponseData(parsedData)) {
+      // 渲染微信扫码金额命令下位机响应解析结果
+      return (
+        <Tabs defaultValue='all' className='w-full'>
+          <TabsList className='mb-4 w-full justify-start'>
+            <TabsTrigger value='all'>全部字段</TabsTrigger>
+            <TabsTrigger value='header'>协议头</TabsTrigger>
+            <TabsTrigger value='body'>响应数据</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value='all' className='mt-0 space-y-6'>
+            <div>
+              <h3 className='mb-2 text-base font-medium'>协议头</h3>
+              {renderFieldTable(parsedData.header)}
+            </div>
+
+            <div>
+              <h3 className='mb-2 text-base font-medium'>响应数据</h3>
+              {renderFieldTable(parsedData.body)}
+            </div>
+
+            <div>
+              <h3 className='mb-2 text-base font-medium'>校验码</h3>
+              {renderFieldTable({ crc: parsedData.crc })}
+            </div>
+
+            {renderRawDataPreview()}
+          </TabsContent>
+
+          <TabsContent value='header' className='mt-0'>
+            <div>
+              <h3 className='mb-2 text-base font-medium'>协议头</h3>
+              {renderFieldTable(parsedData.header)}
+            </div>
+            {renderRawDataPreview()}
+          </TabsContent>
+
+          <TabsContent value='body' className='mt-0'>
+            <div>
+              <h3 className='mb-2 text-base font-medium'>响应数据</h3>
+              {renderFieldTable(parsedData.body)}
+            </div>
+            {renderRawDataPreview()}
+          </TabsContent>
+        </Tabs>
+      );
+    }
+
+    // 渲染普通协议解析结果
+    return (
+      <Tabs defaultValue='all' className='w-full'>
+        <TabsList className='mb-4 w-full justify-start'>
+          <TabsTrigger value='all'>全部字段</TabsTrigger>
+          <TabsTrigger value='header'>协议头</TabsTrigger>
+          <TabsTrigger value='body'>协议体</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value='all' className='mt-0 space-y-6'>
+          <div>
+            <h3 className='mb-2 text-base font-medium'>协议头</h3>
+            {renderFieldTable((parsedData as ProtocolData).header)}
+          </div>
+
+          <div>
+            <h3 className='mb-2 text-base font-medium'>协议体</h3>
+            {renderFieldTable((parsedData as ProtocolData).body)}
+          </div>
+
+          <div>
+            <h3 className='mb-2 text-base font-medium'>校验码</h3>
+            {renderFieldTable({ crc: (parsedData as ProtocolData).crc })}
+          </div>
+
+          {renderRawDataPreview()}
+        </TabsContent>
+
+        <TabsContent value='header' className='mt-0'>
+          <div>
+            <h3 className='mb-2 text-base font-medium'>协议头</h3>
+            {renderFieldTable((parsedData as ProtocolData).header)}
+          </div>
+          {renderRawDataPreview()}
+        </TabsContent>
+
+        <TabsContent value='body' className='mt-0'>
+          <div>
+            <h3 className='mb-2 text-base font-medium'>协议体</h3>
+            {renderFieldTable((parsedData as ProtocolData).body)}
+          </div>
+          {renderRawDataPreview()}
+        </TabsContent>
+      </Tabs>
+    );
+  };
+
   return (
     <div
       ref={containerRef}
@@ -218,6 +500,13 @@ export default function ProtocolAnalyzerPage() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value='consumption'>消费数据</SelectItem>
+                <SelectItem value='wechat-qrcode'>微信扫码金额命令</SelectItem>
+                <SelectItem value='wechat-qrcode-request'>
+                  微信扫码金额命令-上位机
+                </SelectItem>
+                <SelectItem value='wechat-qrcode-response'>
+                  微信扫码金额命令-下位机
+                </SelectItem>
                 <SelectItem value='status'>状态包</SelectItem>
                 <SelectItem value='subsidy'>补助请求</SelectItem>
               </SelectContent>
@@ -239,44 +528,8 @@ export default function ProtocolAnalyzerPage() {
                 <CardTitle>XB协议分析结果</CardTitle>
                 <CardDescription>协议数据解析完成</CardDescription>
               </CardHeader>
-              <CardContent>
-                <Tabs defaultValue='all' className='w-full'>
-                  <TabsList className='mb-4 w-full justify-start'>
-                    <TabsTrigger value='all'>全部字段</TabsTrigger>
-                    <TabsTrigger value='header'>协议头</TabsTrigger>
-                    <TabsTrigger value='body'>协议体</TabsTrigger>
-                  </TabsList>
-
-                  <TabsContent value='all' className='mt-0 space-y-6'>
-                    <div>
-                      <h3 className='mb-2 text-lg font-semibold'>CRC校验</h3>
-                      {renderFieldTable({ crc: parsedData.crc })}
-                    </div>
-
-                    <div>
-                      <h3 className='mb-2 text-lg font-semibold'>协议头</h3>
-                      {renderFieldTable(parsedData.header)}
-                    </div>
-
-                    <div>
-                      <h3 className='mb-2 text-lg font-semibold'>协议体</h3>
-                      {renderFieldTable(parsedData.body)}
-                    </div>
-                  </TabsContent>
-
-                  <TabsContent value='header' className='mt-0'>
-                    {renderFieldTable(parsedData.header)}
-                  </TabsContent>
-
-                  <TabsContent value='body' className='mt-0'>
-                    {renderFieldTable(parsedData.body)}
-                  </TabsContent>
-                </Tabs>
-              </CardContent>
+              <CardContent>{renderAnalysisContent()}</CardContent>
             </Card>
-
-            {/* 原始数据单独显示 */}
-            {renderRawDataPreview()}
           </div>
         ) : (
           <Card>
@@ -297,45 +550,20 @@ export default function ProtocolAnalyzerPage() {
       <AnimatePresence>
         {showScrollTop && (
           <motion.div
-            initial={{ opacity: 0, scale: 0.5 }}
+            initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.5 }}
-            transition={{ duration: 0.3 }}
-            className='fixed right-8 bottom-8 z-50'
-            onClick={scrollToTop}
+            exit={{ opacity: 0, scale: 0.8 }}
+            transition={{ duration: 0.2 }}
+            className='fixed right-6 bottom-6'
           >
             <Button
-              className='bg-primary hover:bg-primary/90 dark:bg-primary/90 dark:hover:bg-primary border-primary-foreground/20 relative z-10 flex h-14 w-14 items-center justify-center rounded-full border-2 p-0 shadow-lg'
-              aria-label='回到顶部'
-              title='回到顶部'
+              size='icon'
+              variant='outline'
+              className='h-10 w-10 rounded-full shadow-md'
+              onClick={scrollToTop}
             >
-              <motion.div
-                animate={{
-                  scale: [1, 1.1, 1]
-                }}
-                transition={{
-                  duration: 2,
-                  repeat: Number.POSITIVE_INFINITY,
-                  repeatType: 'reverse',
-                  ease: 'easeInOut'
-                }}
-              >
-                <ChevronsUp className='text-primary-foreground h-7 w-7' />
-              </motion.div>
+              <ChevronsUp className='h-5 w-5' />
             </Button>
-            <motion.div
-              className='bg-primary/20 pointer-events-none absolute inset-0 rounded-full blur-sm'
-              animate={{
-                scale: [0.85, 1.05, 0.85],
-                opacity: [0.3, 0.5, 0.3]
-              }}
-              transition={{
-                duration: 2.5,
-                repeat: Number.POSITIVE_INFINITY,
-                repeatType: 'reverse',
-                ease: 'easeInOut'
-              }}
-            />
           </motion.div>
         )}
       </AnimatePresence>

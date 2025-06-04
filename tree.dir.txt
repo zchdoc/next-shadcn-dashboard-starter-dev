@@ -1,38 +1,67 @@
 .
+├── doc
+│   ├── code
+│   │   └── back
+│   ├── info
+│   └── promot
+│       ├── exchange-rate
+│       ├── 二维码调试工具
+│       │   └── caoliao
+│       ├── 批量时间戳转时间工具
+│       └── 协议分析工具页面
+│           ├── d250512-id-消费记录
+│           └── d250603-id-微信扫码金额命令
 ├── public
 └── src
     ├── app
     │   ├── api
-    │   │   └── exchange-rate
-    │   │       ├── alltick
-    │   │       └── juhe
+    │   │   ├── auth
+    │   │   │   ├── currentUser
+    │   │   │   └── login
+    │   │   ├── bookmark
+    │   │   │   ├── group
+    │   │   │   ├── link
+    │   │   │   └── list
+    │   │   ├── exchange-rate
+    │   │   │   ├── alltick
+    │   │   │   └── juhe
+    │   │   ├── open-router
+    │   │   │   └── models
+    │   │   └── openrouter
+    │   │       └── models
     │   ├── auth
     │   │   ├── sign-in
     │   │   │   └── [[...sign-in]]
     │   │   └── sign-up
     │   │       └── [[...sign-up]]
-    │   └── dashboard
-    │       ├── bookmark
-    │       │   ├── chrome
-    │       │   └── zch
-    │       ├── kanban
-    │       ├── overview
-    │       │   ├── @area_stats
-    │       │   ├── @bar_stats
-    │       │   ├── @pie_stats
-    │       │   └── @sales
-    │       ├── product
-    │       │   └── [productId]
-    │       ├── profile
-    │       │   └── [[...profile]]
-    │       └── tools
-    │           ├── exchange-rate
-    │           ├── protocol
-    │           │   └── analyzer
-    │           │       └── xb
-    │           └── timestamp
-    │               └── to
-    │                   └── time
+    │   ├── dashboard
+    │   │   ├── auth-test
+    │   │   ├── bookmark
+    │   │   │   ├── chrome
+    │   │   │   ├── zch
+    │   │   │   └── zchfromapi
+    │   │   ├── kanban
+    │   │   ├── overview
+    │   │   │   ├── @area_stats
+    │   │   │   ├── @bar_stats
+    │   │   │   ├── @pie_stats
+    │   │   │   └── @sales
+    │   │   ├── product
+    │   │   │   └── [productId]
+    │   │   ├── profile
+    │   │   │   └── [[...profile]]
+    │   │   └── tools
+    │   │       ├── exchange-rate
+    │   │       ├── openrouter
+    │   │       │   └── model
+    │   │       │       └── list
+    │   │       ├── protocol
+    │   │       │   └── analyzer
+    │   │       │       └── xb
+    │   │       └── timestamp
+    │   │           └── to
+    │   │               └── time
+    │   └── login
     ├── assets
     │   └── fonts
     ├── components
@@ -68,6 +97,9 @@
     │       │   ├── schemas
     │       │   └── utils
     │       │       └── api-providers
+    │       ├── openrouter
+    │       │   └── model
+    │       │       └── components
     │       ├── protocol
     │       │   └── analyzer
     │       │       └── xb
@@ -82,6 +114,7 @@
     │           └── components
     ├── hooks
     ├── lib
+    ├── services
     └── types
 
-85 directories
+118 directories

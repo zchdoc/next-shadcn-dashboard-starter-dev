@@ -1,6 +1,38 @@
 .
 ├── components.json
 ├── CONTRIBUTING.md
+├── doc
+│   ├── code
+│   │   └── back
+│   │       └── middleware.ts
+│   ├── info
+│   │   ├── prefix-promot.txt
+│   │   ├── README.ZCH.TREE.CMD.txt
+│   │   └── tree.desc.back.txt
+│   └── promot
+│       ├── exchange-rate
+│       │   ├── juhe-exchange-api.md
+│       │   ├── kline_query_cn.md
+│       │   ├── p250426-01.txt
+│       │   └── PixPin_2025-04-26_10-29-50.png
+│       ├── 二维码调试工具
+│       │   ├── caoliao
+│       │   │   ├── caoliao_qr_cust0m_style_1.png
+│       │   │   ├── caoliao_qr_custom_style_2.png
+│       │   │   └── caoliao_qr_generate.png
+│       │   ├── d-qr-250513.tsxt
+│       │   ├── qr_demo.png
+│       │   └── 二维码工具模块功能计划.md
+│       ├── 批量时间戳转时间工具
+│       │   └── d250513.txt
+│       └── 协议分析工具页面
+│           ├── d250512-id-消费记录
+│           │   ├── d250512-cmd-demo-data.txt
+│           │   ├── d250512-optimization-1.txt
+│           │   └── d250512.txt
+│           └── d250603-id-微信扫码金额命令
+│               ├── p01.txt
+│               └── protocol.data.ini
 ├── env.example.txt
 ├── HTML-IMPORT-ERROR.md
 ├── LICENSE
@@ -18,10 +50,28 @@
 ├── src
 │   ├── app
 │   │   ├── api
-│   │   │   └── exchange-rate
-│   │   │       ├── alltick
-│   │   │       │   └── route.ts
-│   │   │       └── juhe
+│   │   │   ├── auth
+│   │   │   │   ├── currentUser
+│   │   │   │   │   └── route.ts
+│   │   │   │   └── login
+│   │   │   │       └── route.ts
+│   │   │   ├── bookmark
+│   │   │   │   ├── group
+│   │   │   │   │   └── route.ts
+│   │   │   │   ├── link
+│   │   │   │   │   └── route.ts
+│   │   │   │   └── list
+│   │   │   │       └── route.ts
+│   │   │   ├── exchange-rate
+│   │   │   │   ├── alltick
+│   │   │   │   │   └── route.ts
+│   │   │   │   └── juhe
+│   │   │   │       └── route.ts
+│   │   │   ├── open-router
+│   │   │   │   ├── models
+│   │   │   │   └── open-router-models-demo.json
+│   │   │   └── openrouter
+│   │   │       └── models
 │   │   │           └── route.ts
 │   │   ├── auth
 │   │   │   ├── sign-in
@@ -31,10 +81,14 @@
 │   │   │       └── [[...sign-up]]
 │   │   │           └── page.tsx
 │   │   ├── dashboard
+│   │   │   ├── auth-test
+│   │   │   │   └── page.tsx
 │   │   │   ├── bookmark
 │   │   │   │   ├── chrome
 │   │   │   │   │   └── page.tsx
-│   │   │   │   └── zch
+│   │   │   │   ├── zch
+│   │   │   │   │   └── page.tsx
+│   │   │   │   └── zchfromapi
 │   │   │   │       └── page.tsx
 │   │   │   ├── kanban
 │   │   │   │   └── page.tsx
@@ -69,6 +123,10 @@
 │   │   │   └── tools
 │   │   │       ├── exchange-rate
 │   │   │       │   └── page.tsx
+│   │   │       ├── openrouter
+│   │   │       │   └── model
+│   │   │       │       └── list
+│   │   │       │           └── page.tsx
 │   │   │       ├── protocol
 │   │   │       │   └── analyzer
 │   │   │       │       └── xb
@@ -83,6 +141,7 @@
 │   │   ├── favicon.ico
 │   │   ├── globals.css
 │   │   ├── layout.tsx
+│   │   ├── login
 │   │   ├── not-found.tsx
 │   │   ├── page.tsx
 │   │   └── theme.css
@@ -270,6 +329,9 @@
 │   │       │       │   └── juhe-api-exchange-provider.ts
 │   │       │       ├── currency-data.ts
 │   │       │       └── exchange-rate-service.ts
+│   │       ├── openrouter
+│   │       │   └── model
+│   │       │       └── components
 │   │       ├── protocol
 │   │       │   └── analyzer
 │   │       │       └── xb
@@ -304,6 +366,9 @@
 │   │   ├── searchparams.ts
 │   │   └── utils.ts
 │   ├── middleware.ts
+│   ├── services
+│   │   ├── authService.ts
+│   │   └── bookmarkService.ts
 │   └── types
 │       ├── data-table.ts
 │       └── index.ts
@@ -314,4 +379,4 @@
 ├── tsconfig.json
 └── tsconfig.tsbuildinfo
 
-85 directories, 230 files
+118 directories, 262 files
