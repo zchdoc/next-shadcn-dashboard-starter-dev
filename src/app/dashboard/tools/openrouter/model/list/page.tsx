@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import {
   Table,
   TableBody,
@@ -46,7 +46,7 @@ export default function OpenRouterModelList() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
 
-  const fetchModels = async () => {
+  const fetchModels = useCallback(async () => {
     try {
       setLoading(true);
       const response = await fetch('/api/openrouter/models');
@@ -57,11 +57,11 @@ export default function OpenRouterModelList() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchModels();
-  }, []);
+  }, [fetchModels]);
 
   useEffect(() => {
     if (!models.length) return;
@@ -74,23 +74,38 @@ export default function OpenRouterModelList() {
   }, [models, searchQuery]);
 
   const sortData = (data: OpenRouterModel[], sortConfig: SortConfig) => {
-    const sorted = [...data].sort((a, b) => {
-      if (sortConfig.key.includes('.')) {
-        const [parent, child] = sortConfig.key.split('.');
-        const aValue = (a[parent as keyof OpenRouterModel] as any)?.[child];
-        const bValue = (b[parent as keyof OpenRouterModel] as any)?.[child];
+    return [...data].sort((a, b) => {
+      if (sortConfig.key === 'pricing.prompt') {
+        const aValue = Number(a.pricing.prompt);
+        const bValue = Number(b.pricing.prompt);
         if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
         if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
         return 0;
       }
 
-      const aValue = a[sortConfig.key as keyof OpenRouterModel];
-      const bValue = b[sortConfig.key as keyof OpenRouterModel];
-      if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
-      if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
+      if (sortConfig.key === 'pricing.completion') {
+        const aValue = Number(a.pricing.completion);
+        const bValue = Number(b.pricing.completion);
+        if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
+        if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
+        return 0;
+      }
+
+      const key = sortConfig.key as keyof OpenRouterModel;
+      const aValue = a[key];
+      const bValue = b[key];
+
+      if (aValue === undefined && bValue === undefined) return 0;
+      if (aValue === undefined) return sortConfig.direction === 'asc' ? -1 : 1;
+      if (bValue === undefined) return sortConfig.direction === 'asc' ? 1 : -1;
+
+      const aString = String(aValue);
+      const bString = String(bValue);
+
+      if (aString < bString) return sortConfig.direction === 'asc' ? -1 : 1;
+      if (aString > bString) return sortConfig.direction === 'asc' ? 1 : -1;
       return 0;
     });
-    return sorted;
   };
 
   const requestSort = (key: SortConfig['key']) => {
