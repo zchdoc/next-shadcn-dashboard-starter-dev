@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/table';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { ReloadIcon } from '@radix-ui/react-icons';
+import { ReloadIcon, ExternalLinkIcon } from '@radix-ui/react-icons';
 import { Button } from '@/components/ui/button';
 
 type OpenRouterModel = {
@@ -68,7 +68,8 @@ export default function OpenRouterModelList() {
     const filtered = models.filter(
       (model) =>
         model.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        model.description.toLowerCase().includes(searchQuery.toLowerCase())
+        model.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        model.id.toLowerCase().includes(searchQuery.toLowerCase())
     );
     setFilteredModels(filtered);
   }, [models, searchQuery]);
@@ -130,7 +131,20 @@ export default function OpenRouterModelList() {
   return (
     <Card>
       <CardHeader className='flex flex-row items-center justify-between'>
-        <CardTitle>OpenRouter 可用模型列表</CardTitle>
+        <div className='flex items-center space-x-2'>
+          <CardTitle>OpenRouter 可用模型列表</CardTitle>
+          <Button
+            variant='outline'
+            size='sm'
+            onClick={() =>
+              window.open('https://openrouter.ai/api/v1/models', '_blank')
+            }
+            className='ml-2'
+          >
+            <ExternalLinkIcon className='mr-1 h-4 w-4' />
+            API文档
+          </Button>
+        </div>
         <div className='flex items-center space-x-2'>
           <Input
             placeholder='搜索模型...'
@@ -165,11 +179,11 @@ export default function OpenRouterModelList() {
                       (sortConfig.direction === 'asc' ? '↑' : '↓')}
                   </TableHead>
                   <TableHead
-                    onClick={() => requestSort('context_length')}
+                    onClick={() => requestSort('id')}
                     className='cursor-pointer hover:bg-gray-100'
                   >
-                    上下文长度{' '}
-                    {sortConfig.key === 'context_length' &&
+                    模型ID{' '}
+                    {sortConfig.key === 'id' &&
                       (sortConfig.direction === 'asc' ? '↑' : '↓')}
                   </TableHead>
                   <TableHead
@@ -188,7 +202,15 @@ export default function OpenRouterModelList() {
                     {sortConfig.key === 'pricing.completion' &&
                       (sortConfig.direction === 'asc' ? '↑' : '↓')}
                   </TableHead>
-                  <TableHead>描述</TableHead>
+                  <TableHead
+                    onClick={() => requestSort('context_length')}
+                    className='cursor-pointer hover:bg-gray-100'
+                  >
+                    上下文长度{' '}
+                    {sortConfig.key === 'context_length' &&
+                      (sortConfig.direction === 'asc' ? '↑' : '↓')}
+                  </TableHead>
+                  <TableHead className='w-[180px]'>描述</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -197,8 +219,8 @@ export default function OpenRouterModelList() {
                     <TableCell className='max-w-[200px] truncate font-medium'>
                       {model.name}
                     </TableCell>
-                    <TableCell>
-                      {model.context_length.toLocaleString()}
+                    <TableCell className='max-w-[180px] truncate'>
+                      {model.id}
                     </TableCell>
                     <TableCell>
                       ${Number(model.pricing.prompt).toFixed(8)}
@@ -206,8 +228,11 @@ export default function OpenRouterModelList() {
                     <TableCell>
                       ${Number(model.pricing.completion).toFixed(8)}
                     </TableCell>
-                    <TableCell className='max-w-xl'>
-                      <div className='line-clamp-2 hover:line-clamp-none'>
+                    <TableCell>
+                      {model.context_length.toLocaleString()}
+                    </TableCell>
+                    <TableCell className='max-w-[180px]'>
+                      <div className='truncate hover:absolute hover:z-10 hover:overflow-visible hover:rounded-md hover:bg-white hover:p-2 hover:whitespace-normal hover:shadow-lg'>
                         {model.description}
                       </div>
                     </TableCell>
