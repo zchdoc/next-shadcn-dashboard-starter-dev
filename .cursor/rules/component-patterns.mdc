@@ -1,0 +1,207 @@
+# 组件开发模式
+
+## shadcn/ui 组件扩展
+
+### 基础组件结构
+
+```typescript
+// components/ui/button.tsx
+import * as React from 'react';
+import { Slot } from '@radix-ui/react-slot';
+import { cva, type VariantProps } from 'class-variance-authority';
+import { cn } from '@/lib/utils';
+
+const buttonVariants = cva(
+  // 基础样式
+  'inline-flex items-center justify-center',
+  {
+    variants: {
+      variant: {
+        default: 'bg-primary text-primary-foreground',
+        destructive: 'bg-destructive text-white'
+      },
+      size: {
+        sm: 'h-8 px-3',
+        md: 'h-10 px-4'
+      }
+    },
+    defaultVariants: {
+      variant: 'default',
+      size: 'md'
+    }
+  }
+);
+
+interface ButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+    VariantProps<typeof buttonVariants> {
+  asChild?: boolean;
+}
+
+const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+  ({ className, variant, size, asChild = false, ...props }, ref) => {
+    const Comp = asChild ? Slot : 'button';
+    
+    return (
+      <Comp
+        className={cn(buttonVariants({ variant, size, className }))}
+        ref={ref}
+        {...props}
+      />
+    );
+  }
+);
+
+Button.displayName = 'Button';
+
+export { Button, buttonVariants };
+export type { ButtonProps };
+```
+
+### 复合组件模式
+
+```typescript
+// components/ui/card.tsx
+const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
+  ({ className, ...props }, ref) => (
+    <div
+      ref={ref}
+      className={cn('rounded-lg border bg-card text-card-foreground shadow-sm', className)}
+      {...props}
+    />
+  )
+);
+
+const CardHeader = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
+  ({ className, ...props }, ref) => (
+    <div
+      ref={ref}
+      className={cn('flex flex-col space-y-1.5 p-6', className)}
+      {...props}
+    />
+  )
+);
+
+// 导出所有子组件
+export { Card, CardHeader, CardTitle, CardContent };
+```
+
+### 表单组件模式
+
+```typescript
+// components/ui/form.tsx
+import { useFormContext } from 'react-hook-form';
+
+interface FormFieldProps {
+  name: string;
+  label: string;
+  description?: string;
+  children: React.ReactNode;
+}
+
+function FormField({ name, label, description, children }: FormFieldProps) {
+  const { formState: { errors } } = useFormContext();
+  const error = errors[name];
+
+  return (
+    <div className="space-y-2">
+      <Label htmlFor={name}>{label}</Label>
+      {children}
+      {description && (
+        <p className="text-sm text-muted-foreground">{description}</p>
+      )}
+      {error && (
+        <p className="text-sm text-destructive">{error.message}</p>
+      )}
+    </div>
+  );
+}
+```
+
+### 数据展示组件
+
+```typescript
+// components/ui/data-table.tsx
+interface DataTableProps<T> {
+  data: T[];
+  columns: ColumnDef<T>[];
+  searchKey?: string;
+  loading?: boolean;
+}
+
+function DataTable<T>({ data, columns, searchKey, loading }: DataTableProps<T>) {
+  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
+  
+  const table = useReactTable({
+    data,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    onSortingChange: setSorting,
+    getSortedRowModel: getSortedRowModel(),
+    onColumnFiltersChange: setColumnFilters,
+    getFilteredRowModel: getFilteredRowModel(),
+    state: {
+      sorting,
+      columnFilters,
+    },
+  });
+
+  if (loading) {
+    return <DataTableSkeleton />;
+  }
+
+  return (
+    <div className="space-y-4">
+      {searchKey && (
+        <Input
+          placeholder={`Search ${searchKey}...`}
+          value={(table.getColumn(searchKey)?.getFilterValue() as string) ?? ''}
+          onChange={(event) =>
+            table.getColumn(searchKey)?.setFilterValue(event.target.value)
+          }
+          className="max-w-sm"
+        />
+      )}
+      
+      <div className="rounded-md border">
+        <Table>
+          {/* 表格内容 */}
+        </Table>
+      </div>
+      
+      <DataTablePagination table={table} />
+    </div>
+  );
+}
+```
+
+### 加载状态组件
+
+```typescript
+// components/ui/skeleton.tsx
+function Skeleton({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cn('animate-pulse rounded-md bg-muted', className)}
+      {...props}
+    />
+  );
+}
+
+// 使用示例
+function CardSkeleton() {
+  return (
+    <Card>
+      <CardHeader>
+        <Skeleton className="h-4 w-2/3" />
+        <Skeleton className="h-3 w-1/2" />
+      </CardHeader>
+      <CardContent>
+        <Skeleton className="h-32 w-full" />
+      </CardContent>
+    </Card>
+  );
+}
+```

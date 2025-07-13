@@ -1,0 +1,83 @@
+# React 最佳实践
+
+## 组件结构
+
+1. **使用函数组件**，避免类组件
+2. **组件名使用 PascalCase**
+3. **文件名使用 kebab-case**（如 `user-profile.tsx`）
+4. **一个文件一个组件**（除非是紧密相关的小组件）
+
+## Hooks 使用
+
+```typescript
+// 自定义 hooks 以 use 开头
+function useLocalStorage<T>(key: string, initialValue: T) {
+  // hook 逻辑
+}
+
+// 在组件顶部使用 hooks
+function MyComponent() {
+  const [state, setState] = useState();
+  const { data, loading } = useQuery();
+  
+  // 条件渲染
+  if (loading) return <div>Loading...</div>;
+  
+  return <div>{data}</div>;
+}
+```
+
+## 事件处理
+
+```typescript
+// 使用 handle 前缀
+const handleClick = useCallback(() => {
+  // 处理逻辑
+}, []);
+
+const handleSubmit = async (data: FormData) => {
+  // 异步处理
+};
+```
+
+## 条件渲染
+
+```typescript
+// 使用 && 进行条件渲染
+{isVisible && <Component />}
+
+// 使用三元运算符
+{isLoading ? <Spinner /> : <Content />}
+
+// 复杂条件使用函数
+function renderContent() {
+  if (error) return <ErrorComponent />;
+  if (loading) return <LoadingComponent />;
+  return <MainContent />;
+}
+```
+
+## 性能优化
+
+1. **使用 React.memo** 包装纯组件
+2. **使用 useCallback** 缓存事件处理函数
+3. **使用 useMemo** 缓存计算结果
+4. **避免在 render 中创建对象和函数**
+
+## 表单处理
+
+使用 React Hook Form + Zod 进行表单验证：
+
+```typescript
+const form = useForm<FormData>({
+  resolver: zodResolver(schema),
+  defaultValues: {
+    name: '',
+    email: ''
+  }
+});
+
+const onSubmit = (data: FormData) => {
+  // 处理表单提交
+};
+```

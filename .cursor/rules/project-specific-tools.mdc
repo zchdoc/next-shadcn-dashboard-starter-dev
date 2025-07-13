@@ -1,0 +1,185 @@
+# 项目特定工具开发指南
+
+## 工具页面结构
+
+本项目包含多个工具页面，位于 `src/app/dashboard/tools/` 目录下：
+
+### 汇率工具 (exchange-rate)
+- **路径**: `/dashboard/tools/exchange-rate`
+- **组件**: `src/features/tools/exchange-rate/`
+- **API**: `src/app/api/exchange-rate/`
+- **服务**: 支持多个汇率 API 提供商（聚合数据、AllTick）
+
+```typescript
+// 汇率工具组件结构
+features/tools/exchange-rate/
+├── components/
+│   ├── exchange-rate-form.tsx
+│   ├── exchange-rate-chart.tsx
+│   └── exchange-rate-view-page.tsx
+├── schemas/
+│   └── exchange-rate-schema.ts
+└── utils/
+    ├── api-providers/
+    ├── currency-data.ts
+    └── exchange-rate-service.ts
+```
+
+### 协议分析工具 (protocol-analyzer)
+- **路径**: `/dashboard/tools/protocol/analyzer/xb`
+- **功能**: 微信扫码协议分析
+- **组件**: `src/features/tools/protocol/analyzer/xb/`
+
+### 时间戳转换工具 (timestamp-converter)
+- **路径**: `/dashboard/tools/timestamp/to/time`
+- **功能**: 批量时间戳转换
+- **组件**: `src/features/tools/timestamp-converter/`
+
+### OpenRouter 模型列表
+- **路径**: `/dashboard/tools/openrouter/model/list`
+- **功能**: 显示 OpenRouter API 模型列表
+- **API**: `src/app/api/openrouter/models/`
+
+## 工具开发模式
+
+### 1. 创建新工具的步骤
+
+```typescript
+// 1. 创建页面组件
+// src/app/dashboard/tools/[tool-name]/page.tsx
+import { ToolViewPage } from '@/features/tools/[tool-name]/components/tool-view-page';
+
+export default function ToolPage() {
+  return <ToolViewPage />;
+}
+
+// 2. 创建功能模块
+// src/features/tools/[tool-name]/
+├── components/
+│   ├── tool-form.tsx
+│   ├── tool-result.tsx
+│   └── tool-view-page.tsx
+├── schemas/
+│   └── tool-schema.ts
+└── utils/
+    └── tool-service.ts
+```
+
+### 2. 表单验证模式
+
+使用 Zod 进行表单验证：
+
+```typescript
+// schemas/tool-schema.ts
+import { z } from 'zod';
+
+export const toolSchema = z.object({
+  input: z.string().min(1, '输入不能为空'),
+  options: z.object({
+    format: z.enum(['json', 'xml', 'text']),
+    encoding: z.string().optional()
+  })
+});
+
+export type ToolFormData = z.infer<typeof toolSchema>;
+```
+
+### 3. API 路由模式
+
+```typescript
+// src/app/api/tools/[tool-name]/route.ts
+import { NextRequest, NextResponse } from 'next/server';
+import { toolSchema } from '@/features/tools/[tool-name]/schemas/tool-schema';
+
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const validatedData = toolSchema.parse(body);
+    
+    // 处理工具逻辑
+    const result = await processToolData(validatedData);
+    
+    return NextResponse.json({ success: true, data: result });
+  } catch (error) {
+    return NextResponse.json(
+      { success: false, error: '处理失败' },
+      { status: 400 }
+    );
+  }
+}
+```
+
+### 4. 服务层模式
+
+```typescript
+// utils/tool-service.ts
+export class ToolService {
+  static async processData(data: ToolFormData) {
+    // 工具处理逻辑
+    return {
+      result: 'processed data',
+      timestamp: new Date().toISOString()
+    };
+  }
+  
+  static validateInput(input: string): boolean {
+    // 输入验证逻辑
+    return input.length > 0;
+  }
+}
+```
+
+## 书签管理系统
+
+项目包含书签管理功能：
+
+### 书签数据结构
+```typescript
+interface BookmarkFolder {
+  id: string;
+  title: string;
+  children?: BookmarkItem[];
+  dateAdded?: number;
+  dateGroupModified?: number;
+}
+
+interface BookmarkLink {
+  id: string;
+  title: string;
+  url: string;
+  dateAdded?: number;
+}
+```
+
+### 书签组件
+- `bookmark-card.tsx` - 书签卡片展示
+- `bookmark-grid.tsx` - 网格布局
+- `bookmark-table.tsx` - 表格展示
+- `bookmark-sidebar.tsx` - 侧边栏导航
+
+## 数据表格组件
+
+使用 `@tanstack/react-table` 构建数据表格：
+
+```typescript
+// 表格列定义
+const columns: ColumnDef<DataType>[] = [
+  {
+    accessorKey: 'name',
+    header: '名称',
+    cell: ({ row }) => row.getValue('name')
+  },
+  {
+    id: 'actions',
+    cell: ({ row }) => <CellAction data={row.original} />
+  }
+];
+
+// 表格使用
+<DataTable
+  data={data}
+  columns={columns}
+  searchKey="name"
+  loading={loading}
+/>
+```

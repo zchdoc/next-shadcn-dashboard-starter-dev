@@ -1,0 +1,141 @@
+# API 开发模式
+
+## Next.js App Router API 规范
+
+### 路由处理器结构
+
+```typescript
+// app/api/users/route.ts
+import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@clerk/nextjs/server';
+
+export async function GET(request: NextRequest) {
+  try {
+    const { userId } = await auth();
+    
+    if (!userId) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    // 业务逻辑
+    const data = await fetchUserData(userId);
+    
+    return NextResponse.json(data);
+  } catch (error) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal Server Error' },
+      { status: 500 }
+    );
+  }
+}
+```
+
+### 错误处理
+
+```typescript
+// 统一错误响应格式
+interface ApiError {
+  error: string;
+  message?: string;
+  code?: string;
+}
+
+// 错误处理函数
+function handleApiError(error: unknown) {
+  if (error instanceof Error) {
+    return NextResponse.json(
+      { error: error.message },
+      { status: 400 }
+    );
+  }
+  
+  return NextResponse.json(
+    { error: 'Unknown error occurred' },
+    { status: 500 }
+  );
+}
+```
+
+### 请求验证
+
+```typescript
+import { z } from 'zod';
+
+const createUserSchema = z.object({
+  name: z.string().min(1),
+  email: z.string().email(),
+  age: z.number().min(0)
+});
+
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const validatedData = createUserSchema.parse(body);
+    
+    // 处理有效数据
+    const result = await createUser(validatedData);
+    
+    return NextResponse.json(result, { status: 201 });
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        { error: 'Validation failed', details: error.errors },
+        { status: 400 }
+      );
+    }
+    
+    return handleApiError(error);
+  }
+}
+```
+
+### 中间件模式
+
+```typescript
+// 认证中间件
+async function withAuth(handler: Function) {
+  return async (request: NextRequest) => {
+    const { userId } = await auth();
+    
+    if (!userId) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+    
+    return handler(request, { userId });
+  };
+}
+
+// 使用中间件
+export const GET = withAuth(async (request: NextRequest, context: { userId: string }) => {
+  // 已认证的处理逻辑
+});
+```
+
+### 响应格式
+
+```typescript
+// 成功响应
+interface ApiResponse<T> {
+  data: T;
+  success: true;
+  message?: string;
+}
+
+// 分页响应
+interface PaginatedResponse<T> {
+  data: T[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}
+```

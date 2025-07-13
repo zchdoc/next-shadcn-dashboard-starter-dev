@@ -1,0 +1,146 @@
+# 文件命名规范
+
+## 基本规则
+
+1. **使用 kebab-case** 作为文件和目录名
+2. **组件文件使用 .tsx 扩展名**
+3. **工具函数使用 .ts 扩展名**
+4. **类型定义文件使用 .types.ts 或 types.ts**
+
+## 目录结构命名
+
+```
+src/
+├── app/                    # Next.js App Router
+│   ├── dashboard/          # 路由目录
+│   │   ├── page.tsx       # 页面组件
+│   │   ├── layout.tsx     # 布局组件
+│   │   └── loading.tsx    # 加载组件
+│   └── api/               # API 路由
+│       └── users/
+│           └── route.ts   # API 处理器
+├── components/            # 组件目录
+│   ├── ui/               # 基础 UI 组件
+│   │   ├── button.tsx
+│   │   ├── card.tsx
+│   │   └── data-table.tsx
+│   ├── layout/           # 布局组件
+│   │   ├── header.tsx
+│   │   └── sidebar.tsx
+│   └── tools/            # 工具页面组件
+├── features/             # 功能模块
+│   ├── auth/
+│   │   ├── components/
+│   │   ├── hooks/
+│   │   └── utils/
+│   └── dashboard/
+├── hooks/                # 自定义 hooks
+│   ├── use-local-storage.ts
+│   └── use-debounce.ts
+├── lib/                  # 工具函数
+│   ├── utils.ts
+│   ├── api-client.ts
+│   └── validators.ts
+├── services/             # API 服务
+│   ├── auth-service.ts
+│   └── user-service.ts
+└── types/                # 类型定义
+    ├── index.ts
+    ├── api.types.ts
+    └── user.types.ts
+```
+
+## 组件文件命名
+
+```typescript
+// ✅ 正确
+button.tsx              // 基础组件
+user-profile.tsx        // 复合词使用连字符
+data-table.tsx          // 多个单词
+auth-form.tsx           // 功能相关
+
+// ❌ 错误
+Button.tsx              // 不要使用 PascalCase
+userProfile.tsx         // 不要使用 camelCase
+user_profile.tsx        // 不要使用下划线
+```
+
+## 页面文件命名
+
+```typescript
+// App Router 页面
+page.tsx                // 页面组件
+layout.tsx              // 布局组件
+loading.tsx             // 加载组件
+error.tsx               // 错误组件
+not-found.tsx           // 404 页面
+template.tsx            // 模板组件
+
+// 动态路由
+[id]/page.tsx           // 动态参数
+[...slug]/page.tsx      // 捕获所有路由
+[[...slug]]/page.tsx    // 可选捕获所有路由
+```
+
+## API 文件命名
+
+```typescript
+// API 路由处理器
+route.ts                // 标准 API 处理器
+
+// 中间件
+middleware.ts           // 中间件文件
+
+// API 相关工具
+api-client.ts           // API 客户端
+api-helpers.ts          // API 辅助函数
+```
+
+## 工具函数命名
+
+```typescript
+// 工具函数
+utils.ts                // 通用工具
+date-utils.ts           // 日期工具
+string-utils.ts         // 字符串工具
+validation-utils.ts     // 验证工具
+
+// 服务层
+user-service.ts         // 用户服务
+auth-service.ts         // 认证服务
+api-service.ts          // API 服务
+```
+
+## 类型文件命名
+
+```typescript
+// 类型定义
+types.ts                // 通用类型
+index.ts                // 导出类型
+api.types.ts            // API 类型
+user.types.ts           // 用户类型
+form.types.ts           // 表单类型
+
+// 模式定义
+user.schema.ts          // 用户模式
+form.schema.ts          // 表单模式
+```
+
+## 样式文件命名
+
+```typescript
+// 样式文件
+globals.css             // 全局样式
+theme.css               // 主题样式
+component.module.css    // 组件样式模块
+```
+
+## 配置文件命名
+
+```typescript
+// 配置文件
+next.config.js          // Next.js 配置
+tailwind.config.js      // Tailwind 配置
+tsconfig.json           // TypeScript 配置
+package.json            // 包配置
+```

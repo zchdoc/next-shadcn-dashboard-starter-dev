@@ -1,0 +1,286 @@
+# 代码质量和最佳实践
+
+## 代码风格
+
+### 1. 命名约定
+- **变量和函数**: camelCase (`userName`, `handleClick`)
+- **组件**: PascalCase (`UserProfile`, `DataTable`)
+- **常量**: UPPER_SNAKE_CASE (`API_BASE_URL`, `MAX_RETRY_COUNT`)
+- **类型和接口**: PascalCase (`UserData`, `ApiResponse`)
+
+### 2. 函数和组件结构
+```typescript
+// 优先使用函数声明而非箭头函数（用于组件）
+function UserProfile({ userId }: UserProfileProps) {
+  // hooks 在顶部
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+  
+  // 副作用
+  useEffect(() => {
+    fetchUser(userId).then(setUser);
+  }, [userId]);
+  
+  // 事件处理函数
+  const handleSave = useCallback(async (data: UserData) => {
+    try {
+      await saveUser(data);
+      toast.success('保存成功');
+    } catch (error) {
+      toast.error('保存失败');
+    }
+  }, []);
+  
+  // 早期返回
+  if (loading) return <LoadingSpinner />;
+  if (!user) return <NotFound />;
+  
+  return (
+    <div className="space-y-4">
+      {/* 组件内容 */}
+    </div>
+  );
+}
+```
+
+### 3. 错误处理
+```typescript
+// API 调用错误处理
+async function fetchUserData(id: string): Promise<User> {
+  try {
+    const response = await fetch(`/api/users/${id}`);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error('Failed to fetch user:', error);
+    throw error;
+  }
+}
+
+// 组件内错误处理
+function UserComponent() {
+  const [error, setError] = useState<string | null>(null);
+  
+  const handleAction = async () => {
+    try {
+      setError(null);
+      await performAction();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : '操作失败');
+    }
+  };
+  
+  return (
+    <div>
+      {error && <Alert variant="destructive">{error}</Alert>}
+      <Button onClick={handleAction}>执行操作</Button>
+    </div>
+  );
+}
+```
+
+## 性能优化
+
+### 1. React 性能优化
+```typescript
+// 使用 React.memo 优化纯组件
+const UserCard = React.memo(({ user }: { user: User }) => {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>{user.name}</CardTitle>
+      </CardHeader>
+    </Card>
+  );
+});
+
+// 使用 useCallback 缓存函数
+const handleClick = useCallback((id: string) => {
+  onUserSelect(id);
+}, [onUserSelect]);
+
+// 使用 useMemo 缓存计算结果
+const expensiveValue = useMemo(() => {
+  return computeExpensiveValue(data);
+}, [data]);
+```
+
+### 2. 列表渲染优化
+```typescript
+// 使用 key 属性
+{users.map(user => (
+  <UserCard key={user.id} user={user} />
+))}
+
+// 避免在渲染中创建对象
+// ❌ 错误
+<Component style={{ margin: 10 }} />
+
+// ✅ 正确
+const componentStyle = { margin: 10 };
+<Component style={componentStyle} />
+```
+
+## 可访问性 (a11y)
+
+### 1. 语义化 HTML
+```typescript
+// 使用语义化标签
+<main>
+  <header>
+    <h1>页面标题</h1>
+  </header>
+  <section>
+    <h2>章节标题</h2>
+    <article>内容</article>
+  </section>
+</main>
+```
+
+### 2. ARIA 属性
+```typescript
+// 表单可访问性
+<Label htmlFor="email">邮箱地址</Label>
+<Input
+  id="email"
+  type="email"
+  aria-describedby="email-error"
+  aria-invalid={!!errors.email}
+/>
+{errors.email && (
+  <div id="email-error" role="alert">
+    {errors.email.message}
+  </div>
+)}
+
+// 按钮可访问性
+<Button
+  aria-label="删除用户"
+  aria-describedby="delete-help"
+>
+  <TrashIcon />
+</Button>
+```
+
+## 安全性
+
+### 1. 输入验证
+```typescript
+// 使用 Zod 进行数据验证
+const userSchema = z.object({
+  email: z.string().email('无效的邮箱地址'),
+  password: z.string().min(8, '密码至少8位'),
+  age: z.number().min(0).max(150)
+});
+
+// API 路由中验证
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const validatedData = userSchema.parse(body);
+    // 处理验证后的数据
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        { error: '数据验证失败', details: error.errors },
+        { status: 400 }
+      );
+    }
+  }
+}
+```
+
+### 2. XSS 防护
+```typescript
+// 使用 dangerouslySetInnerHTML 时要小心
+// ❌ 危险
+<div dangerouslySetInnerHTML={{ __html: userInput }} />
+
+// ✅ 安全 - 使用库进行清理
+import DOMPurify from 'dompurify';
+
+const sanitizedHTML = DOMPurify.sanitize(userInput);
+<div dangerouslySetInnerHTML={{ __html: sanitizedHTML }} />
+```
+
+## 测试
+
+### 1. 组件测试
+```typescript
+// 使用 React Testing Library
+import { render, screen, fireEvent } from '@testing-library/react';
+import { Button } from './button';
+
+test('按钮点击事件', () => {
+  const handleClick = jest.fn();
+  render(<Button onClick={handleClick}>点击我</Button>);
+  
+  fireEvent.click(screen.getByText('点击我'));
+  expect(handleClick).toHaveBeenCalledTimes(1);
+});
+```
+
+### 2. API 测试
+```typescript
+// API 路由测试
+import { GET } from './route';
+import { NextRequest } from 'next/server';
+
+test('GET /api/users 返回用户列表', async () => {
+  const request = new NextRequest('http://localhost/api/users');
+  const response = await GET(request);
+  
+  expect(response.status).toBe(200);
+  const data = await response.json();
+  expect(Array.isArray(data)).toBe(true);
+});
+```
+
+## 文档和注释
+
+### 1. JSDoc 注释
+```typescript
+/**
+ * 获取用户信息
+ * @param userId - 用户ID
+ * @returns Promise<User> 用户信息
+ * @throws {Error} 当用户不存在时抛出错误
+ */
+async function getUser(userId: string): Promise<User> {
+  // 实现
+}
+```
+
+### 2. 组件文档
+```typescript
+interface ButtonProps {
+  /** 按钮变体 */
+  variant?: 'default' | 'destructive' | 'outline';
+  /** 按钮尺寸 */
+  size?: 'sm' | 'md' | 'lg';
+  /** 是否禁用 */
+  disabled?: boolean;
+  /** 点击事件处理函数 */
+  onClick?: () => void;
+  /** 子元素 */
+  children: React.ReactNode;
+}
+
+/**
+ * 通用按钮组件
+ * 
+ * @example
+ * ```tsx
+ * <Button variant="destructive" size="lg" onClick={handleDelete}>
+ *   删除
+ * </Button>
+ * ```
+ */
+function Button({ variant = 'default', size = 'md', ...props }: ButtonProps) {
+  // 实现
+}
+```

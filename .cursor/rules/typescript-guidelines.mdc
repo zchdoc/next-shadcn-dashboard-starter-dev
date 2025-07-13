@@ -1,0 +1,64 @@
+# TypeScript 编码规范
+
+## 基本规则
+
+1. **始终使用 TypeScript 严格模式**
+2. **优先使用 interface 而非 type（除非需要联合类型）**
+3. **使用 const assertions 和 as const**
+4. **避免使用 any，使用 unknown 替代**
+
+## 组件类型定义
+
+```typescript
+// 优先使用 interface
+interface ButtonProps {
+  variant?: 'default' | 'destructive' | 'outline';
+  size?: 'sm' | 'md' | 'lg';
+  children: React.ReactNode;
+}
+
+// 使用 React.ComponentProps 扩展原生属性
+type ButtonProps = React.ComponentProps<'button'> & {
+  variant?: 'default' | 'destructive';
+}
+```
+
+## 导入顺序
+
+1. React 和 Next.js 相关
+2. 第三方库
+3. 内部组件（@/ 开头）
+4. 相对路径导入
+5. 类型导入放在最后
+
+```typescript
+import * as React from 'react';
+import { NextPage } from 'next';
+
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
+
+import './styles.css';
+
+import type { User } from '@/types';
+```
+
+## 函数组件规范
+
+```typescript
+// 使用函数声明而非箭头函数（用于组件）
+function MyComponent({ prop1, prop2 }: MyComponentProps) {
+  return <div>{prop1}</div>;
+}
+
+// 导出方式
+export default MyComponent;
+```
+
+## 类型导出
+
+```typescript
+// 导出类型时使用 type 关键字
+export type { ButtonProps } from './button';
+export { Button } from './button';
+```
