@@ -93,6 +93,12 @@ export const navItems: NavItem[] = [
         url: '/dashboard/auth-test',
         icon: 'settings',
         shortcut: ['a', 't']
+      },
+      {
+        title: '数据格式化',
+        url: '/dashboard/tools/data-formatter',
+        icon: 'settings',
+        shortcut: ['d', 'f']
       }
     ]
   },
