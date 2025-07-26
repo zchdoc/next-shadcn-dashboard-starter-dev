@@ -61,7 +61,11 @@ export class DataFormatterService {
       }
 
       // 根据格式生成输出
-      const formattedData = this.applyFormat(lines, outputFormat, formData);
+      const formattedData = DataFormatterService.applyFormat(
+        lines,
+        outputFormat,
+        formData
+      );
 
       return {
         success: true,
@@ -102,6 +106,9 @@ export class DataFormatterService {
       case 'sql-in-clause':
         return `(${lines.map((line) => `'${line}'`).join(',')})`;
 
+      case 'sql-in-numbers':
+        return `(${lines.join(',')})`;
+
       case 'array-format':
         return `[${lines.map((line) => `"${line}"`).join(',')}]`;
 
@@ -115,7 +122,7 @@ export class DataFormatterService {
         return lines.join('|');
 
       case 'custom':
-        return this.applyCustomFormat(lines, formData);
+        return DataFormatterService.applyCustomFormat(lines, formData);
 
       default:
         return lines.join(',');
@@ -153,7 +160,7 @@ export class DataFormatterService {
       inputData: formData.inputData.split(/\r?\n/).slice(0, maxLines).join('\n')
     };
 
-    return this.formatData(previewData);
+    return DataFormatterService.formatData(previewData);
   }
 
   /**

@@ -6,6 +6,7 @@ export const outputFormatEnum = z.enum([
   'quoted-comma', // 带引号逗号分隔："item1","item2","item3"
   'single-quoted-comma', // 单引号逗号分隔：'item1','item2','item3'
   'sql-in-clause', // SQL IN 子句格式：('item1','item2','item3')
+  'sql-in-numbers', // SQL IN 数字格式：(1,2,3)
   'array-format', // 数组格式：["item1","item2","item3"]
   'space-separated', // 空格分隔：item1 item2 item3
   'semicolon-separated', // 分号分隔：item1;item2;item3
@@ -65,8 +66,13 @@ export const outputFormatOptions = [
   },
   {
     value: 'sql-in-clause',
-    label: 'SQL IN 子句',
+    label: 'SQL IN (字符串)',
     example: "('item1','item2','item3')"
+  },
+  {
+    value: 'sql-in-numbers',
+    label: 'SQL IN (数字)',
+    example: '(1,2,3)'
   },
   {
     value: 'array-format',

@@ -13,10 +13,8 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
-  FormDescription
+  FormMessage
 } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
@@ -28,7 +26,12 @@ import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
-import { Copy, FileText, RotateCcw } from 'lucide-react';
+import { Copy, FileText, RotateCcw, Settings } from 'lucide-react';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger
+} from '@/components/ui/collapsible';
 
 import {
   dataFormatterSchema,
@@ -49,6 +52,7 @@ export function DataFormatterForm({ onResult }: DataFormatterFormProps) {
   const [previewResult, setPreviewResult] = React.useState<FormatResult | null>(
     null
   );
+  const [showAdvanced, setShowAdvanced] = React.useState(false);
 
   const form = useForm<DataFormatterFormData>({
     resolver: zodResolver(dataFormatterSchema),
@@ -66,18 +70,56 @@ export function DataFormatterForm({ onResult }: DataFormatterFormProps) {
     }
   });
 
-  const watchedValues = form.watch();
-  const isCustomFormat = watchedValues.outputFormat === 'custom';
+  // 监听表单值变化
+  const inputData = form.watch('inputData');
+  const outputFormat = form.watch('outputFormat');
+  const removeEmptyLines = form.watch('removeEmptyLines');
+  const trimWhitespace = form.watch('trimWhitespace');
+  const removeDuplicates = form.watch('removeDuplicates');
+  const customPrefix = form.watch('customPrefix');
+  const customSuffix = form.watch('customSuffix');
+  const customSeparator = form.watch('customSeparator');
+  const toLowerCase = form.watch('toLowerCase');
+  const toUpperCase = form.watch('toUpperCase');
 
-  // 实时预览
-  React.useEffect(() => {
-    if (watchedValues.inputData && watchedValues.inputData.trim()) {
-      const preview = DataFormatterService.previewFormat(watchedValues, 3);
-      setPreviewResult(preview);
-    } else {
-      setPreviewResult(null);
+  const isCustomFormat = outputFormat === 'custom';
+
+  // 实时预览 - 完整预览，不限制行数
+  const currentPreview = React.useMemo(() => {
+    if (inputData?.trim()) {
+      const formData: DataFormatterFormData = {
+        inputData,
+        outputFormat,
+        removeEmptyLines,
+        trimWhitespace,
+        removeDuplicates,
+        customPrefix: customPrefix || '',
+        customSuffix: customSuffix || '',
+        customSeparator: customSeparator || ',',
+        toLowerCase,
+        toUpperCase
+      };
+      // 移除行数限制，直接格式化完整数据
+      return DataFormatterService.formatData(formData);
     }
-  }, [watchedValues]);
+    return null;
+  }, [
+    inputData,
+    outputFormat,
+    removeEmptyLines,
+    trimWhitespace,
+    removeDuplicates,
+    customPrefix,
+    customSuffix,
+    customSeparator,
+    toLowerCase,
+    toUpperCase
+  ]);
+
+  // 更新预览结果
+  React.useEffect(() => {
+    setPreviewResult(currentPreview);
+  }, [currentPreview]);
 
   const handleSubmit = async (data: DataFormatterFormData) => {
     setIsProcessing(true);
@@ -118,119 +160,289 @@ export function DataFormatterForm({ onResult }: DataFormatterFormProps) {
     toast.success('已重置表单');
   };
 
+  const handleCopyResult = async () => {
+    if (previewResult?.data) {
+      const success = await DataFormatterService.copyToClipboard(
+        previewResult.data
+      );
+      if (success) {
+        toast.success('结果已复制到剪贴板');
+      } else {
+        toast.error('复制失败');
+      }
+    }
+  };
+
   const currentFormatOption = outputFormatOptions.find(
-    (option) => option.value === watchedValues.outputFormat
+    (option) => option.value === outputFormat
   );
 
+  // 计算输入数据统计
+  const inputStats = React.useMemo(() => {
+    if (!inputData?.trim()) return null;
+    const lines = inputData.split(/\r?\n/);
+    const nonEmptyLines = lines.filter((line) => line.trim() !== '');
+    return {
+      totalLines: lines.length,
+      nonEmptyLines: nonEmptyLines.length
+    };
+  }, [inputData]);
+
   return (
-    <div className='grid gap-6 md:grid-cols-2'>
-      {/* 左侧：表单 */}
-      <Card>
-        <CardHeader>
-          <CardTitle className='flex items-center gap-2'>
-            <FileText className='h-5 w-5' />
-            数据格式转换
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(handleSubmit)}
-              className='space-y-6'
-            >
-              {/* 输入数据 */}
-              <FormField
-                control={form.control}
-                name='inputData'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>输入数据</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        placeholder='请输入要转换的数据，每行一个项目...'
-                        className='min-h-[200px] font-mono'
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      每行输入一个数据项，支持最多 10,000 行
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+    <div className='space-y-2'>
+      {/* 顶部工具栏 - 更紧凑 */}
+      <div className='flex items-center justify-between'>
+        <div className='flex items-center gap-1'>
+          <FileText className='text-primary h-3 w-3' />
+          <h2 className='text-sm font-semibold'>数据格式转换</h2>
+        </div>
+        <div className='flex gap-1'>
+          <Button
+            type='button'
+            variant='outline'
+            size='sm'
+            onClick={handleLoadExample}
+          >
+            加载示例
+          </Button>
+          <Button
+            type='button'
+            variant='outline'
+            size='sm'
+            onClick={handleReset}
+          >
+            <RotateCcw className='mr-1 h-3 w-3' />
+            重置
+          </Button>
+        </div>
+      </div>
 
-              {/* 快捷操作 */}
-              <div className='flex gap-2'>
-                <Button
-                  type='button'
-                  variant='outline'
-                  size='sm'
-                  onClick={handleLoadExample}
-                >
-                  加载示例
-                </Button>
-                <Button
-                  type='button'
-                  variant='outline'
-                  size='sm'
-                  onClick={handleReset}
-                >
-                  <RotateCcw className='mr-1 h-4 w-4' />
-                  重置
-                </Button>
-              </div>
-
-              <Separator />
-
-              {/* 输出格式 */}
-              <FormField
-                control={form.control}
-                name='outputFormat'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>输出格式</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(handleSubmit)} className='space-y-2'>
+          <div className='grid gap-2 lg:grid-cols-2'>
+            {/* 左侧：输入区域 - 更紧凑 */}
+            <Card className='shadow-sm'>
+              <CardHeader className='pt-1 pb-1'>
+                <div className='flex items-center justify-between'>
+                  <CardTitle className='text-xs'>输入数据</CardTitle>
+                  {inputStats && (
+                    <div className='text-muted-foreground flex gap-2 text-xs'>
+                      <span>总行数: {inputStats.totalLines}</span>
+                      <span>有效行数: {inputStats.nonEmptyLines}</span>
+                    </div>
+                  )}
+                </div>
+              </CardHeader>
+              <CardContent className='p-2'>
+                <FormField
+                  control={form.control}
+                  name='inputData'
+                  render={({ field }) => (
+                    <FormItem>
                       <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder='选择输出格式' />
-                        </SelectTrigger>
+                        <Textarea
+                          placeholder='请输入要转换的数据，每行一个项目...'
+                          className='min-h-[120px] font-mono text-xs'
+                          {...field}
+                        />
                       </FormControl>
-                      <SelectContent>
-                        {outputFormatOptions.map((option) => (
-                          <SelectItem key={option.value} value={option.value}>
-                            <div className='flex flex-col'>
-                              <span>{option.label}</span>
-                              <span className='text-muted-foreground font-mono text-xs'>
-                                {option.example}
-                              </span>
-                            </div>
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </CardContent>
+            </Card>
+
+            {/* 右侧：输出区域 - 更紧凑 */}
+            <Card className='shadow-sm'>
+              <CardHeader className='pt-1 pb-1'>
+                <div className='flex items-center justify-between'>
+                  <CardTitle className='text-xs'>格式化结果</CardTitle>
+                  {previewResult?.success && (
+                    <div className='flex items-center gap-1'>
+                      <Badge variant='secondary' className='text-xs'>
+                        {currentFormatOption?.label || '未知格式'}
+                      </Badge>
+                      <Button
+                        type='button'
+                        variant='ghost'
+                        size='sm'
+                        onClick={handleCopyResult}
+                      >
+                        <Copy className='h-3 w-3' />
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              </CardHeader>
+              <CardContent className='p-2'>
+                {previewResult ? (
+                  <Textarea
+                    value={
+                      previewResult.success
+                        ? previewResult.data
+                        : previewResult.error
+                    }
+                    readOnly
+                    className={`min-h-[120px] font-mono text-xs ${
+                      previewResult.success
+                        ? 'text-foreground'
+                        : 'text-destructive'
+                    }`}
+                  />
+                ) : (
+                  <div className='text-muted-foreground flex h-[120px] items-center justify-center'>
+                    <div className='text-center'>
+                      <FileText className='mx-auto mb-1 h-8 w-8 opacity-50' />
+                      <p className='text-xs'>输入数据后将显示格式化结果</p>
+                    </div>
+                  </div>
                 )}
-              />
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* 格式选择和设置 - 更紧凑 */}
+          <Card className='shadow-sm'>
+            <CardContent className='p-3'>
+              <div className='grid gap-3 md:grid-cols-2'>
+                {/* 输出格式选择 */}
+                <FormField
+                  control={form.control}
+                  name='outputFormat'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className='text-xs'>输出格式</FormLabel>
+                      <Select
+                        value={field.value}
+                        onValueChange={field.onChange}
+                      >
+                        <FormControl>
+                          <SelectTrigger className='h-8 text-xs'>
+                            <SelectValue placeholder='选择输出格式' />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {outputFormatOptions.map((option) => (
+                            <SelectItem
+                              key={option.value}
+                              value={option.value}
+                              className='text-xs'
+                            >
+                              <div className='flex flex-col'>
+                                <span>{option.label}</span>
+                                <span className='text-muted-foreground font-mono text-xs'>
+                                  {option.example}
+                                </span>
+                              </div>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {/* 提交按钮 */}
+                <div className='flex items-end'>
+                  <Button
+                    type='submit'
+                    className='h-8 w-full text-xs'
+                    disabled={isProcessing || !inputData?.trim()}
+                  >
+                    {isProcessing ? '处理中...' : '开始转换'}
+                  </Button>
+                </div>
+              </div>
 
               {/* 自定义格式选项 */}
               {isCustomFormat && (
-                <div className='bg-muted/50 space-y-4 rounded-lg border p-4'>
-                  <h4 className='font-medium'>自定义格式设置</h4>
-
-                  <div className='grid gap-4 md:grid-cols-2'>
+                <div className='bg-muted/50 mt-2 space-y-2 rounded-lg border p-2'>
+                  <h4 className='text-xs font-medium'>自定义格式设置</h4>
+                  <div className='grid gap-2 md:grid-cols-3'>
                     <FormField
                       control={form.control}
                       name='customPrefix'
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>前缀</FormLabel>
+                          <FormLabel className='text-xs'>前缀</FormLabel>
                           <FormControl>
-                            <Input placeholder='例如: "' {...field} />
+                            <input
+                              className='border-input placeholder:text-muted-foreground focus-visible:ring-ring flex h-7 w-full rounded-md border bg-transparent px-2 py-1 text-xs shadow-sm transition-colors file:border-0 file:bg-transparent file:text-xs file:font-medium focus-visible:ring-1 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50'
+                              placeholder='例如: "'
+                              {...field}
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name='customSuffix'
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className='text-xs'>后缀</FormLabel>
+                          <FormControl>
+                            <input
+                              className='border-input placeholder:text-muted-foreground focus-visible:ring-ring flex h-7 w-full rounded-md border bg-transparent px-2 py-1 text-xs shadow-sm transition-colors file:border-0 file:bg-transparent file:text-xs file:font-medium focus-visible:ring-1 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50'
+                              placeholder='例如: "'
+                              {...field}
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name='customSeparator'
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className='text-xs'>分隔符</FormLabel>
+                          <FormControl>
+                            <input
+                              className='border-input placeholder:text-muted-foreground focus-visible:ring-ring flex h-7 w-full rounded-md border bg-transparent px-2 py-1 text-xs shadow-sm transition-colors file:border-0 file:bg-transparent file:text-xs file:font-medium focus-visible:ring-1 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50'
+                              placeholder='例如: ,'
+                              {...field}
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* 高级选项 */}
+              <Collapsible open={showAdvanced} onOpenChange={setShowAdvanced}>
+                <CollapsibleTrigger asChild>
+                  <Button
+                    type='button'
+                    variant='ghost'
+                    size='sm'
+                    className='mt-2 w-full justify-center'
+                  >
+                    <Settings className='mr-1 h-3 w-3' />
+                    {showAdvanced ? '隐藏' : '显示'}高级选项
+                  </Button>
+                </CollapsibleTrigger>
+                <CollapsibleContent className='mt-2 space-y-2'>
+                  <Separator />
+                  <div className='grid gap-2 md:grid-cols-2'>
+                    <FormField
+                      control={form.control}
+                      name='removeEmptyLines'
+                      render={({ field }) => (
+                        <FormItem className='flex flex-row items-center justify-between rounded-lg border p-2'>
+                          <FormLabel className='text-xs font-medium'>
+                            去除空行
+                          </FormLabel>
+                          <FormControl>
+                            <Switch
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                              className='scale-75'
+                            />
                           </FormControl>
                         </FormItem>
                       )}
@@ -238,245 +450,96 @@ export function DataFormatterForm({ onResult }: DataFormatterFormProps) {
 
                     <FormField
                       control={form.control}
-                      name='customSuffix'
+                      name='trimWhitespace'
                       render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>后缀</FormLabel>
+                        <FormItem className='flex flex-row items-center justify-between rounded-lg border p-2'>
+                          <FormLabel className='text-xs font-medium'>
+                            去除首尾空格
+                          </FormLabel>
                           <FormControl>
-                            <Input placeholder='例如: "' {...field} />
+                            <Switch
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                              className='scale-75'
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name='removeDuplicates'
+                      render={({ field }) => (
+                        <FormItem className='flex flex-row items-center justify-between rounded-lg border p-2'>
+                          <FormLabel className='text-xs font-medium'>
+                            去除重复项
+                          </FormLabel>
+                          <FormControl>
+                            <Switch
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                              className='scale-75'
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name='toLowerCase'
+                      render={({ field }) => (
+                        <FormItem className='flex flex-row items-center justify-between rounded-lg border p-2'>
+                          <FormLabel className='text-xs font-medium'>
+                            转换为小写
+                          </FormLabel>
+                          <FormControl>
+                            <Switch
+                              checked={field.value}
+                              onCheckedChange={(checked) => {
+                                field.onChange(checked);
+                                if (checked) {
+                                  form.setValue('toUpperCase', false);
+                                }
+                              }}
+                              className='scale-75'
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name='toUpperCase'
+                      render={({ field }) => (
+                        <FormItem className='flex flex-row items-center justify-between rounded-lg border p-2'>
+                          <FormLabel className='text-xs font-medium'>
+                            转换为大写
+                          </FormLabel>
+                          <FormControl>
+                            <Switch
+                              checked={field.value}
+                              onCheckedChange={(checked) => {
+                                field.onChange(checked);
+                                if (checked) {
+                                  form.setValue('toLowerCase', false);
+                                }
+                              }}
+                              className='scale-75'
+                            />
                           </FormControl>
                         </FormItem>
                       )}
                     />
                   </div>
-
-                  <FormField
-                    control={form.control}
-                    name='customSeparator'
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>分隔符</FormLabel>
-                        <FormControl>
-                          <Input placeholder='例如: ,' {...field} />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              )}
-
-              <Separator />
-
-              {/* 处理选项 */}
-              <div className='space-y-4'>
-                <h4 className='font-medium'>处理选项</h4>
-
-                <div className='grid gap-4 md:grid-cols-2'>
-                  <FormField
-                    control={form.control}
-                    name='removeEmptyLines'
-                    render={({ field }) => (
-                      <FormItem className='flex flex-row items-center justify-between rounded-lg border p-3'>
-                        <div className='space-y-0.5'>
-                          <FormLabel className='text-base'>去除空行</FormLabel>
-                          <FormDescription>自动移除空白行</FormDescription>
-                        </div>
-                        <FormControl>
-                          <Switch
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name='trimWhitespace'
-                    render={({ field }) => (
-                      <FormItem className='flex flex-row items-center justify-between rounded-lg border p-3'>
-                        <div className='space-y-0.5'>
-                          <FormLabel className='text-base'>
-                            去除首尾空格
-                          </FormLabel>
-                          <FormDescription>清理每行的空白字符</FormDescription>
-                        </div>
-                        <FormControl>
-                          <Switch
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name='removeDuplicates'
-                    render={({ field }) => (
-                      <FormItem className='flex flex-row items-center justify-between rounded-lg border p-3'>
-                        <div className='space-y-0.5'>
-                          <FormLabel className='text-base'>
-                            去除重复项
-                          </FormLabel>
-                          <FormDescription>移除重复的数据项</FormDescription>
-                        </div>
-                        <FormControl>
-                          <Switch
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name='toLowerCase'
-                    render={({ field }) => (
-                      <FormItem className='flex flex-row items-center justify-between rounded-lg border p-3'>
-                        <div className='space-y-0.5'>
-                          <FormLabel className='text-base'>
-                            转换为小写
-                          </FormLabel>
-                          <FormDescription>将所有文本转为小写</FormDescription>
-                        </div>
-                        <FormControl>
-                          <Switch
-                            checked={field.value}
-                            onCheckedChange={(checked) => {
-                              field.onChange(checked);
-                              if (checked) {
-                                form.setValue('toUpperCase', false);
-                              }
-                            }}
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name='toUpperCase'
-                    render={({ field }) => (
-                      <FormItem className='flex flex-row items-center justify-between rounded-lg border p-3'>
-                        <div className='space-y-0.5'>
-                          <FormLabel className='text-base'>
-                            转换为大写
-                          </FormLabel>
-                          <FormDescription>将所有文本转为大写</FormDescription>
-                        </div>
-                        <FormControl>
-                          <Switch
-                            checked={field.value}
-                            onCheckedChange={(checked) => {
-                              field.onChange(checked);
-                              if (checked) {
-                                form.setValue('toLowerCase', false);
-                              }
-                            }}
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              </div>
-
-              {/* 提交按钮 */}
-              <Button
-                type='submit'
-                className='w-full'
-                disabled={isProcessing || !watchedValues.inputData?.trim()}
-              >
-                {isProcessing ? '处理中...' : '开始转换'}
-              </Button>
-            </form>
-          </Form>
-        </CardContent>
-      </Card>
-
-      {/* 右侧：预览 */}
-      <Card>
-        <CardHeader>
-          <CardTitle>实时预览</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {previewResult ? (
-            <div className='space-y-4'>
-              {/* 格式信息 */}
-              <div className='flex items-center gap-2'>
-                <Badge variant='secondary'>
-                  {currentFormatOption?.label || '未知格式'}
-                </Badge>
-                {previewResult.stats && (
-                  <span className='text-muted-foreground text-sm'>
-                    预览前 3 行
-                  </span>
-                )}
-              </div>
-
-              {/* 预览结果 */}
-              <div className='relative'>
-                <Textarea
-                  value={
-                    previewResult.success
-                      ? previewResult.data
-                      : previewResult.error
-                  }
-                  readOnly
-                  className={`min-h-[100px] font-mono ${
-                    previewResult.success
-                      ? 'text-foreground'
-                      : 'text-destructive'
-                  }`}
-                />
-                {previewResult.success && (
-                  <Button
-                    type='button'
-                    variant='ghost'
-                    size='sm'
-                    className='absolute top-2 right-2'
-                    onClick={() => {
-                      if (previewResult.data) {
-                        DataFormatterService.copyToClipboard(
-                          previewResult.data
-                        );
-                        toast.success('预览结果已复制到剪贴板');
-                      }
-                    }}
-                  >
-                    <Copy className='h-4 w-4' />
-                  </Button>
-                )}
-              </div>
-
-              {/* 示例说明 */}
-              <p className='text-muted-foreground text-sm'>
-                {currentFormatOption?.example && (
-                  <>
-                    <strong>格式示例：</strong>
-                    <code className='bg-muted ml-2 rounded px-2 py-1 text-xs'>
-                      {currentFormatOption.example}
-                    </code>
-                  </>
-                )}
-              </p>
-            </div>
-          ) : (
-            <div className='text-muted-foreground flex h-[200px] items-center justify-center'>
-              <div className='text-center'>
-                <FileText className='mx-auto mb-2 h-12 w-12 opacity-50' />
-                <p>输入数据后将显示预览</p>
-              </div>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+                </CollapsibleContent>
+              </Collapsible>
+            </CardContent>
+          </Card>
+        </form>
+      </Form>
     </div>
   );
 }
