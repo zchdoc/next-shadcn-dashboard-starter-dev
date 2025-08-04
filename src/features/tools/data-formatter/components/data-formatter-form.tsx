@@ -242,7 +242,7 @@ export function DataFormatterForm({ onResult }: DataFormatterFormProps) {
                       <FormControl>
                         <Textarea
                           placeholder='请输入要转换的数据，每行一个项目...'
-                          className='min-h-[120px] font-mono text-xs'
+                          className='h-[200px] overflow-y-auto font-mono text-xs'
                           {...field}
                         />
                       </FormControl>
@@ -284,14 +284,14 @@ export function DataFormatterForm({ onResult }: DataFormatterFormProps) {
                         : previewResult.error
                     }
                     readOnly
-                    className={`min-h-[120px] font-mono text-xs ${
+                    className={`h-[200px] overflow-y-auto font-mono text-xs ${
                       previewResult.success
                         ? 'text-foreground'
                         : 'text-destructive'
                     }`}
                   />
                 ) : (
-                  <div className='text-muted-foreground flex h-[120px] items-center justify-center'>
+                  <div className='text-muted-foreground flex h-[200px] items-center justify-center'>
                     <div className='text-center'>
                       <FileText className='mx-auto mb-1 h-8 w-8 opacity-50' />
                       <p className='text-xs'>输入数据后将显示格式化结果</p>
