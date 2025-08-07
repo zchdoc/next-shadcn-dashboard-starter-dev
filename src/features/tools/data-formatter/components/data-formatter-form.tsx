@@ -65,6 +65,7 @@ export function DataFormatterForm({ onResult }: DataFormatterFormProps) {
       customPrefix: '',
       customSuffix: '',
       customSeparator: ',',
+      horizontalSeparator: '。',
       toLowerCase: false,
       toUpperCase: false
     }
@@ -79,10 +80,12 @@ export function DataFormatterForm({ onResult }: DataFormatterFormProps) {
   const customPrefix = form.watch('customPrefix');
   const customSuffix = form.watch('customSuffix');
   const customSeparator = form.watch('customSeparator');
+  const horizontalSeparator = form.watch('horizontalSeparator');
   const toLowerCase = form.watch('toLowerCase');
   const toUpperCase = form.watch('toUpperCase');
 
   const isCustomFormat = outputFormat === 'custom';
+  const isHorizontalToVertical = outputFormat === 'horizontal-to-vertical';
 
   // 实时预览 - 完整预览，不限制行数
   const currentPreview = React.useMemo(() => {
@@ -96,6 +99,7 @@ export function DataFormatterForm({ onResult }: DataFormatterFormProps) {
         customPrefix: customPrefix || '',
         customSuffix: customSuffix || '',
         customSeparator: customSeparator || ',',
+        horizontalSeparator: horizontalSeparator || '。',
         toLowerCase,
         toUpperCase
       };
@@ -112,6 +116,7 @@ export function DataFormatterForm({ onResult }: DataFormatterFormProps) {
     customPrefix,
     customSuffix,
     customSeparator,
+    horizontalSeparator,
     toLowerCase,
     toUpperCase
   ]);
@@ -406,6 +411,34 @@ export function DataFormatterForm({ onResult }: DataFormatterFormProps) {
                               {...field}
                             />
                           </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* 横向转竖列格式选项 */}
+              {isHorizontalToVertical && (
+                <div className='bg-muted/50 mt-2 space-y-2 rounded-lg border p-2'>
+                  <h4 className='text-xs font-medium'>横向转竖列设置</h4>
+                  <div className='grid gap-2 md:grid-cols-1'>
+                    <FormField
+                      control={form.control}
+                      name='horizontalSeparator'
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className='text-xs'>横向分隔符</FormLabel>
+                          <FormControl>
+                            <input
+                              className='border-input placeholder:text-muted-foreground focus-visible:ring-ring flex h-7 w-full rounded-md border bg-transparent px-2 py-1 text-xs shadow-sm transition-colors file:border-0 file:bg-transparent file:text-xs file:font-medium focus-visible:ring-1 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50'
+                              placeholder='例如: 。'
+                              {...field}
+                            />
+                          </FormControl>
+                          <p className='text-muted-foreground text-xs'>
+                            输入横向文本中用于分隔的符号，如 句号 逗号 等
+                          </p>
                         </FormItem>
                       )}
                     />

@@ -121,6 +121,9 @@ export class DataFormatterService {
       case 'pipe-separated':
         return lines.join('|');
 
+      case 'horizontal-to-vertical':
+        return DataFormatterService.applyHorizontalToVertical(lines, formData);
+
       case 'custom':
         return DataFormatterService.applyCustomFormat(lines, formData);
 
@@ -146,6 +149,30 @@ export class DataFormatterService {
       (line) => `${customPrefix}${line}${customSuffix}`
     );
     return formattedLines.join(customSeparator);
+  }
+
+  /**
+   * 应用横向转竖列格式
+   */
+  private static applyHorizontalToVertical(
+    lines: string[],
+    formData: DataFormatterFormData
+  ): string {
+    const { horizontalSeparator = '。' } = formData;
+
+    // 将所有行合并为一个字符串
+    const combinedText = lines.join('');
+
+    // 按指定分隔符分割
+    const parts = combinedText.split(horizontalSeparator);
+
+    // 过滤空字符串并去除首尾空格
+    const filteredParts = parts
+      .map((part) => part.trim())
+      .filter((part) => part.length > 0);
+
+    // 返回竖列格式（每行一个项目）
+    return filteredParts.join('\n');
   }
 
   /**
@@ -187,11 +214,7 @@ export class DataFormatterService {
    * 获取示例数据
    */
   static getExampleData(): string {
-    return `apple
-banana
-cherry
-date
-elderberry`;
+    return `小学145318网关6层。145401修/男601。145415/男602。145418修/男603。145410/男604。`;
   }
 
   /**
