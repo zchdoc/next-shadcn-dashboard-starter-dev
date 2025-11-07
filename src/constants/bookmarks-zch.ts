@@ -141,7 +141,7 @@ export const bookmarkDataZch: BookmarkData = {
     links: [
       { title: 'DeepSeek', url: 'https://chat.deepseek.com' },
       { title: 'DeepSeekApi', url: 'https://platform.deepseek.com' },
-      { title: 'TongYi', url: 'https://tongyi.aliyun.com/' },
+      { title: 'TongYi', url: 'https://tongyi.com/' },
       { title: 'MoonShot', url: 'https://kimi.moonshot.cn/' },
       { title: 'ChatGlm', url: 'https://chatglm.cn/detail' },
       { title: 'YiYan', url: 'https://yiyan.baidu.com/' },
