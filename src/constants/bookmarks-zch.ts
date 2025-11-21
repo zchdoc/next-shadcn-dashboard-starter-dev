@@ -327,7 +327,7 @@ export const bookmarkDataZch: BookmarkData = {
   aiWithShell: {
     title: 'AI Shelled',
     links: [
-      { title: 'Copilot', url: 'https://github.com/features/copilot' },
+      { title: 'Copilot', url: 'https://github.com/copilot' },
       { title: 'JuChat', url: 'https://www.juchats.com/chat' },
       { title: 'OAiFree', url: 'https://shared.oaifree.com/' }
     ]
