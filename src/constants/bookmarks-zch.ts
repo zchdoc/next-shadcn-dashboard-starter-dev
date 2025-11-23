@@ -134,7 +134,8 @@ export const bookmarkDataZch: BookmarkData = {
         url: 'https://fireworks.ai/models/fireworks/f1-preview/playground'
       },
       { title: 'CoZeEn', url: 'https://www.coze.com' },
-      { title: 'CiCi', url: 'https://www.ciciai.com/' }
+      { title: 'CiCi', url: 'https://www.ciciai.com/' },
+      { title: 'Copilot', url: 'https://github.com/copilot' }
     ]
   },
   aiCn: {
@@ -324,14 +325,14 @@ export const bookmarkDataZch: BookmarkData = {
   //     { title: 'So360', url: 'https://www.so.com/' }
   //   ]
   // },
-  aiWithShell: {
-    title: 'AI Shelled',
-    links: [
-      { title: 'Copilot', url: 'https://github.com/copilot' },
-      { title: 'JuChat', url: 'https://www.juchats.com/chat' },
-      { title: 'OAiFree', url: 'https://shared.oaifree.com/' }
-    ]
-  },
+  // aiWithShell: {
+  //   title: 'AI Shelled',
+  //   links: [
+  //     { title: 'Copilot', url: 'https://github.com/copilot' },
+  //     { title: 'JuChat', url: 'https://www.juchats.com/chat' },
+  //     { title: 'OAiFree', url: 'https://shared.oaifree.com/' }
+  //   ]
+  // },
   aiRanking: {
     title: 'AI Ranking',
     links: [
