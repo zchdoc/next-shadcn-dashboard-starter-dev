@@ -18,13 +18,11 @@ This error occurs when the `Html` component from `next/document` is imported in 
 2. **Permanent Fix**: You need to find and remove any imports of `Html`, `Head`, `Main`, or `NextScript` from `next/document` in your codebase.
 
    Potential places to look:
-
    - Custom error pages
    - Layout components
    - Any components that might be trying to modify the HTML structure
 
 3. **For Custom Document Functionality**: If you need functionality that was previously in `_document.js`, use the following App Router alternatives:
-
    - For `<Html>` and `<Head>`: Use metadata in layout.tsx or page.tsx files
    - For scripts: Use the `<Script>` component from 'next/script'
    - For styles: Import CSS files directly or use CSS-in-JS solutions
