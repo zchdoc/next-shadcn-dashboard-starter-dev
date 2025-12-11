@@ -4,15 +4,15 @@ pnpm run dev
 pnpm install && pnpm run dev
 
 pnpm run format
-pnpm run format --write
+pnpm run format
 pnpm run pre-commit
 pnpm run pre-deploy
 
-pnpm run format --write && pnpm run pre-deploy
+pnpm run format && pnpm run pre-deploy
 
-pnpm run format --write && pnpm run pre-commit && pnpm run pre-deploy
+pnpm run format && pnpm run pre-commit && pnpm run pre-deploy
 
-pnpm install && pnpm run format --write && pnpm run pre-commit && pnpm run pre-deploy
+pnpm install && pnpm run format && pnpm run pre-commit && pnpm run pre-deploy
 
 rm -r -fo .next, node_modules
 rm -r -fo .next, node_modules && pnpm install

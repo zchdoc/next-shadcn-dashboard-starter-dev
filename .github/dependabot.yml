@@ -41,7 +41,7 @@ updates:
   # ==========================================================================
   # NPM/PNPM 依赖更新配置（适用于您的 Next.js 项目）
   # ==========================================================================
-  - package-ecosystem: 'pnpm'
+  - package-ecosystem: 'npm'
     # ------------------------------------------------------------------------
     # directory（必填）
     # 包清单文件（package.json）所在的目录
@@ -158,8 +158,8 @@ updates:
     # 自动请求指定用户进行代码审查
     # 最多可以指定 10 个用户或团队
     # ------------------------------------------------------------------------
-    reviewers:
-      - 'zchdoc'
+    # reviewers:
+    #   - 'zchdoc'
 
     # ------------------------------------------------------------------------
     # commit-message（可选）
@@ -330,12 +330,12 @@ updates:
 
     schedule:
       interval: 'weekly'
-      day: 'monday'
+      day: 'saturday'
       time: '09:00'
       timezone: 'Asia/Shanghai'
 
     # GitHub Actions 更新通常较少，可以设置较小的限制
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 1
 
     labels:
       - 'dependencies'
@@ -345,8 +345,8 @@ updates:
     assignees:
       - 'zchdoc'
 
-    reviewers:
-      - 'zchdoc'
+    # reviewers:
+    #   - 'zchdoc'
 
     commit-message:
       prefix: 'ci(deps)'
